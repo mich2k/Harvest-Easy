@@ -9,7 +9,7 @@ https://trello.com/invite/iotproject38/ATTI6b222fe1978f2fbd0a2300412b7b219d0C6F4
 https://trello.com/w/iotproject38
 
 # Smart Bin:
-<h2>Bin</h2>
+## Bin:
 * Stato del bidone ("sano"/malfunzionante/manutenzione)
 * Sensore di riempimento (prossimità)
 * Tag NFC per l'accesso (con raccolta dati dell'oggetto APPARTAMENTO)
@@ -32,6 +32,6 @@ https://trello.com/w/iotproject38
 * Motore (Attuatore Lineare)
 * Batteria (BMS)/Pannello
 
-<h3>Riconoscimento tipo rifiuto</h3>
+## Riconoscimento tipo rifiuto
 * Capacitive sensor (detect plastic)
 * Photoresistor (https://www.sciencedirect.com/topics/engineering/photoresistors)
