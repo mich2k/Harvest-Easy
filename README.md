@@ -29,7 +29,3 @@ https://trello.com/w/iotproject38
 * Tag NFC
 * Motore (Attuatore Lineare)
 * Batteria (BMS)/Pannello
-
-## Riconoscimento tipo rifiuto
-* Capacitive sensor (detect plastic)
-* Photoresistor (https://www.sciencedirect.com/topics/engineering/photoresistors)
