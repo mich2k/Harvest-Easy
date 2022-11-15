@@ -12,7 +12,7 @@
 https://trello.com/w/iotproject38
 
 # Smart Bin:
-## Bin:
+## reqs:
 * Stato del bidone ("sano"/malfunzionante/manutenzione)
 * Sensore di riempimento (prossimità)
 * Tag NFC per l'accesso (con raccolta dati dell'oggetto APPARTAMENTO)
