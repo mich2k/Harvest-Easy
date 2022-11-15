@@ -25,7 +25,7 @@ https://trello.com/w/iotproject38
 * Percorso ottimo basato sul livello di riempimento
 * Alimentato ad energia solare + batteria
 * Feedback sullo stato del bidone (lato utente)
-* Schermo pubblicitario (?)
+* Schermo
 
 ## Sensors/Actuators:
 * Temperatura/CO2
