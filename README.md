@@ -36,6 +36,8 @@ only for the first time run
 
 
 Run the build script for the first time
+
+
 _NOTE: The first time the process will be quite slow (ETA: 4mins)_
 
 `sudo bash build_and_run.sh`
