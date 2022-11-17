@@ -64,6 +64,10 @@ When you want to "commit", share the new upgraded image and deploy to the server
 
 `docker push mick2k1/iotflask`
 
+along with
+
+`git add . && git commit -m "news" && git push`
+
 **Remember to test the code inside the container before pushing**
 
 
