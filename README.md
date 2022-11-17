@@ -58,7 +58,7 @@ if you want to try the new codebase into the container (strongly suggested) you 
 
 `sudo bash build_and_run.sh` (ETA: few seconds)
 
-Remember that if works into the container will work for everybody (server included), if works only locally with `flask run` it means it wont run on the server. Before pushing is mandatory to test the new codebase in the docker container.
+Remember that if works into the container will work for everybody (server included), if works only locally with `flask run` and not into the container it means it wont run on the server. Before pushing is mandatory to test the new codebase in the docker container.
 
 When you want to "commit", share the new upgraded image and deploy to the server run
 
