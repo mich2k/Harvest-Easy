@@ -27,7 +27,11 @@ only for the first time run
 
 
 /*
-  edit, upgrade and change the flask codebase
+
+
+  edit, upgrade and change the flask codebase if needed
+  
+  
 */
 
 
