@@ -1,5 +1,30 @@
 # syntax=docker/dockerfile:1
+
 #
+#
+#
+#    EDIT ONLY IF YOU KNOW WHAT YOU ARE DOING
+#
+#
+#
+#
+#
+#
+#
+#    EDIT ONLY IF YOU KNOW WHAT YOU ARE DOING
+#
+#
+#
+#
+#
+#
+#    EDIT ONLY IF YOU KNOW WHAT YOU ARE DOING
+#
+#
+#
+#
+#
+
 #FROM python:3.11.0-alpine
 #ENV FLASK_APP flasky.py
 #ENV FLASK_CONFIG docker
