@@ -68,6 +68,18 @@ When you want to "commit", share the new upgraded image and deploy to the server
 
 
 
+## Cleaning local host
+
+After N runs or when you are done with this part of the project I suggest cleaning up your host with the delete_all script.
+
+Check into your WSL/LinuxOS and run
+
+`sudo bash delete_all.sh`
+
+You can execute this when you wish, if, after deleting every container & image with this script, you want to commit/deploy again you can; the build script will rebuild the container and download back all the needed images (More time needed on first lunch)
+
+
+The script is available [here](https://github.com/mich2k/IoT-3D-Systems/blob/main/docker-scripts/delete_all.sh)
 
 # Trello:
 
