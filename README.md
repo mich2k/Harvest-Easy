@@ -42,12 +42,12 @@ _NOTE: The first time the process will be quite slow (ETA: 4mins)_
 
 `sudo bash build_and_run.sh`
 
-Now the container is up & running, you will be able to browse into
+Now the container is hopefully up & running, hence you will be able to browse into
 
 
 `http://127.0.0.1:5000/`
 
-and evaluate if is running & upgraded according the new codebase
+and evaluate if is actually running & upgraded according the new codebase
 
 
 Now if you already have all requirements in your local host (or in your local venv) you can test your code with
