@@ -10,7 +10,7 @@ if [ -d "$DIR" ]; then
   python3 -m venv venv
   source venv/bin/activate
   echo "Installing needed requirements..."
-  pip3 install -r requirements.txt
+  venv/bin/pip3 install -r requirements.txt
   echo "Set up done"
 fi
 
