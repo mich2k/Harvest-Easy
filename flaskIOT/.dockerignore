@@ -1,5 +1,5 @@
 build.sh
 delete_all.sh
-
-
+localboot.sh
+venv/
 #  EDIT ONLY IF YOU KNOW WHAT YOU ARE DOING
