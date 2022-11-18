@@ -52,13 +52,13 @@ and evaluate if is actually running & upgraded according the new codebase
 
 Now if you already have all requirements in your local host (or in your local venv) you can test your code with
 
-`flask run`
+`source boot.sh`
 
 if you want to try the new codebase into the container (strongly suggested) you just have to run again
 
 `sudo bash build_and_run.sh` (ETA: few seconds)
 
-Remember that if works into the container will work for everybody (server included), if works only locally with `flask run` and not into the container it means it wont run on the server. Before pushing is mandatory to test the new codebase in the docker container.
+Remember that if works into the container will work for everybody (server included), if works only locally with `source boot.sh` and not into the container it means it wont run on the server. Before pushing is mandatory to test the new codebase in the docker container.
 
 When you want to "commit", share the new upgraded image and deploy to the server run
 
@@ -66,7 +66,7 @@ When you want to "commit", share the new upgraded image and deploy to the server
 
 along with
 
-`git add . && git commit -m "news" && git push`
+`git add . && git commit -m "{commit message}" && git push`
 
 **Remember to test the code inside the container before pushing**
 
