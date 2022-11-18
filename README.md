@@ -18,7 +18,7 @@ First of all check into your local WSL/Linux where docker is installed (verify w
 
 `git clone git@github.com:mich2k/IoT-3D-Systems.git`
 
-`cd Flask-Docker-App`
+`cd flaskIOT`
 
 only for the first time run
 
