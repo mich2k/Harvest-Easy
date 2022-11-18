@@ -1,4 +1,5 @@
 build.sh
+build_and_run.sh
 delete_all.sh
 localboot.sh
 venv/
