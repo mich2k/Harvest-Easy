@@ -50,7 +50,7 @@ Now the container is hopefully up & running, hence you will be able to browse in
 and evaluate if is actually running & upgraded according the new codebase
 
 
-Now if you already have all requirements in your local host (or in your local venv) you can test your code with
+If wou wish to run it in your local host (requirements will be automatically installed in local venv) you can test your code with
 
 `source localboot.sh`
 
