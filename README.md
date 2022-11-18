@@ -42,12 +42,12 @@ _NOTE: The first time the process will be quite slow (ETA: 4mins)_
 
 `sudo bash build_and_run.sh`
 
-Now the container is up & running, you will be able to browse into
+Now the container is hopefully up & running, hence you will be able to browse into
 
 
 `http://127.0.0.1:5000/`
 
-and evaluate if is running & upgraded according the new codebase
+and evaluate if is actually running & upgraded according the new codebase
 
 
 Now if you already have all requirements in your local host (or in your local venv) you can test your code with
@@ -58,16 +58,32 @@ if you want to try the new codebase into the container (strongly suggested) you 
 
 `sudo bash build_and_run.sh` (ETA: few seconds)
 
-Remember that if works into the container will work for everybody (server included), if works only locally with `flask run` it means it wont run on the server. Before pushing is mandatory to test the new codebase in the docker container.
+Remember that if works into the container will work for everybody (server included), if works only locally with `flask run` and not into the container it means it wont run on the server. Before pushing is mandatory to test the new codebase in the docker container.
 
 When you want to "commit", share the new upgraded image and deploy to the server run
 
 `docker push mick2k1/iotflask`
 
+along with
+
+`git add . && git commit -m "news" && git push`
+
 **Remember to test the code inside the container before pushing**
 
 
 
+## Cleaning local host
+
+After N runs or when you are done with this part of the project I suggest cleaning up your host with the delete_all script.
+
+Check into your WSL/LinuxOS and run
+
+`sudo bash delete_all.sh`
+
+You can execute this when you wish, if, after deleting every container & image with this script, you want to commit/deploy again you can; the build script will rebuild the container and download back all the needed images (More time needed on first lunch)
+
+
+The script is available [here](https://github.com/mich2k/IoT-3D-Systems/blob/main/docker-scripts/delete_all.sh)
 
 # Trello:
 
