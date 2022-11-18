@@ -42,3 +42,16 @@ __pycache__/
 *$py.class
 *.so
 *.dylib
+
+# IDE Stuff
+
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+.idea/**/*
