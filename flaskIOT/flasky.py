@@ -19,6 +19,10 @@ app.config.from_object(myconfig)
 # print(getenv('FLASK_CONFIG')) # if you want to print the env var you are passing
     # notice: is already passed by localboot.sh, so you don't need to pass it again
 
+
+# is very important to refer to the db path from the config file, otherwise 
+    # it will not work
+
 if(getenv('FLASK_CONFIG') is None):
     print("FLASK_CONFIG not set in environment")
     raise RuntimeError("Wrong env var value, exiting..")
@@ -31,7 +35,7 @@ elif(getenv.__get__('FLASK_CONFIG') == 'docker'):
     print("NOTE: Using docker debug config")
 elif(getenv('FLASK_CONFIG') == 'local'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///iot.db',
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
         DEBUG = True,
         TESTING = False,
     )
