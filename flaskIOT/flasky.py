@@ -1,6 +1,9 @@
 from flask import Flask, request
 from config import Config
 from app.database.database import database_blueprint,db
+from app.map.map import map_blueprint
+from app.neighbor.neighbor import neighbor_blueprint
+from app.bestpath.bestpath import path_blueprint
 
 #creo applicazione
 appname = "IOT - SmartBin"
@@ -8,8 +11,14 @@ app = Flask(appname)
 myconfig = Config
 app.config.from_object(myconfig)
 
+#Inizializzazione DB
 db.init_app(app)
+
+#Registrazione Blueprint
 app.register_blueprint(database_blueprint, url_prefix='/database')
+app.register_blueprint(map_blueprint, url_prefix='/map')
+app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
+app.register_blueprint(path_blueprint, url_prefix='/bpath')
 
 @app.route('/') 
 def testoHTML():
