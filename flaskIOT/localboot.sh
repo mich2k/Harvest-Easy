@@ -16,4 +16,6 @@ else
   source venv/bin/activate
 fi
 
+export FLASK_CONFIG=local
+
 gunicorn -b :5000 --access-logfile - --error-logfile - flasky:app

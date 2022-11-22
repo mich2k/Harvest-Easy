@@ -3,4 +3,6 @@ build_and_run.sh
 delete_all.sh
 localboot.sh
 venv/
+instance/
+*.db
 #  EDIT ONLY IF YOU KNOW WHAT YOU ARE DOING

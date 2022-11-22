@@ -4,12 +4,48 @@ from app.database.database import database_blueprint,db
 from app.map.map import map_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
-
+from os import getenv, _exit
+from sys import exit as sysexit
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
 myconfig = Config
 app.config.from_object(myconfig)
+
+
+# config update according to environment,
+    # will be mandatory when the app will be larger
+
+# print(getenv('FLASK_CONFIG')) # if you want to print the env var you are passing
+    # notice: is already passed by localboot.sh, so you don't need to pass it again
+
+if(getenv('FLASK_CONFIG') is None):
+    print("FLASK_CONFIG not set in environment")
+    raise RuntimeError("Wrong config, exiting..")
+elif(getenv.__get__('FLASK_CONFIG') == 'docker'):
+    app.config.update(
+        SQLALCHEMY_DATABASE_URI = 'sqlite:////app/database/database.db',
+        DEBUG = True,
+        TESTING = False,
+    )
+    print("NOTE: Using docker debug config")
+elif(getenv('FLASK_CONFIG') == 'local'):
+    app.config.update(
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///iot.db',
+        DEBUG = True,
+        TESTING = False,
+    )
+    print("NOTE: Using local config")
+elif(getenv('FLASK_CONFIG') == 'docker_production'):
+    app.config.update(
+        SQLALCHEMY_DATABASE_URI = 'sqlite:////app/database/database.db',
+        DEBUG = False,
+        TESTING = False,
+    )
+    print("NOTE: Using docker production config")
+else:
+    raise RuntimeError("Wrong config, exiting..")
+
 
 #Inizializzazione DB
 db.init_app(app)
