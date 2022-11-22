@@ -21,7 +21,7 @@ app.config.from_object(myconfig)
 
 if(getenv('FLASK_CONFIG') is None):
     print("FLASK_CONFIG not set in environment")
-    raise RuntimeError("Wrong config, exiting..")
+    raise RuntimeError("Wrong env var value, exiting..")
 elif(getenv.__get__('FLASK_CONFIG') == 'docker'):
     app.config.update(
         SQLALCHEMY_DATABASE_URI = 'sqlite:////app/database/database.db',
