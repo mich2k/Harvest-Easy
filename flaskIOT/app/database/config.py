@@ -1,10 +1,4 @@
-from os import environ, path
-import os
-
-
-
 class Config:
-
     # General Flask Config
     SECRET_KEY = b'ergergergergegg/'
     USE_PROXYFIX = True
@@ -28,9 +22,7 @@ class Config:
     SESSION_PERMANENT = True
 
     # Database
-
     SQLALCHEMY_DATABASE_URI = "sqlite:///example.sqlite"  # = 'mysql://username:password@localhost/db_name'
-
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
