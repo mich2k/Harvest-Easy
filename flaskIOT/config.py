@@ -23,7 +23,7 @@ class Config:
     SESSION_PERMANENT = True
 
     # Database
-    SQLALCHEMY_DATABASE_URI = "sqlite:////home/flasky/db.sqlite"  # = 'mysql://username:password@localhost/db_name'
+    SQLALCHEMY_DATABASE_URI = "sqlite:///"  # = 'mysql://username:password@localhost/db_name'
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
