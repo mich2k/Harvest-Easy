@@ -4,8 +4,9 @@ from app.database.database import database_blueprint,db
 from app.map.map import map_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
-from os import getenv, _exit
-from sys import exit as sysexit
+from os import getenv
+
+
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
@@ -35,7 +36,7 @@ elif(getenv('FLASK_CONFIG') == 'docker'):
     print("NOTE: Using docker debug config")
 elif(getenv('FLASK_CONFIG') == 'local'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///gg1.db',
         DEBUG = True,
         TESTING = False,
     )

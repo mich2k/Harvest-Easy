@@ -1,9 +1,0 @@
-{% extends 'main.html' %}
-
-{% block content %}
-
-  {% for el in lista %}    
-    {{el.id_bin}}  {{el.idcondominio}}  {{el.status}}  {{el.temperature}}  {{el.umidità}}  {{el.co2}}  {{el.riempimento}}  {{el.timestamp}} <BR>
-  {% endfor %}
-
-{% endblock %}
