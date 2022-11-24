@@ -8,3 +8,26 @@
 }
 
 
+{
+    "1":{
+        "idbin":"1",
+        "temperature": 45,
+        "humidity": 10,
+        "co2": 10,
+        "riempimento": 10
+    },
+    "2":{
+        "idbin":"1",
+        "temperature": 45,
+        "humidity": 10,
+        "co2": 10,
+        "riempimento": 10
+    },
+    "":{
+        "idbin":"1",
+        "temperature": 45,
+        "humidity": 10,
+        "co2": 10,
+        "riempimento": 10
+    }
+}
