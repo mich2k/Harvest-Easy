@@ -1,6 +1,7 @@
 from flask import Flask, request
 from config import Config
-from app.database.database import database_blueprint,db
+from app.database.__init__ import db
+from app.database.database import database_blueprint
 from app.map.map import map_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
@@ -36,7 +37,7 @@ elif(getenv('FLASK_CONFIG') == 'docker'):
     print("NOTE: Using docker debug config")
 elif(getenv('FLASK_CONFIG') == 'local'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///gg1.db',
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///gg.db',
         DEBUG = True,
         TESTING = False,
     )

@@ -1,58 +1,8 @@
-from flask import render_template, request, jsonify, Blueprint, redirect, url_for
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-import json
+from .tables import BinRecord, User
+from flask import render_template, request, jsonify, Blueprint
+from .__init__ import db
 
-
-
-
-db = SQLAlchemy()
 database_blueprint = Blueprint('database', __name__, template_folder='templates')
-
-faker_data = json.load(open('app/static/init_example_data.json', 'r'))
-
-# db creation
-class Bin(db.Model):
-    __tablename__='bin'
-    id = db.Column('id', db.Integer, primary_key=True) 
-    idcondominio = db.Column('condominio_id', db.Integer, default="SmartApartment")
-    id_bin = db.Column('bin_id', db.String) 
-    status = db.Column('status', db.Integer)  #1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
-    temperature = db.Column('temperature', db.Integer, nullable=False)
-    humidity = db.Column('humidity', db.Integer, nullable=False)
-    co2 = db.Column('co2', db.Integer, nullable=False)
-    riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
-
-
-    def __init__(self, id_bin, status, temperature, humidity, co2, riempimento):
-        self.id_bin = id_bin
-        self.status = status
-        self.temperature = temperature
-        self.humidity = humidity
-        self.co2 = co2
-        self.riempimento = riempimento
-
-    # if no jsonObj is given, a Bin with fake data is created
-
-    def __init__(self, status, jsonObj=faker_data):
-        self.id_bin = jsonObj['idbin']
-        self.status = status
-        self.temperature = jsonObj['temperature']
-        self.humidity = jsonObj['humidity']
-        self.co2 = jsonObj['co2']
-        self.riempimento = jsonObj['riempimento']
-        
-
-class Utente(db.Model):
-    __tablename__='utente'
-    username = db.Column('username', db.String, primary_key=True, nullable=False)
-    idcondominio = db.Column('condominio_id', db.String, primary_key=True, default="SmartApartment")
-    UID = db.Column('UID', db.String, nullable=False)
-
-    def __init__(self, username, UID):
-        self.UID=UID
-        self.username=username
 
 @database_blueprint.errorhandler(404)
 def page_not_found(error):
@@ -71,10 +21,10 @@ def testoHTML():
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
     try:
-        elenco=Bin.query.order_by(Bin.id.desc()).all() #Bin.query.all() --> ritorna l'intero contenuto della tabella
+        elenco=BinRecord.query.order_by(BinRecord.id.desc()).all() #BinRecord.query.all() --> ritorna l'intero contenuto della tabella
     except:
         db.create_all()
-        fakeBin = Bin(1)
+        fakeBin = BinRecord(1)
         db.session.add(fakeBin)
         db.session.commit()        
     return render_template('listitems.html', lista=elenco)
@@ -82,17 +32,15 @@ def stampaitems():
 #STAMPA UTENTI
 @database_blueprint.route('/users', methods=['GET'])
 def stampausers():
-    elenco=Utente.query.all()
+    elenco=User.query.all()
     return render_template('listausers.html', lista=elenco)
-
-
 
 
 #AGGIUNTA DI INFORMAZIONI FAKE SUL BIDONE
 @database_blueprint.route('/addfakeitem', methods=['POST','GET'])
 def addfakeitem():
-    fakeBin = Bin(5)
-    #   sf = Bin(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
+    fakeBin = BinRecord(5)
+    #   sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
     db.session.add(fakeBin)
     db.session.commit()
     return str(fakeBin.__repr__)
@@ -101,7 +49,7 @@ def addfakeitem():
 @database_blueprint.route('/additem', methods=['POST'])
 def additem():
     status_attuale=1 #-->quando non ci sono istanze nella tabella
-    bin_attuale=Bin.query.all()
+    bin_attuale=BinRecord.query.all()
     
     if(len(bin_attuale)>0): 
         status_attuale=bin_attuale[0].status
@@ -115,28 +63,28 @@ def additem():
     if(status_attuale==2 and float(riempimento_attuale)<0.9): status_attuale=1
     if(status_attuale==4 and float(riempimento_attuale)<0.9):status_attuale=3
 
-    #   sf = Bin(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
-    sf = Bin(status_attuale, msgJson)
+    #   sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
+    sf = BinRecord(status_attuale, msgJson)
     db.session.add(sf)
     db.session.commit()
     return str(sf.id)
 
-#AGGIUNTA DI UN UTENTE
+#AGGIUNTA DI UN User
 @database_blueprint.route('/adduser', methods=['POST'])
 def adduser():
     username=request.args.get('username')
     UID=request.args.get('UID')
 
-    sf = Utente(username, UID)
+    sf = User(username, UID)
 
     db.session.add(sf)
     db.session.commit()
     return str(sf.username)
 
-#CONTROLLA UTENTE
+#CONTROLLA User
 @database_blueprint.route('/checkUID/<string:UID>', methods=['GET'])
 def checkUID(UID):
-    users=Utente.query.all()
+    users=User.query.all()
     
     if(len(users)>0): 
         for user in users:

@@ -104,7 +104,7 @@ https://trello.com/w/iotproject38
 * Tempo raccolta pattume (Tempo di riempimento)
 * Percorso ottimo basato sul livello di riempimento
 * Alimentato ad energia solare + batteria
-* Feedback sullo stato del bidone (lato utente)
+* Feedback sullo stato del bidone (lato User)
 * Schermo
 
 ## Sensors/Actuators:
