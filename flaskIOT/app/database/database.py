@@ -1,6 +1,8 @@
-from .tables import BinRecord, User
+from .tables import *
+from .tables import faker_data as faker
 from flask import render_template, request, jsonify, Blueprint
 from .__init__ import db
+from sqlalchemy import insert
 
 database_blueprint = Blueprint('database', __name__, template_folder='templates')
 
@@ -10,6 +12,7 @@ def page_not_found(error):
 
 @database_blueprint.route('/')
 def testoHTML():
+    
     db.create_all()
         
     if request.accept_mimetypes['application/json']:
@@ -39,11 +42,41 @@ def stampausers():
 #AGGIUNTA DI INFORMAZIONI FAKE SUL BIDONE
 @database_blueprint.route('/addfakeitem', methods=['POST','GET'])
 def addfakeitem():
-    fakeBin = BinRecord(5)
-    #   sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
-    db.session.add(fakeBin)
+    
+    
+    #BinGroup
+    bg1 = BinGroup()
+    
+    db.session.add(bg1)
+    
+    # Admin
+    ad1 = Admin(
+        Person(
+        username="rossi1",
+        name="Mario",
+        surname="Rossi",
+        password="ilovecondomini",
+        city="Modena",
+        birth_year=2000)
+    )
+    
+    db.session.add(ad1)
+    
+    # Apartments
+    ap1 = Apartment(
+        apartment_name="Fermi",
+        city="Modena",
+        street="via Garibaldi",
+        apartment_street_number=1,
+        n_internals=155,
+        associated_bingroup=0,
+        associated_admin='rossi1')
+    
+    db.session.add(ap1)
+    
     db.session.commit()
-    return str(fakeBin.__repr__)
+    
+    return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE
 @database_blueprint.route('/additem', methods=['POST'])

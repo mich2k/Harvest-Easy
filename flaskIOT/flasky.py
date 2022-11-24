@@ -37,7 +37,7 @@ elif(getenv('FLASK_CONFIG') == 'docker'):
     print("NOTE: Using docker debug config")
 elif(getenv('FLASK_CONFIG') == 'local'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///gg.db',
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///out.db',
         DEBUG = True,
         TESTING = False,
     )
