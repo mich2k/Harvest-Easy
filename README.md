@@ -91,7 +91,10 @@ The script is available [here](https://github.com/mich2k/IoT-3D-Systems/blob/mai
 
 https://trello.com/w/iotproject38
 
-# Smart Bin:
+
+# 3D Model Choices, Design & Diagrams
+
+# Concept:
 ## reqs:
 * Stato del bidone ("sano"/malfunzionante/manutenzione)
 * Sensore di riempimento (prossimità)
