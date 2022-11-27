@@ -1,86 +1,32 @@
+from flask import render_template, request, Blueprint
+from sqlalchemy_utils.functions import database_exists
 from .tables import *
-from .tables import faker_data as faker
-from flask import render_template, request, jsonify, Blueprint
+from .faker import create_faker
 from .__init__ import db
-from sqlalchemy import insert
+from ...config import Config
 
 database_blueprint = Blueprint('database', __name__, template_folder='templates')
 
-@database_blueprint.errorhandler(404)
-def page_not_found(error):
-    return 'Errore', 404
-
+#CREA IL DB, SE GIÀ PRESENTE DROPPA TUTTO
 @database_blueprint.route('/')
-def testoHTML():
+def createDB():
     
-    db.create_all()
+    if database_exists(Config.SQLALCHEMY_DATABASE_URI):
+        db.drop_all()
         
-    if request.accept_mimetypes['application/json']:
-        return jsonify({'text':'Valori rilevati'}), '200 OK'
-    else:
-        return '<h1>Valori rilevati</h1>'
+    db.create_all()
 
-#STAMPA INFORMAZIONI BIDONE
-@database_blueprint.route('/items', methods=['GET'])
-def stampaitems():
-    try:
-        elenco=BinRecord.query.order_by(BinRecord.id.desc()).all() #BinRecord.query.all() --> ritorna l'intero contenuto della tabella
-    except:
-        db.create_all()
-        fakeBin = BinRecord(1)
-        db.session.add(fakeBin)
-        db.session.commit()        
-    return render_template('listitems.html', lista=elenco)
-
-#STAMPA UTENTI
-@database_blueprint.route('/users', methods=['GET'])
-def stampausers():
-    elenco=User.query.all()
-    return render_template('listausers.html', lista=elenco)
-
-
-#AGGIUNTA DI INFORMAZIONI FAKE SUL BIDONE
-@database_blueprint.route('/addfakeitem', methods=['POST','GET'])
-def addfakeitem():
-
-    #BinGroup
-    bg1 = BinGroup()
-    
-    db.session.add(bg1)
-    
-    # Admin
-    ad1 = Admin(
-        Person(
-        username="rossi1",
-        name="Mario",
-        surname="Rossi",
-        password="ilovecondomini",
-        city="Modena",
-        birth_year=2000)
-    )
-    
-    db.session.add(ad1)
-    
-    # Apartments
-    ap1 = Apartment(
-        apartment_name="Fermi",
-        city="Modena",
-        street="via Garibaldi",
-        apartment_street_number=1,
-        n_internals=155,
-        associated_bingroup=0,
-        associated_admin='rossi1')
-    
-    db.session.add(ap1)
-    
-    db.session.commit()
+    if not create_faker(db):
+        return 'Error'
     
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE
 @database_blueprint.route('/additem', methods=['POST'])
 def additem():
+    
     status_attuale=1 #-->quando non ci sono istanze nella tabella
+    
     bin_attuale=BinRecord.query.all()
     
     if(len(bin_attuale)>0): 
@@ -120,4 +66,22 @@ def checkUID(UID):
     if(len(users)>0): 
         for user in users:
             if(UID==user.UID): return user.username, '200 OK'
+            
     return '201 ERRORE' 
+
+#STAMPA INFORMAZIONI BIDONE
+@database_blueprint.route('/items', methods=['GET'])
+def stampaitems():
+    
+    elenco=[BinGroup.query.order_by(BinGroup.id.desc()).all(),
+            Admin.all(),
+            Apartment.query.order_by(Apartment.id.desc()).all()]
+            #,BinRecord.query.order_by(BinRecord.id.desc()).all()] 
+    
+    return render_template('listitems.html', listona=elenco)
+
+#STAMPA UTENTI
+@database_blueprint.route('/users', methods=['GET'])
+def stampausers():
+    elenco=User.query.all()
+    return render_template('listausers.html', lista=elenco)
