@@ -43,7 +43,6 @@ class BinRecord(db.Model):
     
     # FK
     associated_bingroup = db.Column(db.Integer, db.ForeignKey('bingroup.id'))
-
     
     # if no jsonObj is given, a BinRecord with fake data is created
 
