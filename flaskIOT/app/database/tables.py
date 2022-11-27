@@ -41,8 +41,6 @@ class BinRecord(db.Model):
     timestamp = db.Column(db.DateTime(timezone=True),
                           nullable=False,  default=datetime.utcnow)
     
-
-    
     # FK
     associated_bingroup = db.Column(db.Integer, db.ForeignKey('bingroup.id'))
 
@@ -70,8 +68,7 @@ class User(Person, db.Model):
 class BinGroup(db.Model):
     __tablename__ = 'bingroup'
     id = db.Column('id', db.Integer, primary_key=True)
-    
-    
+
     # relationship
     
     bin_records = db.relationship('BinRecord', backref='bingroup')

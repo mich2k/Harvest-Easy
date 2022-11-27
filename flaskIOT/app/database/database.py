@@ -42,8 +42,7 @@ def stampausers():
 #AGGIUNTA DI INFORMAZIONI FAKE SUL BIDONE
 @database_blueprint.route('/addfakeitem', methods=['POST','GET'])
 def addfakeitem():
-    
-    
+
     #BinGroup
     bg1 = BinGroup()
     
@@ -88,7 +87,6 @@ def additem():
         status_attuale=bin_attuale[0].status
     
     msgJson = request.get_json()
-
     riempimento_attuale=msgJson['riempimento']
 
     if(status_attuale==1 and float(riempimento_attuale)>=0.9): status_attuale=2
@@ -96,7 +94,7 @@ def additem():
     if(status_attuale==2 and float(riempimento_attuale)<0.9): status_attuale=1
     if(status_attuale==4 and float(riempimento_attuale)<0.9):status_attuale=3
 
-    #   sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
+    #  sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
     sf = BinRecord(status_attuale, msgJson)
     db.session.add(sf)
     db.session.commit()
