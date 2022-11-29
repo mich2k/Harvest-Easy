@@ -36,12 +36,8 @@ class BinRecord(db.Model):
     humidity = db.Column('humidity', db.Integer, nullable=False)
     co2 = db.Column('co2', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
-<<<<<<< HEAD
     timestamp = db.Column(db.DateTime(timezone=True),
                           nullable=False,  default=datetime.utcnow)
-=======
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
->>>>>>> 037edae (improving database module)
     
     # FK
     associated_bingroup = db.Column(db.Integer, db.ForeignKey('bingroup.id'))
@@ -68,11 +64,6 @@ class User(Person, db.Model):
 class BinGroup(db.Model):
     __tablename__ = 'bingroup'
     id = db.Column('id', db.Integer, primary_key=True)
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 037edae (improving database module)
     # relationship
     bin_records = db.relationship('BinRecord', backref='bingroup')
 
