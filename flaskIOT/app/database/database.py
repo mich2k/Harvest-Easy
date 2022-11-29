@@ -9,9 +9,10 @@ from ...flasky import app
 @database_blueprint.route('/')
 def createDB():
     
-    if database_exists(app.config[SQLALCHEMY_DATABASE_URI]):
-        return 'Error'
+    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+        db.drop_all()
     
+    db.create_all()
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE
