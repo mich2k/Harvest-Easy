@@ -1,18 +1,19 @@
-from flask import render_template, request
+from flask import render_template, request, Blueprint
 from sqlalchemy_utils.functions import database_exists
 from .tables import *
 from .faker import create_faker
-from .__init__ import db, database_blueprint
-from ...flasky import app
+from .__init__ import db
+#from ...flasky import app
+
+
+database_blueprint = Blueprint('database', __name__, template_folder='templates')
 
 #CREA IL DB, SE GIÀ PRESENTE DROPPA TUTTO
 @database_blueprint.route('/')
 def createDB():
     
-    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
-        db.drop_all()
-    
     db.create_all()
+    create_faker(db)
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE
@@ -30,9 +31,9 @@ def additem():
     riempimento_attuale=msgJson['riempimento']
 
     if(status_attuale==1 and float(riempimento_attuale)>=0.9): status_attuale=2
-    if(status_attuale==3 and float(riempimento_attuale)>=0.9):status_attuale=4
+    if(status_attuale==3 and float(riempimento_attuale)>=0.9): status_attuale=4
     if(status_attuale==2 and float(riempimento_attuale)<0.9): status_attuale=1
-    if(status_attuale==4 and float(riempimento_attuale)<0.9):status_attuale=3
+    if(status_attuale==4 and float(riempimento_attuale)<0.9): status_attuale=3
 
     #  sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
     sf = BinRecord(status_attuale, msgJson)
@@ -68,7 +69,6 @@ def checkUID(UID):
 def stampaitems():
     
     elenco=[BinGroup.query.order_by(BinGroup.id.desc()).all(),
-            Admin.all(),
             Apartment.query.order_by(Apartment.id.desc()).all()]
             #,BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     

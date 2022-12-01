@@ -1,7 +1,7 @@
 from flask import Flask, request
 from config import Config
-from app.database.__init__ import db,database_blueprint
-from app.map.map import map_blueprint
+from app.database.__init__ import db
+from app.database.database import database_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
 from os import getenv
@@ -18,7 +18,6 @@ app.config.from_object(myconfig)
 
 # print(getenv('FLASK_CONFIG')) # if you want to print the env var you are passing
     # notice: is already passed by localboot.sh, so you don't need to pass it again
-
 
 # is very important to refer to the db path from the config file, otherwise 
     # it will not work
@@ -51,12 +50,14 @@ else:
     raise RuntimeError("Wrong config, exiting..")
 
 
+"""from app.map.map import map_blueprint
+app.register_blueprint(map_blueprint, url_prefix='/map')"""
+
 #Inizializzazione DB
 db.init_app(app)
 
 #Registrazione Blueprint
-app.register_blueprint(database_blueprint, url_prefix='/database')
-app.register_blueprint(map_blueprint, url_prefix='/map')
+app.register_blueprint(database_blueprint, url_prefix='/db')
 app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
 

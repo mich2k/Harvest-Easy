@@ -57,7 +57,7 @@ class User(Person, db.Model):
     internal_number = db.Column('internal_number', db.Integer)
     
     def __init__(self, p: Person, apartment_ID: int, internal_number: int):
-        super().__init__(p.username, p.name, p.surname, p.password, p.birth_year)
+        super().__init__(p.username, p.name, p.surname, p.password, p.city, p.birth_year)
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
 
