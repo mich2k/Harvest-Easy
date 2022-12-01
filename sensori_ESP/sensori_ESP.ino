@@ -4,30 +4,37 @@
 #include <Esp32WifiManager.h>
 #include "DHT.h"
 #include <Wire.h>
-#include <MPU6050.h>
+#include "I2Cdev.h"
+#include "MPU6050.h"
 
 #define ID_BIN "plastic bin"
 #define DHTPIN 23     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT11  //definisco di quale tipo di sensore DHT deve essere utilizzato
-#define PIN_CO2 A0   // Analogical pin connected to the CO2 sensor
-#define PINTrigger 9  // Trigger pin of ultrasonic sensor 
-#define PINEcho 10  // Echo pin connected of ultrasonic sensor 
+#define PIN_CO2 34   // Analogical pin connected to the CO2 sensor
+#define PINTrigger 19  // Trigger pin of ultrasonic sensor 
+#define PINEcho 18  // Echo pin connected of ultrasonic sensor 
 #define SERVER_ADDR "https://flask.gmichele.it/"
-
+#if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+    #include "Wire.h"
+#endif
 
 DHT dht(DHTPIN, DHTTYPE);
-MPU6050 mpu;
 HTTPClient http;
 StaticJsonDocument<1024> jsonMsg;
 
-const char* ssid = "IOT"; // Qui va inserito il nome della propria rete WiFi
-const char* password = "ciaociao1";// Qui va inserita la password di rete
+const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
+const char* password = "altalena";// Qui va inserita la password di rete
 
 unsigned long timestamp;
 // Pitch, Roll and Yaw values
 int pitch = 0;
 int roll = 0;
 float yaw = 0;
+
+const int MPU_addr=0x68;
+int16_t AcX, AcY, AcZ;
+//int16_t GyX, GyY, GyZ;
+
 String msg;
 
 void connectToWiFi() {
@@ -41,31 +48,31 @@ void connectToWiFi() {
 
 void setup() {
   Serial.begin(9600);
-  pinMode(PINTrigger, OUTPUT);
-  pinMode(PINEcho, INPUT);
-  pinMode(PIN_CO2, INPUT);
+  //pinMode(PINTrigger, OUTPUT);
+  //pinMode(PINEcho, INPUT);
+  //pinMode(PIN_CO2, INPUT);
   timestamp = millis();
 
   connectToWiFi();
+  //inizializzazione DHT
   dht.begin();
-
   //inizializzazione accelerometro 
-  Serial.println("Initialize MPU6050");
-  while (!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)) {
-    Serial.println("Could not find a valid MPU6050 sensor, check wiring!");
-    delay(500);
-  }
-  mpu.calibrateGyro();  // Calibrate gyroscope. The calibration must be at rest.
-  mpu.setThreshold(1);  // Set threshold sensivity. Default 3.
-  checkSettings();     // Check settings
+   #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+        Wire.begin();
+    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+        Fastwire::setup(400, true);
+    #endif
+    Wire.beginTransmission(MPU_addr);
+    Wire.write(0x6B);
+    Wire.write(0);
+    Wire.endTransmission(true);
 }
-
 void loop() {
   if(WiFi.status() == WL_CONNECTED){
     //DHT11
     // attendo qualche secondo affinchè il sensore si stabilizzi ed abbia il tempo di effettuare la lettura dei dati.
     if (millis() - timestamp > 2000) {
-      int humidity = (int ) dht.readHumidity(); //readHumidity() restituisce un valore di tipo float.
+      int humidity = (int) dht.readHumidity(); //readHumidity() restituisce un valore di tipo float.
       int temperature = (int) dht.readTemperature();  // Read temperature as Celsius (the default)
     
       // Check if any reads failed and exit early (to try again).
@@ -75,45 +82,48 @@ void loop() {
       }
 
       //SENSORE ULTRASONICO
-      digitalWrite(pinTrigger, LOW);  // imposta l'uscita del trigger LOW
-      digitalWrite(pinTrigger, HIGH);  // imposta l'uscita del trigger HIGH per 10 microsecondi
+      digitalWrite(PINTrigger, LOW);  // imposta l'uscita del trigger LOW
+      digitalWrite(PINTrigger, HIGH);  // imposta l'uscita del trigger HIGH per 10 microsecondi
       delayMicroseconds(10);
-      digitalWrite(pinTrigger, LOW); // imposta l'uscita del trigger LOW
-      int durata = pulseIn(pinEcho, HIGH); // calcolo del tempo attraverso il pin di echo
-      int distanza = (int) durata/58.31;
+      digitalWrite(PINTrigger, LOW); // imposta l'uscita del trigger LOW
+      int durata = pulseIn(PINEcho, HIGH); // calcolo del tempo attraverso il pin di echo
+      int distanza = durata / 58.31;
       
       //SENSORE DI CO2
-      int co2 = analogRead(A0);
-
+      int co2 = analogRead(PIN_CO2);
+    
       //ACCELEROMETRO
-      Vector normAccel = mpu.readNormalizeAccel();
-      Vector normGyro = mpu.readNormalizeGyro();
-      pitch = -(atan2(normAccel.XAxis, sqrt(normAccel.YAxis * normAccel.YAxis + normAccel.ZAxis * normAccel.ZAxis)) * 180.0) / M_PI;
-      roll = (atan2(normAccel.YAxis, normAccel.ZAxis) * 180.0) / M_PI;
-      //Ignore the gyro if our angular velocity does not meet our threshold
-      if (normGyro.ZAxis > 1 || normGyro.ZAxis < -1) {
-        normGyro.ZAxis /= 100;
-        yaw += normGyro.ZAxis;
-      }
-      //Keep our angle between 0-359 degrees
-      if (yaw < 0){ yaw += 360;}
-      else if (yaw > 359) { yaw -= 360; }
-
+      Wire.beginTransmission(MPU_addr);
+      Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
+      Wire.endTransmission(false);
+      Wire.requestFrom(MPU_addr,14,true);  // request a total of 14 registers
+      AcX=Wire.read()<<8|Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+      AcY=Wire.read()<<8|Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+      AcZ=Wire.read()<<8|Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+      /*
+      GyX=Wire.read()<<8|Wire.read();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+      GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+      GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+      */
+      pitch = (atan2(AcX, sqrt(AcY * AcY + AcZ * AcZ)) * 180.0) / M_PI;
+      roll = (atan2(AcY, sqrt(AcX * AcX + AcZ * AcZ)) * 180.0) / M_PI;
+      yaw = (atan2(sqrt(AcX * AcX + AcZ * AcZ), AcZ) * 180.0) / M_PI;
+      
       //CREAZIONE DEL PACCHETTO
       jsonMsg["idbin"] = ID_BIN;
       jsonMsg["temperature"] = temperature;
       jsonMsg["humidity"] = humidity;
       jsonMsg["co2"] = co2;
       jsonMsg["riempimento"] = distanza;
-      jsonMsg["pitch"] = pitch;
-      jsonMsg["roll"] = roll;
-      jsonMsg["yaw"] = yaw;
+      jsonMsg["roll"] = roll; //0 gradi
+      jsonMsg["pitch"] = pitch;  //90 gradi
+      jsonMsg["yaw"] = yaw;  //90 gradi
       
       serializeJson(jsonMsg, msg);
       Serial.println(msg);
       http.begin(String(SERVER_ADDR));
       http.addHeader("Content-Type", "application/json"); // Specify content-type header
-      int respCode = http.POST(output);
+      int respCode = http.POST(msg);
 
       if(respCode > 0){
           String resp = http.getString(); 
@@ -128,41 +138,6 @@ void loop() {
     }
   }
   else{
-    println("Errore di connessione");
+    Serial.println("Errore di connessione");
   }
-}
-
-void checkSettings() {
-  Serial.println();
-
-  Serial.print(" * Sleep Mode:        ");
-  Serial.println(mpu.getSleepEnabled() ? "Enabled" : "Disabled");
-
-  Serial.print(" * Clock Source:      ");
-  switch (mpu.getClockSource()) {
-    case MPU6050_CLOCK_KEEP_RESET:     Serial.println("Stops the clock and keeps the timing generator in reset"); break;
-    case MPU6050_CLOCK_EXTERNAL_19MHZ: Serial.println("PLL with external 19.2MHz reference"); break;
-    case MPU6050_CLOCK_EXTERNAL_32KHZ: Serial.println("PLL with external 32.768kHz reference"); break;
-    case MPU6050_CLOCK_PLL_ZGYRO:      Serial.println("PLL with Z axis gyroscope reference"); break;
-    case MPU6050_CLOCK_PLL_YGYRO:      Serial.println("PLL with Y axis gyroscope reference"); break;
-    case MPU6050_CLOCK_PLL_XGYRO:      Serial.println("PLL with X axis gyroscope reference"); break;
-    case MPU6050_CLOCK_INTERNAL_8MHZ:  Serial.println("Internal 8MHz oscillator"); break;
-  }
-
-  Serial.print(" * Gyroscope:         ");
-  switch (mpu.getScale()) {
-    case MPU6050_SCALE_2000DPS:        Serial.println("2000 dps"); break;
-    case MPU6050_SCALE_1000DPS:        Serial.println("1000 dps"); break;
-    case MPU6050_SCALE_500DPS:         Serial.println("500 dps"); break;
-    case MPU6050_SCALE_250DPS:         Serial.println("250 dps"); break;
-  }
-
-  Serial.print(" * Gyroscope offsets: ");
-  Serial.print(mpu.getGyroOffsetX());
-  Serial.print(" / ");
-  Serial.print(mpu.getGyroOffsetY());
-  Serial.print(" / ");
-  Serial.println(mpu.getGyroOffsetZ());
-
-  Serial.println();
 }
