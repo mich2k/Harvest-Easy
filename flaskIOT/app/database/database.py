@@ -1,24 +1,18 @@
-from flask import render_template, request, Blueprint
+from flask import render_template, request
 from sqlalchemy_utils.functions import database_exists
 from .tables import *
 from .faker import create_faker
-from .__init__ import db
-from ...config import Config
-
-database_blueprint = Blueprint('database', __name__, template_folder='templates')
+from .__init__ import db, database_blueprint
+from ...flasky import app
 
 #CREA IL DB, SE GIÀ PRESENTE DROPPA TUTTO
 @database_blueprint.route('/')
 def createDB():
     
-    if database_exists(Config.SQLALCHEMY_DATABASE_URI):
+    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         db.drop_all()
-        
-    db.create_all()
-
-    if not create_faker(db):
-        return 'Error'
     
+    db.create_all()
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE

@@ -1,13 +1,11 @@
 from flask import Blueprint
 import requests
 from os import getenv
-from app.database.database import database_blueprint
+from app.database.__init__ import database_blueprint
 import json
 
-app.register_blueprint(database_blueprint, url_prefix='/database')
 
 HERE_API_KEY = getenv('HERE_KEY')
-
 map_blueprint = Blueprint('map', __name__, template_folder='templates')
 
 @map_blueprint.route('/')
@@ -18,7 +16,6 @@ def main():
 # Simplest way to get the lat, long of any address.
 
 # Using Python requests and the Google Maps Geocoding API.
-import requests.
 
 @map_blueprint.route('/getposition')
 def main(): 
@@ -33,7 +30,7 @@ def main():
 
     params = {
         'address': address + 'italia',
-        'apiKey'= HERE_API_KEY
+        'apiKey': 'HERE_API_KEY'
     }
     
     # Do the request and get the response data

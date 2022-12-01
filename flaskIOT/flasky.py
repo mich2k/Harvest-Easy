@@ -1,12 +1,10 @@
 from flask import Flask, request
 from config import Config
-from app.database.__init__ import db
-from app.database.database import database_blueprint
+from app.database.__init__ import db,database_blueprint
 from app.map.map import map_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
 from os import getenv
-
 
 #creo applicazione
 appname = "IOT - SmartBin"
