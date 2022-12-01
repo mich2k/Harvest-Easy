@@ -1,11 +1,10 @@
 from flask import Blueprint
 import requests
 from os import getenv
-from app.database.database import database_blueprint
+from app.database.tables import Apartment, BinRecord
+from app.database.__init__ import db
 import json
 import requests
-
-app.register_blueprint(database_blueprint, url_prefix='/database')
 
 HERE_API_KEY = getenv('HERE_KEY')
 
@@ -21,7 +20,7 @@ def main():
     #richiesta A HERE PER OTTENERE LAT E LONG DELL'APPARTAMENTO, per ogni appartamento presente nel database
     HERE_API_URL = f'GET https://geocode.search.hereapi.com/v1/geocode'
     #lista degli appartamenti gestiti dal db
-    apartments = Apartment.query.order_by(Apartment.id.desc()).all()
+    apartments = Apartment.query.all()
     for apartment in apartments:
         address = apartment.city + apartment.street + apartment.apartment_street_number 
         params = {
@@ -44,7 +43,7 @@ def main():
         #VIEW MAP CON BIDONI
         #prendo la lista di bidoni associata a quell'appartamento attraverso l'id del bin group
         associated_bingroup = apartment.associated_bingroup
-        elencobin = db.session.query(BinRecord).filter_by(associated_bingroup = associated_bingroup)
+        elencobin = db.session.query(BinRecord).filter_by(BinRecord.associated_bingroup = associated_bingroup)
         
         #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
         points=[]
