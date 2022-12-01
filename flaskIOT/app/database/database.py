@@ -57,7 +57,7 @@ def checkUID(UID):
     
     if(len(users)>0): 
         for user in users:
-            if(UID==user.UID): return user.username, '200 OK'
+            if(UID == user.username): return user.username, '200 OK'
             
     return '201 ERRORE' 
 
@@ -66,7 +66,9 @@ def checkUID(UID):
 def stampaitems():
     
     elenco=[BinGroup.query.order_by(BinGroup.id.desc()).all(),
-            Apartment.query.order_by(Apartment.id.desc()).all()]
+            Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
+            User.query.order_by(User.username.desc()).all(),
+            Admin.query.order_by(Admin.username.desc()).all()]
             #,BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)
@@ -74,5 +76,5 @@ def stampaitems():
 #STAMPA UTENTI
 @database_blueprint.route('/users', methods=['GET'])
 def stampausers():
-    elenco=User.query.all()
-    return render_template('listausers.html', lista=elenco)
+    elenco=[User.query.all()]
+    return render_template('listitems.html', listona=elenco)
