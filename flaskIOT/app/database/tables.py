@@ -53,7 +53,7 @@ class BinRecord(db.Model):
 
 class User(Person, db.Model):
     __tablename__ = 'user'
-    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.id'))
+    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     internal_number = db.Column('internal_number', db.Integer)
     
     def __init__(self, p: Person, apartment_ID: int, internal_number: int):
@@ -71,8 +71,7 @@ class Apartment(db.Model):
     __tablename__ = 'apartment'
     
     # attributes
-    id = db.Column('id', db.Integer, primary_key=True)
-    apartment_name = db.Column('apartment_name', db.String, nullable=False)
+    apartment_name = db.Column('apartment_name', db.String, primary_key=True)
     city = db.Column('city', db.String, nullable=False)
     street = db.Column('street', db.String, nullable=False)
     apartment_street_number = db.Column(

@@ -1,17 +1,14 @@
 from flask import render_template, request, Blueprint
-from sqlalchemy_utils.functions import database_exists
 from .tables import *
 from .faker import create_faker
 from .__init__ import db
-#from ...flasky import app
 
-
-database_blueprint = Blueprint('database', __name__, template_folder='templates')
+database_blueprint = Blueprint('database', __name__, template_folder='templates', url_prefix='/db')
 
 #CREA IL DB, SE GIÀ PRESENTE DROPPA TUTTO
 @database_blueprint.route('/')
 def createDB():
-    
+    db.drop_all()
     db.create_all()
     create_faker(db)
     return 'Done'
