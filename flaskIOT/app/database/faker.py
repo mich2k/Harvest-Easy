@@ -24,5 +24,8 @@ def create_faker(db):
                    User(Person(username="rossi5", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2005), "Fermi", 33),
                    User(Person(username="rossi6", name="Mario", surname="Rossi", password="ilovecondomini", city="Moliterno", birth_year=2006), "IDK", 12)])
     
+    #Operators
+    db.session.add_all([Operator(id=158), Operator(id=478), Operator(id=500)])
+    
     db.session.commit()
     return True

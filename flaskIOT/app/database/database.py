@@ -5,7 +5,8 @@ from .__init__ import db
 
 database_blueprint = Blueprint('database', __name__, template_folder='templates', url_prefix='/db')
 
-#CREA IL DB, SE GIÀ PRESENTE DROPPA TUTTO
+#CREA IL DB A RUNTIME, SE GIà PRESENTE DROPPA TUTTE LE TABLES
+#È LA PRIMA ROUTE DA RAGGIUNGERE QUANDO SI AVVIA IL SISTEMA
 @database_blueprint.route('/')
 def createDB():
     db.drop_all()
@@ -14,54 +15,122 @@ def createDB():
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE
-@database_blueprint.route('/additem', methods=['POST'])
-def additem():
-    
-    status_attuale=1 #-->quando non ci sono istanze nella tabella
-    
-    bin_attuale=BinRecord.query.all()
-    
-    if(len(bin_attuale)>0): 
-        status_attuale=bin_attuale[0].status
-    
+#Le informazioni saranno inviate mediante JSON ogni N secondi.
+@database_blueprint.route('/addrecord', methods=['POST'])
+def addrecord():
     msgJson = request.get_json()
-    riempimento_attuale=msgJson['riempimento']
-
-    if(status_attuale==1 and float(riempimento_attuale)>=0.9): status_attuale=2
-    if(status_attuale==3 and float(riempimento_attuale)>=0.9): status_attuale=4
-    if(status_attuale==2 and float(riempimento_attuale)<0.9): status_attuale=1
-    if(status_attuale==4 and float(riempimento_attuale)<0.9): status_attuale=3
 
     #  sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
-    sf = BinRecord(status_attuale, msgJson)
-    db.session.add(sf)
-    db.session.commit()
-    return str(sf.id)
+    
+    try:
+        sf = BinRecord(msgJson)
+        db.session.add(sf)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'Done'
 
-#AGGIUNTA DI UN User
-@database_blueprint.route('/adduser', methods=['POST'])
-def adduser():
-    username=request.args.get('username')
-    UID=request.args.get('UID')
-
-    sf = User(username, UID)
-
-    db.session.add(sf)
-    db.session.commit()
-    return str(sf.username)
-
-#CONTROLLA User
-@database_blueprint.route('/checkUID/<string:UID>', methods=['GET'])
-def checkUID(UID):
+#ACCESSO DI UN UTENTE AL BIDONE
+@database_blueprint.route('/checkUser/<string:username>&<string:apartment>', methods=['GET'])
+def checkUser(username, apartment):
     users=User.query.all()
     
     if(len(users)>0): 
         for user in users:
-            if(UID == user.username): return user.username, '200 OK'
+            if(username == user.username): return user.username, '200 OK'
             
     return '201 ERRORE' 
 
-#STAMPA INFORMAZIONI BIDONE
+#ACCESSO DI UN OPERATORE AL BIDONE
+@database_blueprint.route('/checkOp/<int:id>', methods=['GET'])
+def checkOp(username):
+    users=User.query.all()
+    
+    if(len(users)>0): 
+        for user in users:
+            if(username == user.username): return user.username, '200 OK'
+            
+    return '201 ERRORE' 
+
+#ACCESSO DI UN AMMINISTRATORE AL BIDONE
+@database_blueprint.route('/checkAdmin/<string:username>', methods=['GET'])
+def checkAdmin(username):
+    users=User.query.all()
+    
+    if(len(users)>0): 
+        for user in users:
+            if(username == user.username): return user.username, '200 OK'
+            
+    return '201 ERRORE' 
+
+#AGGIUNTA DI UN USER
+@database_blueprint.route('/adduser', methods=['POST'])
+def adduser():
+    msgJson = request.get_json()
+    user = User(Person(username=msgJson['username'], 
+                   name=msgJson['name'], 
+                   surname=msgJson['surname'],
+                   password=msgJson['password'], 
+                   city=msgJson['city'], 
+                   birth_year=msgJson['year']),
+                apartment_ID=msgJson['apartment_ID'],
+                internal_number=msgJson['internal_number'])
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'OK'
+
+#AGGIUNTA DI UN ADMIN
+@database_blueprint.route('/addadmin', methods=['POST'])
+def addadmin():
+    msgJson = request.get_json()
+    admin = Admin(Person(username=msgJson['username'], 
+                   name=msgJson['name'], 
+                   surname=msgJson['surname'],
+                   password=msgJson['password'], 
+                   city=msgJson['city'], 
+                   birth_year=msgJson['year']))
+    try:
+        db.session.add(admin)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'Done'
+
+#AGGIUNTA DI UN ADMIN
+@database_blueprint.route('/addapartment', methods=['POST'])
+def addapartment():
+    msgJson = request.get_json()
+    apartment = Apartment(apartment_name=msgJson['apartment_name'], 
+                          city=msgJson['city'], 
+                          street=msgJson['street'], 
+                          apartment_street_number=msgJson['street_number'], 
+                          n_internals=msgJson['n_internals'], 
+                          associated_bingroup=msgJson['associated_bingroup'], 
+                          associated_admin=msgJson['associated_admin'])
+    try:
+        db.session.add(apartment)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'Done'
+
+#AGGIUNTA DI UN OPERATORE
+@database_blueprint.route('/addoperator', methods=['POST'])
+def addoperator():
+    msgJson = request.get_json()
+    print(msgJson)
+    operator = Operator(id=msgJson['id'])
+    try:
+        db.session.add(operator)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'Done'
+
+#Print tables
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
     
@@ -71,10 +140,4 @@ def stampaitems():
             Admin.query.order_by(Admin.username.desc()).all()]
             #,BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     
-    return render_template('listitems.html', listona=elenco)
-
-#STAMPA UTENTI
-@database_blueprint.route('/users', methods=['GET'])
-def stampausers():
-    elenco=[User.query.all()]
     return render_template('listitems.html', listona=elenco)

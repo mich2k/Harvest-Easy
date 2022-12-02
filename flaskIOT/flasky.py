@@ -4,7 +4,7 @@ from app.database.__init__ import db
 from app.database.database import database_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
-from os import getenv
+#from os import getenv
 
 #creo applicazione
 appname = "IOT - SmartBin"
@@ -22,12 +22,12 @@ app.config.from_object(myconfig)
 # is very important to refer to the db path from the config file, otherwise 
     # it will not work
 
-if(getenv('FLASK_CONFIG') is None):
+"""if(getenv('FLASK_CONFIG') is None):
     print("FLASK_CONFIG not set in environment")
     raise RuntimeError("Wrong env var value, exiting..")
 elif(getenv('FLASK_CONFIG') == 'docker'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:////app/database/database.db',
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
         DEBUG = True,
         TESTING = False,
     )
@@ -41,13 +41,13 @@ elif(getenv('FLASK_CONFIG') == 'local'):
     print("NOTE: Using local config")
 elif(getenv('FLASK_CONFIG') == 'docker_production'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:////app/database/database.db',
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
         DEBUG = False,
         TESTING = False,
     )
     print("NOTE: Using docker production config")
 else:
-    raise RuntimeError("Wrong config, exiting..")
+    raise RuntimeError("Wrong config, exiting..")"""
 
 
 """from app.map.map import map_blueprint
