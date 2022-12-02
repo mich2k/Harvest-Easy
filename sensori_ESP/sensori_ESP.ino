@@ -20,7 +20,7 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 HTTPClient http;
-StaticJsonDocument<1024> jsonMsg;
+StaticJsonDocument<1024> jsonMsg1, jsonMsg2, jsonMsg3;
 
 const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
 const char* password = "altalena";// Qui va inserita la password di rete
@@ -35,7 +35,7 @@ const int MPU_addr=0x68;
 int16_t AcX, AcY, AcZ;
 //int16_t GyX, GyY, GyZ;
 
-String msg;
+String msg1, msg2, msg3;
 
 void connectToWiFi() {
     WiFi.begin(ssid, password); 
@@ -54,6 +54,7 @@ void setup() {
   timestamp = millis();
 
   connectToWiFi();
+
   //inizializzazione DHT
   dht.begin();
   //inizializzazione accelerometro 
@@ -109,30 +110,45 @@ void loop() {
       roll = (atan2(AcY, sqrt(AcX * AcX + AcZ * AcZ)) * 180.0) / M_PI;
       yaw = (atan2(sqrt(AcX * AcX + AcZ * AcZ), AcZ) * 180.0) / M_PI;
       
-      //CREAZIONE DEL PACCHETTO
-      jsonMsg["idbin"] = ID_BIN;
-      jsonMsg["temperature"] = temperature;
-      jsonMsg["humidity"] = humidity;
-      jsonMsg["co2"] = co2;
-      jsonMsg["riempimento"] = distanza;
-      jsonMsg["roll"] = roll; //0 gradi
-      jsonMsg["pitch"] = pitch;  //90 gradi
-      jsonMsg["yaw"] = yaw;  //90 gradi
-      
-      serializeJson(jsonMsg, msg);
-      Serial.println(msg);
-      http.begin(String(SERVER_ADDR));
-      http.addHeader("Content-Type", "application/json"); // Specify content-type header
-      int respCode = http.POST(msg);
+      //CREAZIONE DEI PACCHETTI
+      //pacchetto con i valori rilevati da salvare in db
+      jsonMsg1["idbin"] = ID_BIN;
+      jsonMsg1["temperature"] = temperature;
+      jsonMsg1["humidity"] = humidity;
+      jsonMsg1["riempimento"] = distanza;
 
-      if(respCode > 0){
-          String resp = http.getString(); 
-          Serial.print(respCode);
-      }else{
-          Serial.print("Errore: ");
-          Serial.println(respCode);
-      }
+      //pacchetto con i valori per controllare ed eventualmente segnalare ribaltamento
+      jsonMsg1["idbin"] = ID_BIN;
+      jsonMsg2["roll"] = roll; //0 gradi
+      jsonMsg2["pitch"] = pitch;  //90 gradi
+      jsonMsg2["yaw"] = yaw;  //90 gradi
       
+      //pacchetto con il valore di co2 per controllare ed eventualmente segnalare incendio
+      jsonMsg1["idbin"] = ID_BIN;
+      jsonMsg3["co2"] = co2;
+      
+      serializeJson(jsonMsg1, msg1);
+      serializeJson(jsonMsg2, msg2);
+      serializeJson(jsonMsg3, msg3);
+      Serial.println(msg1);
+      Serial.println(msg2);
+      Serial.println(msg3);
+
+      http.begin(String(SERVER_ADDR + 'database/additem/'));
+      http.addHeader("Content-Type", "application/json"); // Specify content-type header
+      int respCode1 = http.POST(msg1);
+      checkrisp(respCode1);
+
+      http.begin(String(SERVER_ADDR + 'checkribaltamento/'));
+      http.addHeader("Content-Type", "application/json"); // Specify content-type header
+      int respCode2 = http.POST(msg2);
+      checkrisp(respCode2);
+
+      http.begin(String(SERVER_ADDR + 'checkincendio/'));
+      http.addHeader("Content-Type", "application/json"); // Specify content-type header
+      int respCode3 = http.POST(msg3);
+      checkrisp(respCode3);
+
       http.end();
       timestamp = millis();
     }
@@ -140,4 +156,14 @@ void loop() {
   else{
     Serial.println("Errore di connessione");
   }
+}
+
+void checkrisp(int respCode){
+  if(respCode > 0){
+      String resp = http.getString(); 
+      Serial.print(respCode);
+    }else{
+      Serial.print("Errore: ");
+      Serial.println(respCode);
+    }
 }

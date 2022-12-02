@@ -57,7 +57,7 @@ void loop() {
       for (byte i = 0; i < mfrc522.uid.size; i++) {
         inStringDec += String(mfrc522.uid.uidByte[i], DEC);
       }
-      Serial.println(F("Card UID_DEC:"));
+      Serial.println(F("Card UID DEC:"));
       Serial.print(inStringDec);
       Serial.println();
       Serial.println(F("Card UID HEX:"));
@@ -85,7 +85,10 @@ void loop() {
 void checkrisp(int respCode){
   //se utente corretto e status non pieno devo aprire il bidone
   //delay(50000); //attendo un po prima di tornare ad aprire bidone
-  
+  //se utente non autorizzato visualizzo "No autorizzazione"  --> codice 202 (no json)
+  //se utente è autorizzato ma è pieno devo visualizzare il bidone vicino  --> codice 201 (mi metto in attesa json)
+  //se utente autorizzato e bidone vuoto lo apro con il servo  --> codice risposta 200  (no json)
+  //se utente è OPERATORE/ADMIN lo apro sempre --> 203 (no json) NO VISUALIZZAZIONE
   if(respCode > 0){
       String resp = http.getString(); 
       Serial.print(respCode);
