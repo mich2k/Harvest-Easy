@@ -23,6 +23,7 @@ class GeoFirstRecordResourceful(Resource):
 
 class GeoFirstRecord(Resource):
     def get(self):
+        response = Response()
         data = {}
         time = flasky.getUtils().get_local_time
         data['message'] = 'Hello from geofirstrecord module!'

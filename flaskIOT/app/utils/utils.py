@@ -1,8 +1,9 @@
 from datetime import datetime
-
+from os import getenv
 
 class Utils:
     def __init__(self):
+        #self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
     @property
