@@ -60,3 +60,9 @@ __pycache__/
 instance
 *.db
 *.sqlite
+
+
+# output
+
+*.out
+*.txt
