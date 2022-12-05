@@ -71,6 +71,7 @@ class User(Person, db.Model):
 class BinGroup(db.Model):
     __tablename__ = 'bingroup'
     id = db.Column('id', db.Integer, primary_key=True)
+    
     # relationship
     bin_records = db.relationship('BinRecord', backref='bingroup')
 
@@ -81,8 +82,7 @@ class Apartment(db.Model):
     apartment_name = db.Column('apartment_name', db.String, primary_key=True)
     city = db.Column('city', db.String, nullable=False)
     street = db.Column('street', db.String, nullable=False)
-    apartment_street_number = db.Column(
-        'apartment_street_number', db.Integer, nullable=False)
+    apartment_street_number = db.Column('apartment_street_number', db.Integer, nullable=False)
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
     
     # FK
@@ -92,7 +92,8 @@ class Apartment(db.Model):
     # relationships
     users = db.relationship('User', backref='apartment')
     
-    def __init__(self, apartment_name: str, city: str, street: str, apartment_street_number: int, n_internals: int, associated_bingroup: int, associated_admin: str):
+    def __init__(self, apartment_name: str, city: str, street: str, apartment_street_number: int, 
+                 n_internals: int, associated_bingroup: int, associated_admin: str):
         self.apartment_name = apartment_name
         self.city = city
         self.street = street

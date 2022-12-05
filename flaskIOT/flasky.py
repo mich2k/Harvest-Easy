@@ -3,6 +3,7 @@ from config import Config
 from app.database.__init__ import db
 from app.database.database import database_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
+from app.trap.trap import trap_blueprint
 from app.bestpath.bestpath import path_blueprint
 #from os import getenv
 
@@ -60,7 +61,7 @@ db.init_app(app)
 app.register_blueprint(database_blueprint, url_prefix='/db')
 app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
-
+app.register_blueprint(trap_blueprint, url_prefix='/trap')
 @app.route('/') 
 def testoHTML():
     return '<h1>Smart Bin</h1>'
