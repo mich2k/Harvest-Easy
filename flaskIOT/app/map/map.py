@@ -43,7 +43,7 @@ def main():
         #VIEW MAP CON BIDONI
         #prendo la lista di bidoni associata a quell'appartamento attraverso l'id del bin group
         associated_bingroup = apartment.associated_bingroup
-        elencobin = db.session.query(BinRecord).filter_by(BinRecord.associated_bingroup = associated_bingroup)
+        elencobin = db.session.query(BinRecord).filter_by(BinRecord.associated_bingroup == associated_bingroup)
         
         #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
         points=[]
