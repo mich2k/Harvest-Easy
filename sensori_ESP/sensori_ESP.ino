@@ -1,6 +1,6 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
-#include <AddicoreRFID.h>
+//#include <AddicoreRFID.h>
 #include <Esp32WifiManager.h>
 #include "DHT.h"
 #include <Wire.h>
@@ -13,6 +13,7 @@
 #define PIN_CO2 34   // Analogical pin connected to the CO2 sensor
 #define PINTrigger 19  // Trigger pin of ultrasonic sensor 
 #define PINEcho 18  // Echo pin connected of ultrasonic sensor 
+#define altezza 50
 #define SERVER_ADDR "https://flask.gmichele.it/"
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
@@ -58,15 +59,15 @@ void setup() {
   //inizializzazione DHT
   dht.begin();
   //inizializzazione accelerometro 
-   #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-        Wire.begin();
-    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
-        Fastwire::setup(400, true);
-    #endif
-    Wire.beginTransmission(MPU_addr);
-    Wire.write(0x6B);
-    Wire.write(0);
-    Wire.endTransmission(true);
+  #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+      Wire.begin();
+  #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+      Fastwire::setup(400, true);
+  #endif
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x6B);
+  Wire.write(0);
+  Wire.endTransmission(true);
 }
 void loop() {
   if(WiFi.status() == WL_CONNECTED){
@@ -115,7 +116,7 @@ void loop() {
       jsonMsg1["idbin"] = ID_BIN;
       jsonMsg1["temperature"] = temperature;
       jsonMsg1["humidity"] = humidity;
-      jsonMsg1["riempimento"] = distanza;
+      jsonMsg1["riempimento"] = (altezza-distanza)/altezza;
 
       //pacchetto con i valori per controllare ed eventualmente segnalare ribaltamento
       jsonMsg1["idbin"] = ID_BIN;
@@ -134,22 +135,9 @@ void loop() {
       Serial.println(msg2);
       Serial.println(msg3);
 
-      http.begin(String(SERVER_ADDR + 'database/additem/'));
-      http.addHeader("Content-Type", "application/json"); // Specify content-type header
-      int respCode1 = http.POST(msg1);
-      checkrisp(respCode1);
-
-      http.begin(String(SERVER_ADDR + 'checkribaltamento/'));
-      http.addHeader("Content-Type", "application/json"); // Specify content-type header
-      int respCode2 = http.POST(msg2);
-      checkrisp(respCode2);
-
-      http.begin(String(SERVER_ADDR + 'checkincendio/'));
-      http.addHeader("Content-Type", "application/json"); // Specify content-type header
-      int respCode3 = http.POST(msg3);
-      checkrisp(respCode3);
-
-      http.end();
+      httpPOSTJSON(String(SERVER_ADDR + 'database/additem/'), msg1);
+      httpPOSTJSON(String(SERVER_ADDR + 'checkribaltamento/'), msg2);
+      httpPOSTJSON(String(SERVER_ADDR + 'checkincendio/'), msg3);
       timestamp = millis();
     }
   }
@@ -158,12 +146,19 @@ void loop() {
   }
 }
 
-void checkrisp(int respCode){
-  if(respCode > 0){
-      String resp = http.getString(); 
-      Serial.print(respCode);
-    }else{
-      Serial.print("Errore: ");
-      Serial.println(respCode);
-    }
+String httpPOSTJSON(String serverName, String msg) {
+  http.begin(serverName);
+  http.addHeader("Content-Type", "application/json"); // Specify content-type header
+  int httpResponseCode = http.POST(msg); 
+  
+  if (httpResponseCode>0) {
+    String resp = http.getString(); 
+    Serial.print(httpResponseCode);
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
 }
+
