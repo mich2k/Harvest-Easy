@@ -1,9 +1,10 @@
+#include <ArduinoJson.h>
+#include <Arduino_JSON.h>
 #include <SPI.h>
 #include <MFRC522.h>
 //#include <Servo.h> 
 #include <Esp32WifiManager.h>
 #include <stdlib.h>
-#include <ArduinoJson.h>
 #include <HTTPClient.h>
 
 #define ID_BIN "plastic bin"
@@ -12,7 +13,8 @@
 #define SS_PIN          21       //pin di selezione
 
 HTTPClient http;
-StaticJsonDocument<1024> jsonMsg1, jsonMsg2, jsonMsg3;
+StaticJsonDocument<1024> jsonMsg1;
+JSONVar myObject;
 String msg1, msg2, msg3;
 
 //#define PIN_SERVO  3
@@ -23,8 +25,14 @@ String inStringHex = "";
 
 //Servo servo; // servo object representing the MG 996R servo
 MFRC522::Uid uid;
+
+unsigned long lastTime = 0;
+unsigned long timerDelay = 3600000;
+String sensorReadings;
+
 const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
 const char* password = "altalena";// Qui va inserita la password di rete
+
 void connectToWiFi() {
     WiFi.begin(ssid, password); 
         while (WiFi.status() != WL_CONNECTED) {
@@ -48,7 +56,8 @@ void setup() {
 
 void loop() {
   if(WiFi.status() == WL_CONNECTED){
-    // Look for new cards
+	//RFID
+    // Utente prova ad aprire il bidone
     if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()){
       for (byte i = 0; i < mfrc522.uid.size; i++) {
         inStringHex += String(mfrc522.uid.uidByte[i], HEX);
@@ -79,21 +88,92 @@ void loop() {
       inStringHex = "";
       inStringDec = "";
     }
+
+      //AGGIORNO IL DISPLAY ogni 30 minuti
+    if ((millis() - lastTime) > timerDelay) {
+      String serverPath = String(SERVER_ADDR) + 'database/getsensor?idbin='+ String(ID_BIN);
+      sensorReadings = httpGETRequest(serverPath.c_str());
+      myObject = JSON.parse(sensorReadings);
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+    
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+      JSONVar keys = myObject.keys(); //stato, temperatura, livello di riempimento
+      String status_attuale = myObject[keys[0]];
+      int temperatura = int(myObject[keys[1]]);
+      int riempimento = int(myObject[keys[2]]);
+
+      Serial.print("status_attuale = ");
+      Serial.println(status_attuale);
+      Serial.print("temperatura = ");
+      Serial.println(temperatura);
+      Serial.print("riempimento = ");
+      Serial.println(riempimento);
+      lastTime = millis();
+    }
   }
 }
 
+
 void checkrisp(int respCode){
-  //se utente corretto e status non pieno devo aprire il bidone
-  //delay(50000); //attendo un po prima di tornare ad aprire bidone
-  //se utente non autorizzato visualizzo "No autorizzazione"  --> codice 202 (no json)
-  //se utente è autorizzato ma è pieno devo visualizzare il bidone vicino  --> codice 201 (mi metto in attesa json)
-  //se utente autorizzato e bidone vuoto lo apro con il servo  --> codice risposta 200  (no json)
-  //se utente è OPERATORE/ADMIN lo apro sempre --> 203 (no json) NO VISUALIZZAZIONE
-  if(respCode > 0){
-      String resp = http.getString(); 
-      Serial.print(respCode);
-    }else{
-      Serial.print("Errore: ");
-      Serial.println(respCode);
+
+  if(respCode > 0){ 
+	  if(respCode == 200){ //se utente è autorizzato e il bidone vuoto
+		//visualizzo "Autorizzato"
+	  }
+
+    if(respCode == 201){  //se utente è autorizzato ma il bidone è pieno 
+      //visualizzo "autorizzato""
+      //visualizzo bidone più vicino
+      String serverPath = String(SERVER_ADDR) + 'neighbor/?idbin=' + String(ID_BIN);
+      sensorReadings = httpGETRequest(serverPath.c_str());
+      myObject = JSON.parse(sensorReadings);
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+        }
+      JSONVar keys = myObject.keys(); //via, numero
+      String via = myObject[keys[0]];
+      int numero = int(myObject[keys[1]]);
+      Serial.print("via = ");
+      Serial.println(via);
+      Serial.print("numero = ");
+      Serial.println();
+	  }
+
+    if(respCode == 202){  //se utente non è autorizzato 
+      //visualizzo "Non autorizzato"
     }
+
+    if(respCode == 203){  //se utente è OPERATORE/ADMIN 
+      //visualizzo "autorizzato"
+      //aziono il servo
+    }
+    
+  }else{
+    Serial.print("Errore: ");
+    Serial.println(respCode);
+  }
+}
+
+String httpGETRequest(const char* serverName) {
+  http.begin(serverName);
+  int httpResponseCode = http.GET();
+  
+  String payload = "{}"; 
+  
+  if (httpResponseCode>0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+  return payload;
 }
