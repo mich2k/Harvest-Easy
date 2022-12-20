@@ -2,6 +2,9 @@ from flask import render_template, request, Blueprint
 from .tables import *
 from .faker import create_faker
 from .__init__ import db
+import requests
+from os import getenv
+HERE_API_KEY = getenv('HERE_KEY')
 
 database_blueprint = Blueprint('database', __name__, template_folder='templates', url_prefix='/db')
 
@@ -24,6 +27,19 @@ def addrecord():
     
     try:
         sf = BinRecord(msgJson)
+        db.session.add(sf)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'Done'
+
+#AGGIUNTA DI UN BIDONE
+@database_blueprint.route('/addbin', methods=['POST'])
+def addrecord():
+    msgJson = request.get_json()
+
+    try:
+        sf = Bin(msgJson)
         db.session.add(sf)
         db.session.commit()
     except:
@@ -99,24 +115,6 @@ def addadmin():
         return 'Error'
     return 'Done'
 
-#AGGIUNTA DI UN ADMIN
-@database_blueprint.route('/addapartment', methods=['POST'])
-def addapartment():
-    msgJson = request.get_json()
-    apartment = Apartment(apartment_name=msgJson['apartment_name'], 
-                          city=msgJson['city'], 
-                          street=msgJson['street'], 
-                          apartment_street_number=msgJson['street_number'], 
-                          n_internals=msgJson['n_internals'], 
-                          associated_bingroup=msgJson['associated_bingroup'], 
-                          associated_admin=msgJson['associated_admin'])
-    try:
-        db.session.add(apartment)
-        db.session.commit()
-    except:
-        return 'Error'
-    return 'Done'
-
 #AGGIUNTA DI UN OPERATORE
 @database_blueprint.route('/addoperator', methods=['POST'])
 def addoperator():
@@ -129,15 +127,53 @@ def addoperator():
     except:
         return 'Error'
     return 'Done'
+    
+#AGGIUNTA DI UN APARTMENT
+#inserire qui lat e long dell'appartamento tramite chiamata ad API
+#da verificare chiamata ad API
+@database_blueprint.route('/addapartment', methods=['POST'])
+def addapartment():
+    msgJson = request.get_json()
+    HERE_API_URL = f'GET https://geocode.search.hereapi.com/v1/geocode'
+    address = msgJson['city'] + msgJson['street'] + msgJson['street_number'] 
+    params = {
+        'address': address + 'italia', 
+        'apiKey': HERE_API_KEY
+    }
+    
+    # Do the request and get the response data
+    req = requests.get(HERE_API_URL, params=params)
+    res = req.json()
+
+    # Use the first result
+    result = res['object'][0]
+    lat = result['items'][0]['position']['lat']
+    lng = result['items'][0]['position']['lng']
+    apartment = Apartment(apartment_name=msgJson['apartment_name'], 
+                          city=msgJson['city'], 
+                          street=msgJson['street'], 
+                          lat=lat,
+                          lng=lng,
+                          apartment_street_number=msgJson['street_number'], 
+                          n_internals=msgJson['n_internals'], 
+                          associated_bin=msgJson['associated_bin'], 
+                          associated_admin=msgJson['associated_admin'])
+    try:
+        db.session.add(apartment)
+        db.session.commit()
+    except:
+        return 'Error'
+    return 'Done'
+
 
 #Print tables
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
     
-    elenco=[BinGroup.query.order_by(BinGroup.id.desc()).all(),
+    elenco=[#BinGroup.query.order_by(BinGroup.id.desc()).all(),
             Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
             User.query.order_by(User.username.desc()).all(),
-            Admin.query.order_by(Admin.username.desc()).all()]
-            #,BinRecord.query.order_by(BinRecord.id.desc()).all()] 
+            Admin.query.order_by(Admin.username.desc()).all(),
+            BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)

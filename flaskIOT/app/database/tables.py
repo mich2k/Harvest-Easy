@@ -31,32 +31,6 @@ class Operator(db.Model):
     
     def __init__(self, id: int) -> None:
         self.id_operator = id
-        
-class BinRecord(db.Model):
-    __tablename__ = 'bin'
-    id_record = db.Column('id_record', db.Integer, primary_key=True)
-    id_bin = db.Column('id_bin', db.String)
-    
-    # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
-    status = db.Column('status', db.Integer)
-    
-    temperature = db.Column('temperature', db.Integer, nullable=False)
-    humidity = db.Column('humidity', db.Integer, nullable=False)
-    co2 = db.Column('co2', db.Integer, nullable=False)
-    riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
-    
-    # FK
-    associated_bingroup = db.Column('bingroup',db.Integer, db.ForeignKey('bingroup.id'))
-    
-    def __init__(self, status, jsonObj):
-        self.id_bin = jsonObj['idbin']
-        self.status = status['status']
-        self.temperature = jsonObj['temperature']
-        self.humidity = jsonObj['humidity']
-        self.co2 = jsonObj['co2']
-        self.riempimento = jsonObj['riempimento']
-        self.associated_bingroup = jsonObj['bingroup']
 
 class User(Person, db.Model):
     __tablename__ = 'user'
@@ -67,13 +41,41 @@ class User(Person, db.Model):
         super().__init__(p.username, p.name, p.surname, p.password, p.city, p.birth_year)
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
-
-class BinGroup(db.Model):
-    __tablename__ = 'bingroup'
-    id = db.Column('id', db.Integer, primary_key=True)
+        
+class BinRecord(db.Model):
+    __tablename__ = 'bin'
+    id_record = db.Column('id_record', db.Integer, primary_key=True)
+    id_bin = db.Column('id_bin', db.String)
     
-    # relationship
-    bin_records = db.relationship('BinRecord', backref='bingroup')
+    # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
+    status = db.Column('status', db.Integer)
+
+    temperature = db.Column('temperature', db.Integer, nullable=False)
+    humidity = db.Column('humidity', db.Integer, nullable=False)
+    co2 = db.Column('co2', db.Integer, nullable=False)
+    riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
+
+    def __init__(self, status, jsonObj):
+        self.id_bin = jsonObj['idbin']
+        self.status = status['status']
+        self.temperature = jsonObj['temperature']
+        self.humidity = jsonObj['humidity']
+        self.co2 = jsonObj['co2']
+        self.riempimento = jsonObj['riempimento']
+        
+
+class Bin(db.Model):
+    __tablename__ = 'bin'
+    id_bin = db.Column('id_bin', db.String, primary_key=True)
+    tipologia = db.Column('tipologia', db.String)
+    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
+    previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
+    
+    def __init__(self, status, jsonObj):
+        self.id_bin = jsonObj['idbin']
+        self.tipologia = jsonObj['tipologia']
+        self.apartment_ID = jsonObj['apartment_ID']
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
@@ -82,23 +84,29 @@ class Apartment(db.Model):
     apartment_name = db.Column('apartment_name', db.String, primary_key=True)
     city = db.Column('city', db.String, nullable=False)
     street = db.Column('street', db.String, nullable=False)
+    lat = db.Column('lat', db.String)
+    lng = db.Column('lng', db.String)
     apartment_street_number = db.Column('apartment_street_number', db.Integer, nullable=False)
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
     
     # FK
-    associated_bingroup = db.Column(db.Integer, db.ForeignKey('bingroup.id'))
+    associated_bin = db.Column(db.Integer, db.ForeignKey('bin.id'))
     associated_admin = db.Column(db.String, db.ForeignKey('admin.username'))
+    
 
     # relationships
     users = db.relationship('User', backref='apartment')
     
-    def __init__(self, apartment_name: str, city: str, street: str, apartment_street_number: int, 
-                 n_internals: int, associated_bingroup: int, associated_admin: str):
+    def __init__(self, apartment_name: str, city: str, street: str, lat: str, lng: str,
+                apartment_street_number: int, n_internals: int, associated_bin: int, associated_admin: str):
         self.apartment_name = apartment_name
         self.city = city
         self.street = street
+        self.lat = lat
+        self.lng = lng
         self.apartment_street_number = apartment_street_number
         self.n_internals = n_internals
-        self.associated_bingroup = associated_bingroup
+        self.associated_bin = associated_bin
         self.associated_admin = associated_admin
+
     

@@ -15,4 +15,5 @@ fi
 
 export FLASK_CONFIG=local
 export HERE_KEY=XQlhgTyikHJMIi35pKcqjf3AbGBYho6FL8mvncE4T_g
+export WEATHER_API_KEY=8db7edbf3f049e2543fb1115755351c0
 gunicorn -b :5000 --access-logfile - --error-logfile - flasky:app

@@ -26,7 +26,7 @@
                             }
                     };
                     
-                    xobj.open('GET', 'points.json', true);
+                    xobj.open('GET', 'http://flask.gmichele.it/map/getpoints');
                     xobj.setRequestHeader('Access-Control-Allow-Origin', '*')
                     xobj.send(null);
                 }

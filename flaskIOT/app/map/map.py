@@ -1,10 +1,11 @@
 from flask import Blueprint
 import requests
 from os import getenv
-from app.database.tables import Apartment, BinRecord
+from app.database.tables import Apartment, BinRecord, Bin
 from app.database.__init__ import db
 import json
-import requests
+from sqlalchemy.sql.expression import func
+import datetime
 
 HERE_API_KEY = getenv('HERE_KEY')
 
@@ -14,57 +15,69 @@ map_blueprint = Blueprint('map', __name__, template_folder='templates')
 def main():
     return '<h1>Map</h1>'
 
-
-@map_blueprint.route('/getposition')
-def main(): 
-    #richiesta A HERE PER OTTENERE LAT E LONG DELL'APPARTAMENTO, per ogni appartamento presente nel database
-    HERE_API_URL = f'GET https://geocode.search.hereapi.com/v1/geocode'
-    #lista degli appartamenti gestiti dal db
+#MAPPA COMPLETA CON TUTTI I BIDONI
+@map_blueprint.route('/getmap')
+def getpoints(): 
     apartments = Apartment.query.all()
+    
+    #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
+    points=[] #lista di json=punti
+    point={}
     for apartment in apartments:
-        address = apartment.city + apartment.street + apartment.apartment_street_number 
-        params = {
-            'address': address + 'italia', 
-            'apiKey': HERE_API_KEY
-        }
-        
-        # Do the request and get the response data
-        req = requests.get(HERE_API_URL, params=params)
-        res = req.json()
-
-        # Use the first result
-        result = res['object'][0]
-        lat = result['items'][0]['position']['lat']
-        lng = result['items'][0]['position']['lng']
-
-        print(lat)
-        print(lng)
-
-        #VIEW MAP CON BIDONI
-        #prendo la lista di bidoni associata a quell'appartamento attraverso l'id del bin group
-        associated_bingroup = apartment.associated_bingroup
-        elencobin = db.session.query(BinRecord).filter_by(BinRecord.associated_bingroup == associated_bingroup)
-        
-        #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
-        points=[]
-        point={}
-
-        for i in len(elencobin):
-            point['id'] = elencobin[i].id_bin
+        #prendo i bidoni associati a quell'appartamento 
+        bins = Bin.query.filter_by(Bin.apartment_ID == apartment.apartment_ID) 
+        for bin in bins: 
+            #aggiungo i bidoni dell'appartamento alla mappa come punti
+            point['id'] = bin.id_bin
+            point['tipologia']=bin.tipologia
             point['apartment_name'] = apartment.apartment_name
-            point['status'] = elencobin[i].status
-            point['address'] = address
-            point['riempimento'] = elencobin[i].riempimento
-            point['lat'] = lat
-            point['lng'] = lng
+            point['status'] = bin.status
+            point['address'] = apartment.city + apartment.street + apartment.apartment_street_number 
+            point['lat'] = apartment.lat
+            point['lng'] = apartment.lng
+            point['previsione'] = bin.previsione_status
+            
             #trasformo il dizionario in json
             point = json.dumps(point)
             #aggiungo il json alla lista di punti
-            points[i]=point
+            points.append(point)
 
-        viewmap = {
-            "updated":"20/11/2022 11:13:06", #mettete ora attuale
-            "listaPunti": points
-        }
-        #DA SALVARE COME FILE JSON PERCHE VIEWMAP LO CARICA PER COSTRUIRE MAPPA
-        # Result => Link Rd, Best Nagar, Goregaon West, Mumbai, Maharashtra 400104, India. (lat, lng) = (19.1528967, 72.8371262)
+    viewmap = {
+        "updated":datetime.datetime.now, 
+        "listaPunti": points
+    }
+
+    return viewmap
+
+#MAPPA CON I BIDONI DI UNA CERTA TIPOLOGIA   
+@map_blueprint.route('/getmap/<string:tipologia>')
+def getpoints(tipologia): 
+    apartments = Apartment.query.all()
+    
+    #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
+    points=[] #lista di json=punti
+    point={}
+    for apartment in apartments:
+        #prendo i bidoni associati a quell'appartamento  di quella tipologia
+        bins = Bin.query.filter_by(Bin.apartment_ID==apartment.apartment_ID and Bin.tipologia==tipologia) 
+        for bin in bins: 
+            #aggiungo i bidoni dell'appartamento alla mappa come punti
+            point['id'] = bin.id_bin
+            point['apartment_name'] = apartment.apartment_name
+            point['status'] = bin.status
+            point['address'] = apartment.city + apartment.street + apartment.apartment_street_number 
+            point['lat'] = apartment.lat
+            point['lng'] = apartment.lng
+            point['previsione'] = bin.previsione_status
+            
+            #trasformo il dizionario in json
+            point = json.dumps(point)
+            #aggiungo il json alla lista di punti
+            points.append(point)
+
+    viewmap = {
+        "updated":datetime.datetime.now, 
+        "listaPunti": points
+    }
+
+    return viewmap

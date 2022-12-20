@@ -5,6 +5,7 @@ from app.database.database import database_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.trap.trap import trap_blueprint
 from app.bestpath.bestpath import path_blueprint
+from app.map.map import map_blueprint
 from app.geofirstrecord.geofirstrecord import geofirstrecord_blueprint
 from app.utils.utils import Utils
 from os import getenv
@@ -58,9 +59,6 @@ else:
     #raise RuntimeError("Wrong config, exiting..")
 
 
-"""from app.map.map import map_blueprint
-app.register_blueprint(map_blueprint, url_prefix='/map')"""
-
 #Inizializzazione DB
 db.init_app(app)
     
@@ -70,6 +68,7 @@ app.register_blueprint(database_blueprint, url_prefix='/db')
 app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
 app.register_blueprint(trap_blueprint, url_prefix='/trap')
+app.register_blueprint(map_blueprint, url_prefix='/map')
 @app.route('/') 
 def testoHTML():
     return '<h1>Smart Bin</h1>'
