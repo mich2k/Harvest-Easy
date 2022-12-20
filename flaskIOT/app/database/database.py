@@ -170,7 +170,7 @@ def addapartment():
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
     
-    elenco=[#BinGroup.query.order_by(BinGroup.id.desc()).all(),
+    elenco=[Bin.query.order_by(Bin.id.desc()).all(),
             Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
             User.query.order_by(User.username.desc()).all(),
             Admin.query.order_by(Admin.username.desc()).all(),
