@@ -5,6 +5,7 @@ from fbprophet import Prophet
 from datetime import datetime, timedelta
 from app.database.tables import BinRecord, Bin
 import csv
+from flask import Flask,jsonify,json
 
 bins=Bin.query.all()
 timestamp=[]
@@ -50,3 +51,12 @@ for bin in bins: #per ogni bidone creo previsione temporale
     plt.show()
 
     fig2 = m.plot_components(forecast)
+
+    prediction=forecast[['yhat']]
+    #messaggio Json
+    msgJson = {'id_bin': bin.id_bin,
+        'riempimento': prediction[0]}
+    jsonify(msgJson)
+    #mando il json alla pagina trap/getstatus
+    status=0#previsione ricevuta
+    Bin.query().filter(Bin.id_bin==bin.id_bin).update({Bin.previsione_status: status}, synchronize_session = False)

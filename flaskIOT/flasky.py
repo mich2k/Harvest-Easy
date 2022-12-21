@@ -9,6 +9,8 @@ from app.map.map import map_blueprint
 from app.geofirstrecord.geofirstrecord import geofirstrecord_blueprint
 from app.utils.utils import Utils
 from os import getenv
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
 
 #creo applicazione
 appname = "IOT - SmartBin"
@@ -61,6 +63,9 @@ else:
 
 #Inizializzazione DB
 db.init_app(app)
+
+# Initialize the extension
+#GoogleMaps(app)
     
 #Registrazione Blueprint
 app.register_blueprint(geofirstrecord_blueprint, url_prefix='/geofr')

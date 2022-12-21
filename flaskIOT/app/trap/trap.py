@@ -23,7 +23,7 @@ def change_status_f():
 def change_status_r():
     msgJson = request.get_json()
 
-
+@trap_blueprint.route('/getstatus')
 def calcolastatus():
     # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
     soglie={"plastica": 0.9, "carta": 0.9, "vetro": 0.8, "umido": 0.7} #soglie fisse
