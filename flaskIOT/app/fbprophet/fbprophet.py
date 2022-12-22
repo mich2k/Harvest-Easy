@@ -30,7 +30,6 @@ for bin in bins: #per ogni bidone creo previsione temporale
     df['ds']= to_datetime(df['ds'])
     #Predictions are then made on a dataframe with a column ds containing the dates for which a prediction is to be made.
     #You can get a suitable dataframe that extends into the future a specified number of days using the helper method Prophet.make_future_dataframe. 
-    #By default it will also include the dates from the history, so we will see the model fit as well.
     m = Prophet()
     m.fit(df)
     future = m.make_future_dataframe(m, periods=5, freq="day")

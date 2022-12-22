@@ -3,7 +3,7 @@ from .tables import *
 def create_faker(db):
     
     #BinGroup
-    db.session.add_all([BinGroup(), BinGroup(), BinGroup(), BinGroup()])
+    #db.session.add_all([BinGroup(), BinGroup(), BinGroup(), BinGroup()])
     
     # Admin    
     db.session.add_all([Admin(Person(username="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2000)),

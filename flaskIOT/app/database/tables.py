@@ -3,12 +3,13 @@ from .__init__ import db
 
 class Person():
     username = db.Column('username', db.String,
-                         primary_key=True, nullable=False)
+                         primary_key=True, nullable=False)  #UID=username
     name = db.Column('name', db.String)
     surname = db.Column('surname', db.String)
     password = db.Column('password', db.String)
     city = db.Column('city', db.String)
     birth_year = db.Column('birth_year', db.Integer)
+    
     
     def __init__(self, username: str, name:str, surname:str, password: str, city: str, birth_year:int):
         self.username = username
@@ -71,6 +72,7 @@ class Bin(db.Model):
     tipologia = db.Column('tipologia', db.String)
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
+    #timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow) ultimo svuotamento
     
     def __init__(self, status, jsonObj):
         self.id_bin = jsonObj['idbin']

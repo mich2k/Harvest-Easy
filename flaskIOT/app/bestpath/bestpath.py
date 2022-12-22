@@ -38,3 +38,5 @@ def mapview():
         #markers=[(point['lat'], point['lat']) for point in points]
     )
     return render_template('map.html', map=map)
+
+#POST https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix
