@@ -48,7 +48,7 @@ def getpoints():
     }
 
     return viewmap
-
+"""
 #MAPPA CON I BIDONI DI UNA CERTA TIPOLOGIA   
 @map_blueprint.route('/getmap/<string:tipologia>')
 def getpoints(tipologia): 
@@ -81,3 +81,4 @@ def getpoints(tipologia):
     }
 
     return viewmap
+"""
