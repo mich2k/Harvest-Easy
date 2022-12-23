@@ -1,7 +1,7 @@
 from flask import Blueprint
 import requests
 from os import getenv
-from app.database.tables import Apartment, BinRecord, Bin
+from app.database.tables import Apartment, Bin
 from app.database.__init__ import db
 import json
 from sqlalchemy.sql.expression import func
@@ -17,7 +17,7 @@ def main():
 
 #MAPPA COMPLETA CON TUTTI I BIDONI
 @map_blueprint.route('/getmap')
-def getpoints(): 
+def getmap(): 
     apartments = Apartment.query.all()
     
     #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
@@ -48,7 +48,7 @@ def getpoints():
     }
 
     return viewmap
-"""
+
 #MAPPA CON I BIDONI DI UNA CERTA TIPOLOGIA   
 @map_blueprint.route('/getmap/<string:tipologia>')
 def getpoints(tipologia): 
@@ -81,4 +81,3 @@ def getpoints(tipologia):
     }
 
     return viewmap
-"""

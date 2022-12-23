@@ -35,7 +35,7 @@ def addrecord():
 
 #AGGIUNTA DI UN BIDONE
 @database_blueprint.route('/addbin', methods=['POST'])
-def addrecord():
+def addbin():
     msgJson = request.get_json()
 
     try:
@@ -127,7 +127,7 @@ def addoperator():
     except:
         return 'Error'
     return 'Done'
-    
+  
 #AGGIUNTA DI UN APARTMENT
 #inserire qui lat e long dell'appartamento tramite chiamata ad API
 #da verificare chiamata ad API
