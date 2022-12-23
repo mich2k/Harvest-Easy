@@ -74,10 +74,10 @@ class Bin(db.Model):
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
     #timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow) ultimo svuotamento
     
-    def __init__(self, status, jsonObj):
-        self.id_bin = jsonObj['idbin']
-        self.tipologia = jsonObj['tipologia']
-        self.apartment_ID = jsonObj['apartment_ID']
+    def __init__(self, id_bin: int, tipologia: str, apartment_ID: str):
+        self.id_bin = id_bin
+        self.tipologia = tipologia
+        self.apartment_ID = apartment_ID
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
@@ -92,7 +92,7 @@ class Apartment(db.Model):
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
     
     # FK
-    associated_bin = db.Column(db.Integer, db.ForeignKey('bin.id'))
+    associated_bin = db.Column(db.Integer, db.ForeignKey('bin.id_bin'))
     associated_admin = db.Column(db.String, db.ForeignKey('admin.username'))
     
 

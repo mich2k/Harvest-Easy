@@ -23,6 +23,7 @@ def change_status_f():
 def change_status_r():
     msgJson = request.get_json()
 
+
 @trap_blueprint.route('/getstatus')
 def calcolastatus():
     msgJson = request.get_json() #id_bin, riempimento, angoli di inclinazione 
