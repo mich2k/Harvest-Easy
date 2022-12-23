@@ -1,4 +1,4 @@
-from .tables import *
+from app.database.tables import *
   
 def create_faker(db):
     

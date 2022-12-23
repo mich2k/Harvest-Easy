@@ -44,7 +44,7 @@ class User(Person, db.Model):
         self.internal_number = internal_number
         
 class BinRecord(db.Model):
-    __tablename__ = 'bin'
+    __tablename__ = 'binrecord'
     id_record = db.Column('id_record', db.Integer, primary_key=True)
     id_bin = db.Column('id_bin', db.String)
     

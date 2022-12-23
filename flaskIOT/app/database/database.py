@@ -1,5 +1,5 @@
 from flask import render_template, request, Blueprint
-from .tables import *
+from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db
 import requests
