@@ -2,17 +2,15 @@ from datetime import datetime
 from .__init__ import db
 
 class Person():
-    username = db.Column('username', db.String,
-                         primary_key=True, nullable=False)  #UID=username
+    uid = db.Column('uid', db.String, primary_key=True, nullable=False)
     name = db.Column('name', db.String)
     surname = db.Column('surname', db.String)
     password = db.Column('password', db.String)
     city = db.Column('city', db.String)
     birth_year = db.Column('birth_year', db.Integer)
     
-    
-    def __init__(self, username: str, name:str, surname:str, password: str, city: str, birth_year:int):
-        self.username = username
+    def __init__(self, uid: str, name:str, surname:str, password: str, city: str, birth_year:int):
+        self.uid = uid
         self.name = name
         self.surname = surname
         self.password = password
@@ -24,13 +22,14 @@ class Admin(Person, db.Model):
     apartments = db.relationship('Apartment', backref='admin')
 
     def __init__(self, x: Person) -> None:
-        super().__init__(x.username, x.name, x.surname, x.password, x.city, x.birth_year)
+        super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
 
-class Operator(db.Model):
+class Operator(Person, db.Model):
     __tablename__='operator'
-    id_operator = db.Column('idOperator', db.Integer, primary_key=True)
+    id_operator = db.Column('idOperator', db.Integer)
     
-    def __init__(self, id: int) -> None:
+    def __init__(self, x: Person,id: int) -> None:
+        super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
         self.id_operator = id
 
 class User(Person, db.Model):
@@ -39,15 +38,14 @@ class User(Person, db.Model):
     internal_number = db.Column('internal_number', db.Integer)
     
     def __init__(self, p: Person, apartment_ID: int, internal_number: int):
-        super().__init__(p.username, p.name, p.surname, p.password, p.city, p.birth_year)
+        super().__init__(p.uid, p.name, p.surname, p.password, p.city, p.birth_year)
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
         
 class BinRecord(db.Model):
-    __tablename__ = 'binrecord'
+    __tablename__ = 'binRecord'
     id_record = db.Column('id_record', db.Integer, primary_key=True)
-    id_bin = db.Column('id_bin', db.String)
-    
+        
     # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
     status = db.Column('status', db.Integer)
 
@@ -57,27 +55,32 @@ class BinRecord(db.Model):
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
 
-    def __init__(self, status, jsonObj):
+    #Ogni record è relativo ad un preciso bidone
+    id_bin = db.Column('id_bin', db.String, db.ForeignKey('Bin.id_bin'))
+
+
+    def __init__(self, jsonObj):
         self.id_bin = jsonObj['idbin']
-        self.status = status['status']
+        self.status = jsonObj['status']
         self.temperature = jsonObj['temperature']
         self.humidity = jsonObj['humidity']
         self.co2 = jsonObj['co2']
         self.riempimento = jsonObj['riempimento']
         
-
 class Bin(db.Model):
     __tablename__ = 'bin'
-    id_bin = db.Column('id_bin', db.String, primary_key=True)
+    id_bin = db.Column('id_bin', db.Integer, primary_key=True)
     tipologia = db.Column('tipologia', db.String)
-    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
-    #timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow) ultimo svuotamento
+    ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
+    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
+    bin_records = db.relationship('BinRecord', backref='bin')
     
-    def __init__(self, id_bin: int, tipologia: str, apartment_ID: str):
-        self.id_bin = id_bin
-        self.tipologia = tipologia
-        self.apartment_ID = apartment_ID
+    def __init__(self, jsonObj):
+        self.id_bin = jsonObj['idbin']
+        self.tipologia = jsonObj['tipologia']
+        self.apartment_ID = jsonObj['apartment_ID']
+        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
@@ -93,9 +96,8 @@ class Apartment(db.Model):
     
     # FK
     associated_bin = db.Column(db.Integer, db.ForeignKey('bin.id_bin'))
-    associated_admin = db.Column(db.String, db.ForeignKey('admin.username'))
+    associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
     
-
     # relationships
     users = db.relationship('User', backref='apartment')
     

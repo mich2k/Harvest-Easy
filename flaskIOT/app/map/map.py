@@ -17,8 +17,13 @@ def main():
 
 #MAPPA COMPLETA CON TUTTI I BIDONI
 @map_blueprint.route('/getmap')
-def getmap(): 
+@map_blueprint.route('/getmap/<string:tipologia>')
+def getpoints(tipologia): 
     apartments = Apartment.query.all()
+    if (tipologia == None):
+        #TODO
+        pass
+    
     
     #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
     points=[] #lista di json=punti
@@ -32,7 +37,10 @@ def getmap():
             point['tipologia']=bin.tipologia
             point['apartment_name'] = apartment.apartment_name
             point['status'] = bin.status
+            
+            #TOCHECK
             point['address'] = apartment.city + apartment.street + apartment.apartment_street_number 
+            
             point['lat'] = apartment.lat
             point['lng'] = apartment.lng
             point['previsione'] = bin.previsione_status
@@ -50,7 +58,6 @@ def getmap():
     return viewmap
 
 #MAPPA CON I BIDONI DI UNA CERTA TIPOLOGIA   
-@map_blueprint.route('/getmap/<string:tipologia>')
 def getpoints(tipologia): 
     apartments = Apartment.query.all()
     

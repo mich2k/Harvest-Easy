@@ -135,7 +135,10 @@ def addoperator():
 def addapartment():
     msgJson = request.get_json()
     HERE_API_URL = f'GET https://geocode.search.hereapi.com/v1/geocode'
+    
+    #TO CHECK
     address = msgJson['city'] + msgJson['street'] + msgJson['street_number'] 
+    
     params = {
         'address': address + 'italia', 
         'apiKey': HERE_API_KEY
@@ -149,6 +152,7 @@ def addapartment():
     result = res['object'][0]
     lat = result['items'][0]['position']['lat']
     lng = result['items'][0]['position']['lng']
+    
     apartment = Apartment(apartment_name=msgJson['apartment_name'], 
                           city=msgJson['city'], 
                           street=msgJson['street'], 
@@ -158,6 +162,7 @@ def addapartment():
                           n_internals=msgJson['n_internals'], 
                           associated_bin=msgJson['associated_bin'], 
                           associated_admin=msgJson['associated_admin'])
+    
     try:
         db.session.add(apartment)
         db.session.commit()

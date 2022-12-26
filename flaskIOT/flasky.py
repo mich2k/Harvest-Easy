@@ -62,7 +62,6 @@ else:
 
 #Inizializzazione DB
 db.init_app(app)
-
     
 #Registrazione Blueprint
 app.register_blueprint(geofirstrecord_blueprint, url_prefix='/geofr')
@@ -71,6 +70,7 @@ app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
 app.register_blueprint(trap_blueprint, url_prefix='/trap')
 app.register_blueprint(map_blueprint, url_prefix='/map')
+
 @app.route('/') 
 def testoHTML():
     return '<h1>Smart Bin</h1>'
@@ -83,10 +83,3 @@ def data():
 @app.route('/<string:name>&<int:id>')
 def test(name, id):
     return '<h2> name:' + str(type(name)) + ' id:' + str(type(id)) + '</h2>'
-
-
-#Testing
-"""
-if __name__ == '__main__':
-    app.run('0.0.0.0',5000)
-    """ 
