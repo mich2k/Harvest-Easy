@@ -7,7 +7,7 @@ import requests
 from sqlalchemy.sql.expression import func
 from os import getenv
 
-WEATHER_API_KEY = getenv('WHEATHER_KEY')
+WEATHER_API_KEY = getenv('WEATHER_API_KEY')
 trap_blueprint = Blueprint('trap', __name__)
 #Ricevo il dato, ottengo l'id e modifico lo status
 
@@ -22,7 +22,7 @@ def change_status_r():
     msgJson = request.get_json()
 
 
-@trap_blueprint.route('/getstatus')
+@trap_blueprint.route('/getstatus', methods=['GET', 'POST'])
 def calcolastatus():
     msgJson = request.get_json() #id_bin, riempimento, angoli di inclinazione 
     
@@ -36,17 +36,18 @@ def calcolastatus():
     dd_umido={"medie": 5, "alte": 3, "altissime": 2} #soglia dinamica per l'organico in base alla temperatura
 
     status_attuale=1 #-->quando non ci sono istanze nella tabella
-    tipologia = (Bin.query.filter_by(Bin.id_bin == msgJson["id_bin"]))[0].tipologia
+    tipologia = (Bin.query.filter(Bin.id_bin == msgJson["id_bin"])).first().tipologia
     soglia_attuale=0
-    if (tipologia=='umido'):
+    if (tipologia=="umido"):
         now = datetime.datetime.now()
-        mese=now.month
+        mese=9 #now.month   --->DA CAMBIARE!!!!!!!
         giorno=now.day
         if(mese>=4 and mese<=10): #mesi caldi
-            apartment_ID=(Bin.query.filter_by(Bin.id_bin == msgJson["id_bin"]))[0].apartment_ID
-            lat=(Apartment.query.filter_by(Apartment.apartment_name==apartment_ID))[0].lat
-            lon=(Apartment.query.filter_by(Apartment.apartment_name==apartment_ID))[0].lng
-            WEATHERE_API_URL = f'GET https://api.openweathermap.org/data/2.5/weather'
+            apartment_ID=(Bin.query.filter(Bin.id_bin == msgJson["id_bin"])).first().apartment_ID
+            lat=(Apartment.query.filter(Apartment.apartment_name==apartment_ID)).first().lat
+            lon=(Apartment.query.filter(Apartment.apartment_name==apartment_ID)).first().lng
+            
+            WEATHERE_API_URL = f'https://api.openweathermap.org/data/2.5/weather'
             params = {
                 'lat':lat,
                 'lon':lon,
@@ -54,9 +55,9 @@ def calcolastatus():
             }
             req = requests.get(WEATHERE_API_URL, params=params)
             res = req.json()
-            temp = res['object'][0]['main']['temp']-272.15 #conversione kelvin-celsius
+            temp = res['main']['temp']-272.15 #conversione kelvin-celsius
+            temp=int(temp)
             dd_time=0
-            
             if(temp>=20 and temp<=25): #medie
                 dd_time=dd_umido["media"]
             if(temp>25 and temp<=30): #alte
@@ -66,7 +67,7 @@ def calcolastatus():
                 
             #controllo che umido venga svuotato ogni quattro giorni
             #Verificare: mi deve dare la data dell'ultimo svuotamento
-            timestamp=BinRecord.query(func.min(BinRecord.timestamp)).filter_by(BinRecord.id_bin==msgJson["id_bin"] and (BinRecord.status==1 or BinRecord.status==4))
+            timestamp=BinRecord.query.filter(Bin.id_bin==msgJson["id_bin"]).first().ultimo_svuotamento
             
             last_date = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
             now = datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S")
@@ -93,4 +94,4 @@ def calcolastatus():
     if(status_attuale==2 and float(riempimento_attuale)<soglia_attuale): status_attuale=1
     if(status_attuale==4 and float(riempimento_attuale)<soglia_attuale): status_attuale=3
     
-    return status_attuale 
+    return str(status_attuale)

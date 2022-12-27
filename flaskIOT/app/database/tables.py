@@ -19,7 +19,6 @@ class Person():
 
 class Admin(Person, db.Model):
     __tablename__ = 'admin'
-    apartments = db.relationship('Apartment', backref='admin')
 
     def __init__(self, x: Person) -> None:
         super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
@@ -54,9 +53,7 @@ class BinRecord(db.Model):
     co2 = db.Column('co2', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
-
-    #Ogni record è relativo ad un preciso bidone
-    id_bin = db.Column('id_bin', db.String, db.ForeignKey('Bin.id_bin'))
+    id_bin = db.Column('id_bin', db.String, db.ForeignKey('bin.id_bin'))
 
 
     def __init__(self, jsonObj):
@@ -74,7 +71,6 @@ class Bin(db.Model):
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
     ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
-    bin_records = db.relationship('BinRecord', backref='bin')
     
     def __init__(self, jsonObj):
         self.id_bin = jsonObj['idbin']
@@ -89,20 +85,16 @@ class Apartment(db.Model):
     apartment_name = db.Column('apartment_name', db.String, primary_key=True)
     city = db.Column('city', db.String, nullable=False)
     street = db.Column('street', db.String, nullable=False)
-    lat = db.Column('lat', db.String)
-    lng = db.Column('lng', db.String)
+    lat = db.Column('lat', db.Float)
+    lng = db.Column('lng', db.Float)
     apartment_street_number = db.Column('apartment_street_number', db.Integer, nullable=False)
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
     
     # FK
-    associated_bin = db.Column(db.Integer, db.ForeignKey('bin.id_bin'))
     associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
     
-    # relationships
-    users = db.relationship('User', backref='apartment')
-    
     def __init__(self, apartment_name: str, city: str, street: str, lat: str, lng: str,
-                apartment_street_number: int, n_internals: int, associated_bin: int, associated_admin: str):
+                apartment_street_number: int, n_internals: int, associated_admin: str):
         self.apartment_name = apartment_name
         self.city = city
         self.street = street
@@ -110,7 +102,6 @@ class Apartment(db.Model):
         self.lng = lng
         self.apartment_street_number = apartment_street_number
         self.n_internals = n_internals
-        self.associated_bin = associated_bin
         self.associated_admin = associated_admin
 
     

@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint
 from app.database.tables import *
-from .faker import create_faker
+from .faker2 import create_faker
 from .__init__ import db
 import requests
 from os import getenv
@@ -24,13 +24,12 @@ def addrecord():
     msgJson = request.get_json()
 
     #  sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
-    
     try:
         sf = BinRecord(msgJson)
         db.session.add(sf)
         db.session.commit()
     except:
-        return 'Error'
+        return 'Error' 
     return 'Done'
 
 #AGGIUNTA DI UN BIDONE
@@ -47,35 +46,35 @@ def addbin():
     return 'Done'
 
 #ACCESSO DI UN UTENTE AL BIDONE
-@database_blueprint.route('/checkUser/<string:username>&<string:apartment>', methods=['GET'])
-def checkUser(username, apartment):
+@database_blueprint.route('/checkUser/<string:uid>', methods=['GET'])
+def checkUser(uid):
     users=User.query.all()
     
     if(len(users)>0): 
         for user in users:
-            if(username == user.username): return user.username, '200 OK'
+            if(uid == user.uid): return user.uid, '200 OK'
             
     return '201 ERRORE' 
 
 #ACCESSO DI UN OPERATORE AL BIDONE
 @database_blueprint.route('/checkOp/<int:id>', methods=['GET'])
-def checkOp(username):
-    users=User.query.all()
+def checkOp(id):
+    operators=Operator.query.all()
     
-    if(len(users)>0): 
-        for user in users:
-            if(username == user.username): return user.username, '200 OK'
+    if(len(operators)>0): 
+        for operator in operators:
+            if(id == operator.id_operator): return operator.id_operator, '200 OK'
             
     return '201 ERRORE' 
 
 #ACCESSO DI UN AMMINISTRATORE AL BIDONE
 @database_blueprint.route('/checkAdmin/<string:username>', methods=['GET'])
-def checkAdmin(username):
-    users=User.query.all()
+def checkAdmin(uid):
+    admins=Admin.query.all()
     
-    if(len(users)>0): 
-        for user in users:
-            if(username == user.username): return user.username, '200 OK'
+    if(len(admins)>0): 
+        for admin in admins:
+            if(uid == admin.uid): return admin.uid, '200 OK'
             
     return '201 ERRORE' 
 
@@ -134,22 +133,20 @@ def addoperator():
 @database_blueprint.route('/addapartment', methods=['POST'])
 def addapartment():
     msgJson = request.get_json()
-    HERE_API_URL = f'GET https://geocode.search.hereapi.com/v1/geocode'
+    HERE_API_URL = f'https://geocode.search.hereapi.com/v1/geocode'
     
     #TO CHECK
-    address = msgJson['city'] + msgJson['street'] + msgJson['street_number'] 
+    address = msgJson['city'] + msgJson['street'] + str(msgJson['street_number'])
     
     params = {
-        'address': address + 'italia', 
+        'q': address + 'italia', 
         'apiKey': HERE_API_KEY
     }
     
     # Do the request and get the response data
     req = requests.get(HERE_API_URL, params=params)
-    res = req.json()
-
+    result = req.json()
     # Use the first result
-    result = res['object'][0]
     lat = result['items'][0]['position']['lat']
     lng = result['items'][0]['position']['lng']
     
@@ -159,8 +156,7 @@ def addapartment():
                           lat=lat,
                           lng=lng,
                           apartment_street_number=msgJson['street_number'], 
-                          n_internals=msgJson['n_internals'], 
-                          associated_bin=msgJson['associated_bin'], 
+                          n_internals=msgJson['n_internals'],  
                           associated_admin=msgJson['associated_admin'])
     
     try:
@@ -175,10 +171,10 @@ def addapartment():
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
     
-    elenco=[Bin.query.order_by(Bin.id.desc()).all(),
+    elenco=[Bin.query.order_by(Bin.id_bin.desc()).all(),
             Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
-            User.query.order_by(User.username.desc()).all(),
-            Admin.query.order_by(Admin.username.desc()).all(),
-            BinRecord.query.order_by(BinRecord.id.desc()).all()] 
+            User.query.order_by(User.uid.desc()).all(),
+            Admin.query.order_by(Admin.uid.desc()).all(),
+            BinRecord.query.order_by(BinRecord.id_record.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)
