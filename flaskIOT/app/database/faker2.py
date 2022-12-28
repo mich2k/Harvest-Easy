@@ -12,11 +12,11 @@ fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':timestamps[0],
           {'idbin':7,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[6], 'apartment_ID':'Cuoppo'},
           {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':timestamps[7], 'apartment_ID':'Cuoppo'}]
 
-faker_record=[{"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 5},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 1},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 2},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 3},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 6}]
+faker_record=[{"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 5},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 1},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 2},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 3},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 6}]
 
 def create_faker(db):
     
@@ -34,10 +34,10 @@ def create_faker(db):
                         Admin(Person(uid="luigi3", name="Luigi", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2000))])
     
     # Apartments
-    db.session.add_all([Apartment(apartment_name="Fermi", city="Modena", street="via Giuseppe Fava", apartment_street_number=49, lat=44.6194014, lng=10.9217465,n_internals=155, associated_admin='rossi1'),
-                   Apartment(apartment_name="Torri", city="Modena", street="via Viterbo", apartment_street_number=90, lat=44.6229105, lng=10.9374034,n_internals=100, associated_admin='rossi1'),
-                   Apartment(apartment_name="Cuoppo", city="Modena", street="via Nervi", apartment_street_number=57, lat=44.6219696, lng=10.931554,n_internals=258, associated_admin='mario2'),
-                   Apartment(apartment_name="IDK", city="Modena", street="via Cividale", apartment_street_number=80, lat=44.6270617, lng=10.9183277,n_internals=50, associated_admin='luigi3')])
+    db.session.add_all([Apartment(apartment_name="Fermi", city="Modena", street="via Giuseppe Fava", apartment_street_number=49, lat=44.619401, lng=10.921746,n_internals=155, associated_admin='rossi1'),
+                   Apartment(apartment_name="Torri", city="Modena", street="via Viterbo", apartment_street_number=90, lat=44.622911, lng=10.937403,n_internals=100, associated_admin='rossi1'),
+                   Apartment(apartment_name="Cuoppo", city="Modena", street="via Nervi", apartment_street_number=57, lat=44.621969, lng=10.931554,n_internals=258, associated_admin='mario2'),
+                   Apartment(apartment_name="IDK", city="Modena", street="via Cividale", apartment_street_number=80, lat=44.627061, lng=10.918327,n_internals=50, associated_admin='luigi3')])
     
     #Users
     db.session.add_all([User(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2001), apartment_ID="Fermi", internal_number=45),

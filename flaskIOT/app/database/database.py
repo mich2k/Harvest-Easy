@@ -8,7 +8,7 @@ from sqlalchemy import update
 import datetime
 from os import getenv
 HERE_API_KEY = getenv('HERE_KEY')
-WEATHER_API_KEY = getenv('WEATHER_API_KEY')
+WEATHER_KEY = getenv('WEATHER_KEY')
 
 database_blueprint = Blueprint('database', __name__, template_folder='templates', url_prefix='/db')
 
@@ -139,16 +139,12 @@ def addoperator():
 def addapartment():
     msgJson = request.get_json()
     HERE_API_URL = f'https://geocode.search.hereapi.com/v1/geocode'
-    
-    #TO CHECK
     address = msgJson['city'] + msgJson['street'] + str(msgJson['street_number'])
-    
     params = {
         'q': address + 'italia', 
         'apiKey': HERE_API_KEY
     }
-    
-    # Do the request and get the response data
+
     req = requests.get(HERE_API_URL, params=params)
     result = req.json()
     # Use the first result
@@ -208,7 +204,7 @@ def calcolastatus(id_bin, riempimento, roll, pitch):
             params = {
                 'lat':lat,
                 'lon':lon,
-                'appid': WEATHER_API_KEY
+                'appid': WEATHER_KEY
             }
             req = requests.get(WEATHERE_API_URL, params=params)
             res = req.json()
@@ -267,3 +263,16 @@ def calcolastatus(id_bin, riempimento, roll, pitch):
         status_attuale=4
 
     return status_attuale
+
+def getstringstatus(status):
+    if(status==1):
+        return "integro e non-pieno"
+    elif(status==2):
+        return "integro e pieno"
+    elif(status==3):
+        return "manomesso e non-pieno"
+    elif(status==4):
+        return "manomesso e pieno"
+    else:
+        return "Error"
+    

@@ -76,7 +76,6 @@ class Bin(db.Model):
         #self.id_bin = jsonObj['idbin'] -->mettiamo il mc address dell'ESP??
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
-        #self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
