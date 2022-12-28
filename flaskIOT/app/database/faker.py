@@ -1,17 +1,17 @@
 
 from .tables import *
 from ..utils import utils
+from .record_faker import faker_instances
+import random
 
-timestamps = utils.Utils.randomTime()
-
-fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':timestamps[0], 'apartment_ID':'Fermi'},
-          {'idbin':2,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[1], 'apartment_ID':'Fermi'},
-          {'idbin':3,'tipologia':'vetro',    'ultimo_svuotamento':timestamps[2], 'apartment_ID':'Fermi'},
-          {'idbin':4,'tipologia':'carta',    'ultimo_svuotamento':timestamps[3], 'apartment_ID':'Torri'},
-          {'idbin':5,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[4], 'apartment_ID':'Torri'},
-          {'idbin':6,'tipologia':'umido',    'ultimo_svuotamento':timestamps[5], 'apartment_ID':'Cuoppo'},
-          {'idbin':7,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[6], 'apartment_ID':'Cuoppo'},
-          {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':timestamps[7], 'apartment_ID':'Cuoppo'}]
+fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Fermi'},
+          {'idbin':2,'tipologia':'plastica', 'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Fermi'},
+          {'idbin':3,'tipologia':'vetro',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Fermi'},
+          {'idbin':4,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Torri'},
+          {'idbin':5,'tipologia':'plastica', 'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Torri'},
+          {'idbin':6,'tipologia':'umido',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Cuoppo'},
+          {'idbin':7,'tipologia':'plastica', 'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Cuoppo'},
+          {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Cuoppo'}]
 
 def create_faker(db):
     
@@ -43,5 +43,10 @@ def create_faker(db):
                         Operator(Person(uid="rossi10", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2004),id=478), 
                         Operator(Person(uid="rossi11", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2004),id=500)])
     
+    
+    #BinRecords
+    for i in range(90):
+        db.session.add(BinRecord(faker_instances()))
+        
     db.session.commit()
     return True

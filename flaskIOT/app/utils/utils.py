@@ -14,13 +14,15 @@ class Utils:
         # (30*12) = 360 Y/M/D
         rtime = int(random.random()*86400)
         dtime = int(random.random()*360)
+        
         year = datetime.now().date().strftime("%Y")
-        month = int(dtime/12)
-        day = int((dtime - month*12)/30)
+        month = int(dtime/30)
+        day = int(dtime - month*30)
+        
         hours   = int(rtime/3600)
         minutes = int((rtime - hours*3600)/60)
         seconds = rtime - hours*3600 - minutes*60
-        time_string.append('%s-%d-%d %02d:%02d:%02d' % (year, month, day, hours, minutes, seconds))
+        time_string = '%s-%d-%d %02d:%02d:%02d' % (year, month, day, hours, minutes, seconds)
         
         return time_string
     

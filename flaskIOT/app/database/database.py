@@ -1,7 +1,6 @@
 from flask import render_template, request, Blueprint
 from app.database.tables import *
 from .faker import create_faker
-from .record_faker import faker_instances
 from .__init__ import db
 import requests
 import datetime
@@ -18,7 +17,6 @@ def createDB():
     db.drop_all()
     db.create_all()
     create_faker(db)
-    faker_instances(db)
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE

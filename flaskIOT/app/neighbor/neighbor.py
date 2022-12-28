@@ -7,7 +7,6 @@ import datetime
 from flask import jsonify
 import requests
 from os import getenv
-import googlemaps
 
 GOOGLEMAPS_API_KEY = getenv('GOOGLEMAPS_API_KEY')
   
