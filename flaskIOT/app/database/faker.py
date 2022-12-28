@@ -25,10 +25,10 @@ def create_faker(db):
                         Admin(Person(uid="luigi3", name="Luigi", surname="Rossi", password="ilovecondomini", city="Moliterno", birth_year=2000))])
     
     # Apartments
-    db.session.add_all([Apartment(apartment_name="Fermi", city="Modena", street="via Garibaldi", apartment_street_number=1, lat='12', lng='15',n_internals=155, associated_bin=0, associated_admin='rossi1'),
-                   Apartment(apartment_name="Torri", city="Modena", street="via Garibaldi", apartment_street_number=4,      lat='12', lng='15',n_internals=100, associated_bin=1, associated_admin='rossi1'),
-                   Apartment(apartment_name="Cuoppo", city="Avellino", street="via Garibaldi", apartment_street_number=6,   lat='12', lng='15',n_internals=258, associated_bin=2, associated_admin='mario2'),
-                   Apartment(apartment_name="IDK", city="Moliterno", street="via Garibaldi", apartment_street_number=2,     lat='12', lng='15',n_internals=50, associated_bin=3, associated_admin='luigi3')])
+    db.session.add_all([Apartment(apartment_name="Fermi", city="Modena", street="via Garibaldi", apartment_street_number=1, lat='12', lng='15',n_internals=155, associated_admin='rossi1'),
+                   Apartment(apartment_name="Torri", city="Modena", street="via Garibaldi", apartment_street_number=4,      lat='12', lng='15',n_internals=100, associated_admin='rossi1'),
+                   Apartment(apartment_name="Cuoppo", city="Avellino", street="via Garibaldi", apartment_street_number=6,   lat='12', lng='15',n_internals=258, associated_admin='mario2'),
+                   Apartment(apartment_name="IDK", city="Moliterno", street="via Garibaldi", apartment_street_number=2,     lat='12', lng='15',n_internals=50, associated_admin='luigi3')])
     
     #Users
     db.session.add_all([User(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2001), "Fermi", 45),
