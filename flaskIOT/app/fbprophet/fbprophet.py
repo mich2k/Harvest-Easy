@@ -1,7 +1,4 @@
 from flask import render_template, request, Blueprint
-import pandas as pd
-from pandas import to_datetime
-import matplotlib.pyplot as plt
 #from fbprophet import Prophet
 from datetime import datetime, timedelta
 from app.database.tables import BinRecord, Bin

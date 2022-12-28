@@ -7,7 +7,7 @@ class Utils:
         #self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
-    def randomTime(n: int):
+    def randomTime(n = 9):
         time_string = []
         
         # (24*60*60) = 86400 H/M/S
@@ -23,7 +23,7 @@ class Utils:
             minutes = int((rtime - hours*3600)/60)
             seconds = rtime - hours*3600 - minutes*60
 
-            time_string.append('%02d:%02d:%02d:%02d:%02d:%02d' % (day, month, year, hours, minutes, seconds))
+            time_string.append('%02d:%02d:%ss:%02d:%02d:%02d' % (day, month, year, hours, minutes, seconds))
         
         return time_string
     

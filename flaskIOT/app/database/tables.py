@@ -43,6 +43,20 @@ class User(Person, db.Model):
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
         
+class Bin(db.Model):
+    __tablename__ = 'bin'
+    id_bin = db.Column('id_bin', db.Integer, primary_key=True)
+    tipologia = db.Column('tipologia', db.String)
+    previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
+    ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
+    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
+    
+    def __init__(self, jsonObj):
+        self.id_bin = jsonObj['idbin']
+        self.tipologia = jsonObj['tipologia']
+        self.apartment_ID = jsonObj['apartment_ID']
+        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']        
+        
 class BinRecord(db.Model):
     __tablename__ = 'binRecord'
     id_record = db.Column('id_record', db.Integer, primary_key=True)
@@ -55,7 +69,7 @@ class BinRecord(db.Model):
     timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow))
 
     #Ogni record è relativo ad un preciso bidone
-    associated_bin = db.Column('associated_bin', db.String, db.ForeignKey('Bin.id_bin'))
+    associated_bin = db.Column('associated_bin', db.Integer, db.ForeignKey('bin.id_bin'))
 
     def __init__(self, jsonObj):
         self.associated_bin = jsonObj['associated_bin']
@@ -65,20 +79,6 @@ class BinRecord(db.Model):
         self.riempimento = jsonObj['riempimento']
         self.timestamp = jsonObj['timestamp']
         
-class Bin(db.Model):
-    __tablename__ = 'bin'
-    id_bin = db.Column('id_bin', db.Integer, primary_key=True)
-    tipologia = db.Column('tipologia', db.String)
-    previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
-    ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
-    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
-    
-    def __init__(self, jsonObj):
-        #self.id_bin = jsonObj['idbin'] -->mettiamo il mc address dell'ESP??
-        self.tipologia = jsonObj['tipologia']
-        self.apartment_ID = jsonObj['apartment_ID']
-        #self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
-
 class Apartment(db.Model):
     __tablename__ = 'apartment'
     

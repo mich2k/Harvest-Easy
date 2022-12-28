@@ -2,19 +2,20 @@ from .tables import BinRecord
 from ..utils import utils
 
 sample = {'status': 1, 
-          'temperature': 23, 
-          'humidity': 25, 
-          'co2': 32, 
-          'riempimento':34.45,
-          'associated_bin':1}
+          'temperature': 0, #randomvalue
+          'humidity': 0, #randomvalue
+          'co2': 0, #randomvalue
+          'riempimento':0.0, #randomvalue
+          'associated_bin':1, #randomvalue 
+          'timestamp':'0'}
 
-timestamps = [x for x in utils.Utils.randomTime(90)]
 records = []
 
 def faker_instances(db):
     
-    for timestamp in timestamps:
-        records.append(sample.update('timestamp', timestamp))
+    for i in range(90):
+        sample['timestamp'] = utils.Utils.randomTime() 
+        records.append(sample)
 
     for record in records:    
         db.session.add(BinRecord(record))
