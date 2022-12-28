@@ -62,8 +62,8 @@ class BinRecord(db.Model):
         
     # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
     status = db.Column('status', db.Integer)
-    temperature = db.Column('temperature', db.Integer, nullable=False)
-    humidity = db.Column('humidity', db.Integer, nullable=False)
+    temperature = db.Column('temperature', db.Float, nullable=False)
+    humidity = db.Column('humidity', db.Float, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow))
 

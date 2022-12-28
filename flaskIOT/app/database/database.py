@@ -4,8 +4,6 @@ from .faker import create_faker
 from .record_faker import faker_instances
 from .__init__ import db
 import requests
-from datetime import timedelta
-from sqlalchemy import update
 import datetime
 from os import getenv
 HERE_API_KEY = getenv('HERE_KEY')
