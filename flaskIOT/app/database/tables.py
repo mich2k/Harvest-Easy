@@ -19,7 +19,6 @@ class Person():
 
 class Admin(Person, db.Model):
     __tablename__ = 'admin'
-    apartments = db.relationship('Apartment', backref='admin')
 
     def __init__(self, x: Person) -> None:
         super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
@@ -34,8 +33,10 @@ class Operator(Person, db.Model):
 
 class User(Person, db.Model):
     __tablename__ = 'user'
-    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     internal_number = db.Column('internal_number', db.Integer)
+    #FK
+    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
+    
     
     def __init__(self, p: Person, apartment_ID: int, internal_number: int):
         super().__init__(p.uid, p.name, p.surname, p.password, p.city, p.birth_year)
@@ -48,10 +49,8 @@ class BinRecord(db.Model):
         
     # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
     status = db.Column('status', db.Integer)
-
     temperature = db.Column('temperature', db.Integer, nullable=False)
     humidity = db.Column('humidity', db.Integer, nullable=False)
-    co2 = db.Column('co2', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow))
 
@@ -63,7 +62,6 @@ class BinRecord(db.Model):
         self.status = jsonObj['status']
         self.temperature = jsonObj['temperature']
         self.humidity = jsonObj['humidity']
-        self.co2 = jsonObj['co2']
         self.riempimento = jsonObj['riempimento']
         self.timestamp = jsonObj['timestamp']
         
@@ -74,35 +72,29 @@ class Bin(db.Model):
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
     ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
-    bin_records = db.relationship('BinRecord', backref='bin')
     
     def __init__(self, jsonObj):
-        self.id_bin = jsonObj['idbin']
+        #self.id_bin = jsonObj['idbin'] -->mettiamo il mc address dell'ESP??
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
-        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
+        #self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
     
-    # attributes
     apartment_name = db.Column('apartment_name', db.String, primary_key=True)
     city = db.Column('city', db.String, nullable=False)
     street = db.Column('street', db.String, nullable=False)
-    lat = db.Column('lat', db.String)
-    lng = db.Column('lng', db.String)
+    lat = db.Column('lat', db.Float)
+    lng = db.Column('lng', db.Float)
     apartment_street_number = db.Column('apartment_street_number', db.Integer, nullable=False)
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
     
     # FK
-    associated_bin = db.Column(db.Integer, db.ForeignKey('bin.id_bin'))
     associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
     
-    # relationships
-    users = db.relationship('User', backref='apartment')
-    
     def __init__(self, apartment_name: str, city: str, street: str, lat: str, lng: str,
-                apartment_street_number: int, n_internals: int, associated_bin: int, associated_admin: str):
+                apartment_street_number: int, n_internals: int, associated_admin: str):
         self.apartment_name = apartment_name
         self.city = city
         self.street = street
@@ -110,7 +102,6 @@ class Apartment(db.Model):
         self.lng = lng
         self.apartment_street_number = apartment_street_number
         self.n_internals = n_internals
-        self.associated_bin = associated_bin
         self.associated_admin = associated_admin
 
     

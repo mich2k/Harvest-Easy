@@ -4,8 +4,12 @@ from .faker import create_faker
 from .record_faker import faker_instances
 from .__init__ import db
 import requests
+from datetime import timedelta
+from sqlalchemy import update
+import datetime
 from os import getenv
 HERE_API_KEY = getenv('HERE_KEY')
+WEATHER_API_KEY = getenv('WEATHER_API_KEY')
 
 database_blueprint = Blueprint('database', __name__, template_folder='templates', url_prefix='/db')
 
@@ -24,9 +28,9 @@ def createDB():
 @database_blueprint.route('/addrecord', methods=['POST'])
 def addrecord():
     msgJson = request.get_json()
+    status=calcolastatus(msgJson["id_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"])
+    msgJson["status"]=status
 
-    #  sf = BinRecord(id_bin, status_attuale, temperature, humidity, co2, str(riempimento))
-    
     try:
         sf = BinRecord(msgJson)
         db.session.add(sf)
@@ -116,22 +120,20 @@ def addoperator():
 @database_blueprint.route('/addapartment', methods=['POST'])
 def addapartment():
     msgJson = request.get_json()
-    HERE_API_URL = f'GET https://geocode.search.hereapi.com/v1/geocode'
+    HERE_API_URL = f'https://geocode.search.hereapi.com/v1/geocode'
     
     #TO CHECK
-    address = msgJson['city'] + msgJson['street'] + msgJson['street_number'] 
+    address = msgJson['city'] + msgJson['street'] + str(msgJson['street_number'])
     
     params = {
-        'address': address + 'italia', 
+        'q': address + 'italia', 
         'apiKey': HERE_API_KEY
     }
     
     # Do the request and get the response data
     req = requests.get(HERE_API_URL, params=params)
-    res = req.json()
-
+    result = req.json()
     # Use the first result
-    result = res['object'][0]
     lat = result['items'][0]['position']['lat']
     lng = result['items'][0]['position']['lng']
     
@@ -141,8 +143,7 @@ def addapartment():
                           lat=lat,
                           lng=lng,
                           apartment_street_number=msgJson['street_number'], 
-                          n_internals=msgJson['n_internals'], 
-                          associated_bin=msgJson['associated_bin'], 
+                          n_internals=msgJson['n_internals'],  
                           associated_admin=msgJson['associated_admin'])
     
     try:
@@ -157,10 +158,94 @@ def addapartment():
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
     
-    elenco=[Bin.query.order_by(Bin.id.desc()).all(),
+    elenco=[Bin.query.order_by(Bin.id_bin.desc()).all(),
             Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
             User.query.order_by(User.uid.desc()).all(),
             Admin.query.order_by(Admin.uid.desc()).all(),
             BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)
+
+
+def calcolastatus(id_bin, riempimento, roll, pitch): 
+    soglie={"plastica": 0.9, "carta": 0.9, "vetro": 0.8, "umido": 0.7} #soglie fisse
+    dd_umido={"medie": 5, "alte": 3, "altissime": 2} #soglia dinamica per l'organico in base alla temperatura
+    
+    status_attuale=1 #default del primo record del bidone
+    bin_attuale=BinRecord.query.filter(BinRecord.id_bin == id_bin)
+    if(bin_attuale.count()): 
+        status_attuale= (BinRecord.query.filter(BinRecord.id_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()).status
+
+    tipologia = (Bin.query.filter(Bin.id_bin == id_bin)).first().tipologia
+    soglia_attuale=0
+    if (tipologia=="umido"):
+        now = datetime.datetime.now()
+        mese=now.month  
+        if(mese>=4 and mese<=10): #mesi caldi
+            apartment_ID=(Bin.query.filter(Bin.id_bin == id_bin)).first().apartment_ID
+            lat=(Apartment.query.filter(Apartment.apartment_name==apartment_ID)).first().lat
+            lon=(Apartment.query.filter(Apartment.apartment_name==apartment_ID)).first().lng
+            
+            WEATHERE_API_URL = f'https://api.openweathermap.org/data/2.5/weather'
+            params = {
+                'lat':lat,
+                'lon':lon,
+                'appid': WEATHER_API_KEY
+            }
+            req = requests.get(WEATHERE_API_URL, params=params)
+            res = req.json()
+            temp = int(res['main']['temp']-272.15) #conversione kelvin-celsius
+
+            dd_time=0
+            if(temp>=20 and temp<=25): #medie
+                dd_time=dd_umido["media"]
+            if(temp>25 and temp<=30): #alte
+                dd_time=dd_umido["alte"]
+            if(temp>30): #altissime
+                dd_time=dd_umido["altissime"]
+
+            timestamp=Bin.query.filter(Bin.id_bin==id_bin).first().ultimo_svuotamento
+            last_date = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+            now = datetime.datetime.now()
+            if((now-last_date).days>dd_time and dd_time>0): #temperature alte + sono passo più di deltagiorni
+                soglia_attuale=0
+            else:
+                soglia_attuale=soglie["umido"]
+        else:
+            soglia_attuale=soglie["umido"]
+    elif(tipologia=='plastica'):
+        soglia_attuale=soglie["plastica"]
+    elif(tipologia=='carta'):
+        soglia_attuale=soglie["carta"]
+    elif(tipologia=='vetro'):
+        soglia_attuale=soglie["vetro"]
+
+    # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
+    #passaggio da pieno a non pieno e viceversa
+    if(status_attuale==1 and float(riempimento)>=soglia_attuale): 
+        #SEGNALAZIONE AD HERA
+        status_attuale=2
+    if(status_attuale==3 and float(riempimento)>=soglia_attuale): 
+        #SEGNALAZIONE AD HERA
+        status_attuale=4
+    if(status_attuale==2 and float(riempimento)<soglia_attuale): 
+        status_attuale=1
+        db.session.query(Bin).filter(Bin.id_bin == id_bin).update({'ultimo_svuotamento': datetime.datetime.now()})
+        db.session.commit()
+       
+    if(status_attuale==4 and float(riempimento)<soglia_attuale):
+        status_attuale=3
+        db.session.query(Bin).filter(Bin.id_bin == id_bin).update({'ultimo_svuotamento': datetime.datetime.now()})
+        db.session.commit()
+
+    #passaggio da accappottato a dritto e viceversa
+    if(status_attuale==3 and (roll<45 and (abs(pitch)-90)<45)): status_attuale=1
+    if(status_attuale==1 and (roll>=45 or (abs(pitch)-90)>=45)): 
+        #SEGNALAZIONE CAPOTTAMENTO
+        status_attuale=3
+    if(status_attuale==4 and (roll<45 and (abs(pitch)-90)<45)): status_attuale=2
+    if(status_attuale==2 and (roll>=45 or (abs(pitch)-90)>=45)): 
+        #SEGNALAZIONE CAPOTTAMENTO
+        status_attuale=4
+
+    return status_attuale

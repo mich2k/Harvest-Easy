@@ -1,3 +1,4 @@
+
 from .tables import *
 from ..utils import utils
 
@@ -19,7 +20,7 @@ def create_faker(db):
         db.session.add(Bin(faker))
     
     # Admin    
-    db.session.add_all([Admin(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2000)),
+    db.session.add_all([Admin(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2000)), 
                         Admin(Person(uid="mario2", name="Mario", surname="Verdi", password="ilovecondomini", city="Avellino", birth_year=2000)),
                         Admin(Person(uid="luigi3", name="Luigi", surname="Rossi", password="ilovecondomini", city="Moliterno", birth_year=2000))])
     
