@@ -43,27 +43,6 @@ class User(Person, db.Model):
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
         
-class BinRecord(db.Model):
-    __tablename__ = 'binRecord'
-    id_record = db.Column('id_record', db.Integer, primary_key=True)
-        
-    # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
-    status = db.Column('status', db.Integer)
-    temperature = db.Column('temperature', db.Integer, nullable=False)
-    humidity = db.Column('humidity', db.Integer, nullable=False)
-    riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
-    
-    #FK
-    id_bin = db.Column('id_bin', db.String, db.ForeignKey('bin.id_bin'))
-
-    def __init__(self, jsonObj):
-        self.id_bin = jsonObj['id_bin']
-        self.status = jsonObj['status']
-        self.temperature = jsonObj['temperature']
-        self.humidity = jsonObj['humidity']
-        self.riempimento = jsonObj['riempimento']
-        
 class Bin(db.Model):
     __tablename__ = 'bin'
     id_bin = db.Column('id_bin', db.Integer, primary_key=True)
@@ -73,10 +52,36 @@ class Bin(db.Model):
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     
     def __init__(self, jsonObj):
-        #self.id_bin = jsonObj['idbin'] -->mettiamo il mc address dell'ESP??
+        self.id_bin = jsonObj['idbin']
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
+<<<<<<< HEAD
+=======
+        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']        
+        
+class BinRecord(db.Model):
+    __tablename__ = 'binRecord'
+    id_record = db.Column('id_record', db.Integer, primary_key=True)
+        
+    # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
+    status = db.Column('status', db.Integer)
+    temperature = db.Column('temperature', db.Integer, nullable=False)
+    humidity = db.Column('humidity', db.Integer, nullable=False)
+    riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
+    timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow))
+>>>>>>> 5b156c96366eeaef28ce512df9740a61e2d0cac9
 
+    #Ogni record è relativo ad un preciso bidone
+    associated_bin = db.Column('associated_bin', db.Integer, db.ForeignKey('bin.id_bin'))
+
+    def __init__(self, jsonObj):
+        self.associated_bin = jsonObj['associated_bin']
+        self.status = jsonObj['status']
+        self.temperature = jsonObj['temperature']
+        self.humidity = jsonObj['humidity']
+        self.riempimento = jsonObj['riempimento']
+        self.timestamp = jsonObj['timestamp']
+        
 class Apartment(db.Model):
     __tablename__ = 'apartment'
     
