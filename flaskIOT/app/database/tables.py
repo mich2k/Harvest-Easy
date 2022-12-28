@@ -53,19 +53,19 @@ class BinRecord(db.Model):
     humidity = db.Column('humidity', db.Integer, nullable=False)
     co2 = db.Column('co2', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
+    timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow))
 
     #Ogni record è relativo ad un preciso bidone
-    id_bin = db.Column('id_bin', db.String, db.ForeignKey('Bin.id_bin'))
-
+    associated_bin = db.Column('associated_bin', db.String, db.ForeignKey('Bin.id_bin'))
 
     def __init__(self, jsonObj):
-        self.id_bin = jsonObj['idbin']
+        self.associated_bin = jsonObj['associated_bin']
         self.status = jsonObj['status']
         self.temperature = jsonObj['temperature']
         self.humidity = jsonObj['humidity']
         self.co2 = jsonObj['co2']
         self.riempimento = jsonObj['riempimento']
+        self.timestamp = jsonObj['timestamp']
         
 class Bin(db.Model):
     __tablename__ = 'bin'

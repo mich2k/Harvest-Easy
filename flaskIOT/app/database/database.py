@@ -1,6 +1,7 @@
 from flask import render_template, request, Blueprint
 from app.database.tables import *
 from .faker import create_faker
+from .record_faker import faker_instances
 from .__init__ import db
 import requests
 from os import getenv
@@ -15,6 +16,7 @@ def createDB():
     db.drop_all()
     db.create_all()
     create_faker(db)
+    faker_instances(db)
     return 'Done'
 
 #AGGIUNTA DI INFORMAZIONI SUL BIDONE
@@ -47,35 +49,15 @@ def addbin():
     return 'Done'
 
 #ACCESSO DI UN UTENTE AL BIDONE
-@database_blueprint.route('/checkUser/<string:username>&<string:apartment>', methods=['GET'])
-def checkUser(username, apartment):
+@database_blueprint.route('/checkOp/<string:uid>&<int:id_bin>', methods=['GET'])
+@database_blueprint.route('/checkAdmin/<string:uid>', methods=['GET'])
+@database_blueprint.route('/checkUser/<string:uid>&<string:apartment>', methods=['GET'])
+def checkUser(uid, id_bin):
     users=User.query.all()
     
     if(len(users)>0): 
         for user in users:
-            if(username == user.username): return user.username, '200 OK'
-            
-    return '201 ERRORE' 
-
-#ACCESSO DI UN OPERATORE AL BIDONE
-@database_blueprint.route('/checkOp/<int:id>', methods=['GET'])
-def checkOp(username):
-    users=User.query.all()
-    
-    if(len(users)>0): 
-        for user in users:
-            if(username == user.username): return user.username, '200 OK'
-            
-    return '201 ERRORE' 
-
-#ACCESSO DI UN AMMINISTRATORE AL BIDONE
-@database_blueprint.route('/checkAdmin/<string:username>', methods=['GET'])
-def checkAdmin(username):
-    users=User.query.all()
-    
-    if(len(users)>0): 
-        for user in users:
-            if(username == user.username): return user.username, '200 OK'
+            if(uid == user.uid): return user.uid, '200 OK'
             
     return '201 ERRORE' 
 
@@ -83,7 +65,7 @@ def checkAdmin(username):
 @database_blueprint.route('/adduser', methods=['POST'])
 def adduser():
     msgJson = request.get_json()
-    user = User(Person(username=msgJson['username'], 
+    user = User(Person(uid=msgJson['uid'], 
                    name=msgJson['name'], 
                    surname=msgJson['surname'],
                    password=msgJson['password'], 
@@ -102,7 +84,7 @@ def adduser():
 @database_blueprint.route('/addadmin', methods=['POST'])
 def addadmin():
     msgJson = request.get_json()
-    admin = Admin(Person(username=msgJson['username'], 
+    admin = Admin(Person(uid=msgJson['uid'], 
                    name=msgJson['name'], 
                    surname=msgJson['surname'],
                    password=msgJson['password'], 
@@ -177,8 +159,8 @@ def stampaitems():
     
     elenco=[Bin.query.order_by(Bin.id.desc()).all(),
             Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
-            User.query.order_by(User.username.desc()).all(),
-            Admin.query.order_by(Admin.username.desc()).all(),
+            User.query.order_by(User.uid.desc()).all(),
+            Admin.query.order_by(Admin.uid.desc()).all(),
             BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)
