@@ -33,8 +33,10 @@ class Operator(Person, db.Model):
 
 class User(Person, db.Model):
     __tablename__ = 'user'
-    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     internal_number = db.Column('internal_number', db.Integer)
+    #FK
+    apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
+    
     
     def __init__(self, p: Person, apartment_ID: int, internal_number: int):
         super().__init__(p.uid, p.name, p.surname, p.password, p.city, p.birth_year)
@@ -47,21 +49,19 @@ class BinRecord(db.Model):
         
     # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
     status = db.Column('status', db.Integer)
-
     temperature = db.Column('temperature', db.Integer, nullable=False)
     humidity = db.Column('humidity', db.Integer, nullable=False)
-    co2 = db.Column('co2', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), nullable=False,  default=datetime.utcnow)
+    
+    #FK
     id_bin = db.Column('id_bin', db.String, db.ForeignKey('bin.id_bin'))
 
-
     def __init__(self, jsonObj):
-        self.id_bin = jsonObj['idbin']
+        self.id_bin = jsonObj['id_bin']
         self.status = jsonObj['status']
         self.temperature = jsonObj['temperature']
         self.humidity = jsonObj['humidity']
-        self.co2 = jsonObj['co2']
         self.riempimento = jsonObj['riempimento']
         
 class Bin(db.Model):
@@ -73,15 +73,14 @@ class Bin(db.Model):
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     
     def __init__(self, jsonObj):
-        self.id_bin = jsonObj['idbin']
+        #self.id_bin = jsonObj['idbin'] -->mettiamo il mc address dell'ESP??
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
-        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
+        #self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
     
-    # attributes
     apartment_name = db.Column('apartment_name', db.String, primary_key=True)
     city = db.Column('city', db.String, nullable=False)
     street = db.Column('street', db.String, nullable=False)

@@ -28,10 +28,11 @@ def getmap():
     for apartment in apartments:
         bins = Bin.query.filter(Bin.apartment_ID == apartment.apartment_name) 
         for bin in bins:
-            point={} 
-            #ultimo_bin_record=(BinRecord.query.filter(BinRecord.id_bin==bin.id_bin).order_by(BinRecord.timestamp.desc()))[0]
-            status=1 #ultimo_bin_record.status
-        
+            point={}
+            #ultimo_bin_record=db.session.query(BinRecord).filter(BinRecord.id_bin==bin.id_bin).filter(func.max(BinRecord.timestamp)).first()
+            #ultimo_bin_record=BinRecord.query(func.max(BinRecord.timestamp)).filter(BinRecord.id_bin==bin.id_bin)
+            status= 1 #ultimo_bin_record.status
+
             point['tipologia']= bin.tipologia
             point['apartment_name'] = apartment.apartment_name
             point['status'] = status
@@ -57,32 +58,30 @@ def getmap():
 def getmaptipology(tipologia): 
     apartments = Apartment.query.all()
     
-    #per ogni bidone nella lista creo un dizionario con le informazioni del bidone da visualizzare sulla mappa
     points=[] #lista di json=punti
-    point={}
+
     for apartment in apartments:
-        #prendo i bidoni associati a quell'appartamento  di quella tipologia
         bins = Bin.query.filter_by(Bin.apartment_ID==apartment.apartment_name, Bin.tipologia==tipologia)
         for bin in bins: 
-            ultimo_bin_record=(BinRecord.query.filter(BinRecord.id_bin==bin.id_bin).order_by(BinRecord.timestamp.desc))[0]
-            status=ultimo_bin_record.status
+            point={}
+            #ultimo_bin_record=(BinRecord.query.filter(BinRecord.id_bin==bin.id_bin).order_by(BinRecord.timestamp.desc())).first()
+            status=1#ultimo_bin_record.status
             #aggiungo i bidoni dell'appartamento alla mappa come punti
-            point['id'] = bin.id_bin
             point['apartment_name'] = apartment.apartment_name
-            point['status'] = bin.status
-            point['address'] = apartment.city + apartment.street + apartment.apartment_street_number 
+            point['status'] = status
+            point['id'] = bin.id_bin
+            point['address'] = apartment.street + " " + str(apartment.apartment_street_number) + ", " + apartment.city
             point['lat'] = apartment.lat
             point['lng'] = apartment.lng
             point['previsione'] = bin.previsione_status
-            
-            #trasformo il dizionario in json
-            point = json.dumps(point)
-            #aggiungo il json alla lista di punti
             points.append(point)
 
     viewmap = {
-        "updated":datetime.datetime.now, 
+        "updated":datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),  
         "listaPunti": points
     }
+
+    with open('points.json', 'w') as outfile:
+        json.dump(viewmap, outfile)
 
     return viewmap

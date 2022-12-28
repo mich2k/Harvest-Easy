@@ -8,16 +8,15 @@ fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':timestamps[0],
           {'idbin':3,'tipologia':'vetro',    'ultimo_svuotamento':timestamps[2], 'apartment_ID':'Fermi'},
           {'idbin':4,'tipologia':'carta',    'ultimo_svuotamento':timestamps[3], 'apartment_ID':'Torri'},
           {'idbin':5,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[4], 'apartment_ID':'Torri'},
-          {'idbin':6,'tipologia':'umido',    'ultimo_svuotamento':timestamps[5], 'apartment_ID':'Cuoppo'},
+          {'idbin':6,'tipologia':'umido',    'ultimo_svuotamento':"2022-12-20 16:30:16", 'apartment_ID':'Cuoppo'},
           {'idbin':7,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[6], 'apartment_ID':'Cuoppo'},
           {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':timestamps[7], 'apartment_ID':'Cuoppo'}]
 
-faker_record=[{"status": 2, "temperature": 26, "humidity": 49, "co2": 80, "riempimento": 20, "idbin": 5},
-              {"status": 2, "temperature": 26, "humidity": 49, "co2": 80, "riempimento": 20, "idbin": 1},
-              {"status": 2, "temperature": 26, "humidity": 49, "co2": 80, "riempimento": 20, "idbin": 2},
-              {"status": 2, "temperature": 26, "humidity": 49, "co2": 80, "riempimento": 20, "idbin": 3},
-              {"status": 2, "temperature": 26, "humidity": 49, "co2": 80, "riempimento": 20, "idbin": 4},
-              {"status": 2, "temperature": 26, "humidity": 49, "co2": 80, "riempimento": 20, "idbin": 6}]
+faker_record=[{"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 5},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 1},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 2},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 3},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "idbin": 6}]
 
 def create_faker(db):
     
