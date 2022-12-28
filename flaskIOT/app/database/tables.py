@@ -52,12 +52,9 @@ class Bin(db.Model):
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     
     def __init__(self, jsonObj):
-        self.id_bin = jsonObj['idbin']
+        #self.id_bin = jsonObj['idbin']
         self.tipologia = jsonObj['tipologia']
-        self.apartment_ID = jsonObj['apartment_ID']
-<<<<<<< HEAD
-=======
-        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']        
+        self.apartment_ID = jsonObj['apartment_ID']     
         
 class BinRecord(db.Model):
     __tablename__ = 'binRecord'
@@ -69,7 +66,6 @@ class BinRecord(db.Model):
     humidity = db.Column('humidity', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow))
->>>>>>> 5b156c96366eeaef28ce512df9740a61e2d0cac9
 
     #Ogni record è relativo ad un preciso bidone
     associated_bin = db.Column('associated_bin', db.Integer, db.ForeignKey('bin.id_bin'))
