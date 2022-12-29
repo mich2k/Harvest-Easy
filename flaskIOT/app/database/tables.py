@@ -49,13 +49,14 @@ class Bin(db.Model):
     tipologia = db.Column('tipologia', db.String)
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
     ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
+    #FK
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     
     def __init__(self, jsonObj):
         self.id_bin = jsonObj['idbin']
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
-        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']        
+        #self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']   da decommentare solo per il faker     
         
 class BinRecord(db.Model):
     __tablename__ = 'binRecord'
@@ -63,12 +64,11 @@ class BinRecord(db.Model):
         
     # 1: integro e non-pieno, 2: integro e pieno, 3: manomesso e non-pieno, 4: manomesso e pieno
     status = db.Column('status', db.Integer)
-    temperature = db.Column('temperature', db.Float, nullable=False)
-    humidity = db.Column('humidity', db.Float, nullable=False)
+    temperature = db.Column('temperature', db.Integer, nullable=False)
+    humidity = db.Column('humidity', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
     timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow()))
-
-    #Ogni record è relativo ad un preciso bidone
+    #FK
     associated_bin = db.Column('associated_bin', db.Integer, db.ForeignKey('bin.id_bin'))
 
     def __init__(self, jsonObj):
@@ -77,7 +77,7 @@ class BinRecord(db.Model):
         self.temperature = jsonObj['temperature']
         self.humidity = jsonObj['humidity']
         self.riempimento = jsonObj['riempimento']
-        self.timestamp = jsonObj['timestamp']
+        #self.timestamp = jsonObj['timestamp']  #da decommenatre solo per creare il faker
         
 class Apartment(db.Model):
     __tablename__ = 'apartment'
@@ -89,7 +89,6 @@ class Apartment(db.Model):
     lng = db.Column('lng', db.Float)
     apartment_street_number = db.Column('apartment_street_number', db.Integer, nullable=False)
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
-    
     # FK
     associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
     

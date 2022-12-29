@@ -4,6 +4,7 @@ from .faker import create_faker
 from .__init__ import db
 import requests
 import datetime
+from sqlalchemy import update
 from os import getenv
 HERE_API_KEY = getenv('HERE_KEY')
 WEATHER_KEY = getenv('WEATHER_KEY')
@@ -24,9 +25,8 @@ def createDB():
 @database_blueprint.route('/addrecord', methods=['POST'])
 def addrecord():
     msgJson = request.get_json()
-    status=calcolastatus(msgJson["id_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"])
+    status=calcolastatus(msgJson["associated_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"])
     msgJson["status"]=status
-
     try:
         sf = BinRecord(msgJson)
         db.session.add(sf)
@@ -50,16 +50,29 @@ def addbin():
 
 #ACCESSO DI UN UTENTE AL BIDONE
 @database_blueprint.route('/checkOp/<string:uid>&<int:id_bin>', methods=['GET'])
-@database_blueprint.route('/checkAdmin/<string:uid>', methods=['GET'])
-@database_blueprint.route('/checkUser/<string:uid>&<string:apartment>', methods=['GET'])
-def checkUser(uid, id_bin):
+@database_blueprint.route('/checkAdmin/<string:uid>&<int:id_bin>', methods=['GET'])
+@database_blueprint.route('/checkUser/<string:uid>&<int:id_bin>', methods=['GET'])
+@database_blueprint.route('/checkuid/<string:uid>&<int:id_bin>', methods=['GET'])
+def check(uid, id_bin):
     users=User.query.all()
-    
+    operators =Operator.query.all()
+    admins=Admin.query.all()
+    status_attuale= (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()).status
     if(len(users)>0): 
         for user in users:
-            if(uid == user.uid): return user.uid, '200 OK'
-            
-    return '201 ERRORE' 
+            if(uid == user.uid):
+                if(status_attuale==1): return {"code": 200}
+                else: return {"code": 201, "vicino": ""} #cerco il bidone più vicino
+    elif(len(admins)>0): 
+        for admin in admins:
+            if(uid == admin.uid):
+                if(status_attuale==1): return {"code": 200} 
+                else: return {"code": 201, "vicino": ""} #cerco il bidone più vicino
+    elif(len(operators)>0): 
+        for operator in operators:
+            if(uid == operator.uid): return {"code": 203}
+    else: 
+        return {"code": 202} 
 
 #AGGIUNTA DI UN USER
 @database_blueprint.route('/adduser', methods=['POST'])
@@ -164,10 +177,9 @@ def calcolastatus(id_bin, riempimento, roll, pitch):
     dd_umido={"medie": 5, "alte": 3, "altissime": 2} #soglia dinamica per l'organico in base alla temperatura
     
     status_attuale=1 #default del primo record del bidone
-    bin_attuale=BinRecord.query.filter(BinRecord.id_bin == id_bin)
+    bin_attuale=BinRecord.query.filter(BinRecord.associated_bin == id_bin)
     if(bin_attuale.count()): 
-        status_attuale= (BinRecord.query.filter(BinRecord.id_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()).status
-
+        status_attuale= (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()).status
     tipologia = (Bin.query.filter(Bin.id_bin == id_bin)).first().tipologia
     soglia_attuale=0
     if (tipologia=="umido"):
@@ -187,7 +199,6 @@ def calcolastatus(id_bin, riempimento, roll, pitch):
             req = requests.get(WEATHERE_API_URL, params=params)
             res = req.json()
             temp = int(res['main']['temp']-272.15) #conversione kelvin-celsius
-
             dd_time=0
             if(temp>=20 and temp<=25): #medie
                 dd_time=dd_umido["media"]
@@ -231,12 +242,12 @@ def calcolastatus(id_bin, riempimento, roll, pitch):
         db.session.commit()
 
     #passaggio da accappottato a dritto e viceversa
-    if(status_attuale==3 and (roll<45 and (abs(pitch)-90)<45)): status_attuale=1
-    if(status_attuale==1 and (roll>=45 or (abs(pitch)-90)>=45)): 
+    if(status_attuale==3 and (roll<45 and (abs(pitch-90)<45))): status_attuale=1
+    if(status_attuale==1 and (roll>=45 or (abs(pitch-90)>=45))): 
         #SEGNALAZIONE CAPOTTAMENTO
         status_attuale=3
-    if(status_attuale==4 and (roll<45 and (abs(pitch)-90)<45)): status_attuale=2
-    if(status_attuale==2 and (roll>=45 or (abs(pitch)-90)>=45)): 
+    if(status_attuale==4 and (roll<45 and (abs(pitch-90)<45))): status_attuale=2
+    if(status_attuale==2 and (roll>=45 or (abs(pitch-90)>=45))): 
         #SEGNALAZIONE CAPOTTAMENTO
         status_attuale=4
 

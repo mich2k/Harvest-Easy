@@ -12,11 +12,11 @@ fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':timestamps[0],
           {'idbin':7,'tipologia':'plastica', 'ultimo_svuotamento':timestamps[6], 'apartment_ID':'Cuoppo'},
           {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':timestamps[7], 'apartment_ID':'Cuoppo'}]
 
-faker_record=[{"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 5},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 1},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 2},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 3},
-              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "id_bin": 6}]
+faker_record=[{"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "associated_bin": 5},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "associated_bin": 1},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "associated_bin": 2},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "associated_bin": 3},
+              {"status": 2, "temperature": 26, "humidity": 49, "riempimento": 0.2, "associated_bin": 6}]
 
 def create_faker(db):
     

@@ -10,8 +10,8 @@ sample = {'status': 1,
           'timestamp':'0'}
 
 def faker_instances():
-    sample['temperature'] = random.random()*25
-    sample['humidity'] = random.random()*90
+    sample['temperature'] = int(random.random()*25)
+    sample['humidity'] = int(random.random()*90)
     sample['riempimento'] = random.random()
     sample['associated_bin'] = random.randint(1, 8)
     sample['timestamp'] = utils.Utils.randomTime() 

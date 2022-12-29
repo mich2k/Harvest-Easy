@@ -30,8 +30,8 @@ def getmap():
         bins = Bin.query.filter(Bin.apartment_ID == apartment.apartment_name) 
         for bin in bins:
             point={}
-            #ultimo_bin_record=db.session.query(BinRecord).filter(BinRecord.id_bin==bin.id_bin).filter(func.max(BinRecord.timestamp)).first()
-            #ultimo_bin_record=BinRecord.query(func.max(BinRecord.timestamp)).filter(BinRecord.id_bin==bin.id_bin)
+            #ultimo_bin_record=db.session.query(BinRecord).filter(BinRecord.associated_bin==bin.id_bin).filter(func.max(BinRecord.timestamp)).first()
+            #ultimo_bin_record=BinRecord.query(func.max(BinRecord.timestamp)).filter(BinRecord.associated_bin==bin.id_bin)
             status= 1 #ultimo_bin_record.status
             riempimento=0.7 #ultimo_bin_record.riempimento
             status=getstringstatus(status)

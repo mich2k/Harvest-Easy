@@ -25,10 +25,10 @@ def create_faker(db):
                         Admin(Person(uid="luigi3", name="Luigi", surname="Rossi", password="ilovecondomini", city="Moliterno", birth_year=2000))])
     
     # Apartments
-    db.session.add_all([Apartment(apartment_name="Fermi", city="Modena", street="via Garibaldi", apartment_street_number=1, lat='12', lng='15',n_internals=155, associated_admin='rossi1'),
-                   Apartment(apartment_name="Torri", city="Modena", street="via Garibaldi", apartment_street_number=4,      lat='12', lng='15',n_internals=100, associated_admin='rossi1'),
-                   Apartment(apartment_name="Cuoppo", city="Avellino", street="via Garibaldi", apartment_street_number=6,   lat='12', lng='15',n_internals=258, associated_admin='mario2'),
-                   Apartment(apartment_name="IDK", city="Moliterno", street="via Garibaldi", apartment_street_number=2,     lat='12', lng='15',n_internals=50, associated_admin='luigi3')])
+    db.session.add_all([Apartment(apartment_name="Fermi", city="Modena", street="via Giuseppe Fava", apartment_street_number=49, lat=44.619401, lng=10.921746,n_internals=155, associated_admin='rossi1'),
+                   Apartment(apartment_name="Torri", city="Modena", street="via Viterbo", apartment_street_number=90, lat=44.622911, lng=10.937403,n_internals=100, associated_admin='rossi1'),
+                   Apartment(apartment_name="Cuoppo", city="Modena", street="via Nervi", apartment_street_number=57, lat=44.621969, lng=10.931554,n_internals=258, associated_admin='mario2'),
+                   Apartment(apartment_name="IDK", city="Modena", street="via Cividale", apartment_street_number=80, lat=44.627061, lng=10.918327,n_internals=50, associated_admin='luigi3')])
     
     #Users
     db.session.add_all([User(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2001), "Fermi", 45),
