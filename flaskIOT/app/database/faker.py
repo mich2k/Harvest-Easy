@@ -2,7 +2,6 @@
 from .tables import *
 from ..utils import utils
 from .record_faker import faker_instances
-import random
 
 fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Fermi'},
           {'idbin':2,'tipologia':'plastica', 'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Fermi'},
@@ -46,7 +45,7 @@ def create_faker(db):
     
     #BinRecords
     for i in range(90):
-        db.session.add(BinRecord(faker_instances()))
+        db.session.add(BinRecord(faker_instances(db)))
         
     db.session.commit()
     return True

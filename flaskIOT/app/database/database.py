@@ -2,6 +2,7 @@ from flask import render_template, request, Blueprint
 from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db
+from ..utils import utils
 import requests
 import datetime
 from sqlalchemy import update
@@ -25,8 +26,8 @@ def createDB():
 @database_blueprint.route('/addrecord', methods=['POST'])
 def addrecord():
     msgJson = request.get_json()
-    status=calcolastatus(msgJson["associated_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"])
-    msgJson["status"]=status
+    msgJson["status"] = calcolastatus(msgJson["id_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"])
+   
     try:
         sf = BinRecord(msgJson)
         db.session.add(sf)
@@ -41,12 +42,11 @@ def addbin():
     msgJson = request.get_json()
 
     try:
-        sf = Bin(msgJson)
-        db.session.add(sf)
+        db.session.add(Bin(msgJson))
         db.session.commit()
     except:
         return 'Error'
-    return 'Done'
+    return 'Done' 
 
 #ACCESSO DI UN UTENTE AL BIDONE
 @database_blueprint.route('/checkOp/<string:uid>&<int:id_bin>', methods=['GET'])
@@ -114,8 +114,13 @@ def addadmin():
 @database_blueprint.route('/addoperator', methods=['POST'])
 def addoperator():
     msgJson = request.get_json()
-    print(msgJson)
-    operator = Operator(id=msgJson['id'])
+    operator = Operator(Person(uid=msgJson['uid'], 
+                   name=msgJson['name'], 
+                   surname=msgJson['surname'],
+                   password=msgJson['password'], 
+                   city=msgJson['city'], 
+                   birth_year=msgJson['year']),
+                   id=msgJson['id'])
     try:
         db.session.add(operator)
         db.session.commit()
@@ -138,6 +143,7 @@ def addapartment():
 
     req = requests.get(HERE_API_URL, params=params)
     result = req.json()
+    
     # Use the first result
     lat = result['items'][0]['position']['lat']
     lng = result['items'][0]['position']['lng']
@@ -158,7 +164,27 @@ def addapartment():
         return 'Error'
     return 'Done'
 
-
+#ACCESSO AL BIDONE
+@database_blueprint.route('/checkAdmin/', methods=['POST'])
+@database_blueprint.route('/checkUser/', methods=['POST'])
+@database_blueprint.route('/checkOp/', methods=['POST'])
+def checkAccess():
+    msgJson = request.get_json()
+    uid_recv = msgJson['uid']
+    
+    if User.query().filter(User.uid == uid_recv) is not None:
+        return '200'
+    if Admin.query().filter(Admin.uid == uid_recv) is not None:
+        return '201'
+    
+    if Operator.query().filter(Operator.uid == uid_recv) is not None:
+        
+        #Aggiorno il timestamp dell'ultimo svuotamento del bidone i-esimo
+        db.session.Query(Bin).\
+            filter(Bin.id_bin == msgJson['id_bin']).\
+            update('ultimo_svuotamento', utils.Utils.randomTime(False))
+        return '202'
+    
 #Print tables
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
@@ -170,7 +196,6 @@ def stampaitems():
             BinRecord.query.order_by(BinRecord.id.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)
-
 
 def calcolastatus(id_bin, riempimento, roll, pitch): 
     soglie={"plastica": 0.9, "carta": 0.9, "vetro": 0.8, "umido": 0.7} #soglie fisse
