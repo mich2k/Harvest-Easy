@@ -49,6 +49,7 @@ class Bin(db.Model):
     tipologia = db.Column('tipologia', db.String)
     previsione_status = db.Column('previsione_status', db.String, nullable= True, default='')
     ultimo_svuotamento = db.Column('ultimo_svuotamento', db.String(), nullable=False, default='')
+    
     #FK
     apartment_ID = db.Column('apartment_ID',db.Integer, db.ForeignKey('apartment.apartment_name'))
     
@@ -56,7 +57,7 @@ class Bin(db.Model):
         self.id_bin = jsonObj['idbin']
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
-        #self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']   da decommentare solo per il faker     
+        self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']   #da decommentare solo per il faker     
         
 class BinRecord(db.Model):
     __tablename__ = 'binRecord'
@@ -67,7 +68,7 @@ class BinRecord(db.Model):
     temperature = db.Column('temperature', db.Integer, nullable=False)
     humidity = db.Column('humidity', db.Integer, nullable=False)
     riempimento = db.Column('livello_di_riempimento', db.Float, nullable=False)
-    timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow()))
+    timestamp = db.Column('Timestamp', db.String, nullable=False,  default=str(datetime.utcnow().replace(microsecond=0)))
     #FK
     associated_bin = db.Column('associated_bin', db.Integer, db.ForeignKey('bin.id_bin'))
 
@@ -77,7 +78,7 @@ class BinRecord(db.Model):
         self.temperature = jsonObj['temperature']
         self.humidity = jsonObj['humidity']
         self.riempimento = jsonObj['riempimento']
-        #self.timestamp = jsonObj['timestamp']  #da decommenatre solo per creare il faker
+        self.timestamp = jsonObj['timestamp']  #da decommentare solo per creare il faker
         
 class Apartment(db.Model):
     __tablename__ = 'apartment'

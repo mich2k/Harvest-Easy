@@ -44,7 +44,7 @@ def create_faker(db):
     
     
     #BinRecords
-    for i in range(90):
+    for i in range(10):
         db.session.add(BinRecord(faker_instances(db)))
         
     db.session.commit()

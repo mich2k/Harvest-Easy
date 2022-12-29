@@ -14,25 +14,22 @@ class Utils:
             rtime = int(random.random()*86400)
             dtime = int(random.random()*360)
 
-            year = datetime.now().date().strftime("%Y")
+            year = random.randrange(2022, 2050)
             month = int(dtime/30) if int(dtime/30) != 0 else int(dtime/30) + 1
-            day = int(dtime - month*30) if int(dtime - month*30) != 0 else int(dtime - month*30) + 1
-            print(day)
+            day = int(dtime/12) if int(dtime/12) != 0 else int(dtime/12) + 1
             hours   = int(rtime/3600)
             minutes = int((rtime - hours*3600)/60)
             seconds = rtime - hours*3600 - minutes*60
             time_string = '%s-%d-%d %02d:%02d:%02d' % (year, month, day, hours, minutes, seconds)
         else:
-            time_string = str(datetime.utcnow())
+            time_string = str(datetime.utcnow().replace(microsecond=0))
         return time_string
     
-    @property
-    def get_universal_time(self):
-        return datetime.utcnow()
+    def get_random_int(low: int, upper: int):
+        return random.randint(low, upper)
     
-    @property
-    def get_local_time(self):
-        return datetime.now()
+    def get_random():
+        return random.random()
 
     @property
     def get_timestamp(self):
