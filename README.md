@@ -12,7 +12,7 @@ check into the main path (and not flask path) where the `docker-compose.yml` fil
 
 `docker-compose up -d` to run that just built image into a container in a detached mode **(do this)**
 
-`docker-compose up` to run that just built image into a container in a detached mode
+`docker-compose up` to run that just built image into a "frontend-ed" container
 
 `docker-compose down` to stop the container
 
