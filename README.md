@@ -1,5 +1,21 @@
 # IoT-3D-Systems
 
+# Docker-Compose
+
+Added docker compose
+
+check into the main path (and not flask path) where the `docker-compose.yml` file is located and execute:
+
+## Commands
+
+`docker-compose build` to build a new image
+
+`docker-compose up -d` to run that just built image into a container in a detached mode **(do this)**
+
+`docker-compose up` to run that just built image into a container in a detached mode
+
+`docker-compose down` to stop the container
+
 # Docker
 
 ## Remote image for server

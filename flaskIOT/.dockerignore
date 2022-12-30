@@ -1,8 +1,12 @@
+*.txt
+!requirements.txt
 build.sh
 build_and_run.sh
 delete_all.sh
 localboot.sh
+l.sh
 venv/
 instance/
 *.db
+*.yml
 #  EDIT ONLY IF YOU KNOW WHAT YOU ARE DOING
