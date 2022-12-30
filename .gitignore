@@ -67,6 +67,5 @@ instance
 *.out
 *.txt
 
-
 Zone.Identifier
 *.Identifier

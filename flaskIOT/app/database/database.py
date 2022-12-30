@@ -193,7 +193,7 @@ def stampaitems():
             Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
             User.query.order_by(User.uid.desc()).all(),
             Admin.query.order_by(Admin.uid.desc()).all(),
-            BinRecord.query.order_by(BinRecord.id.desc()).all()] 
+            BinRecord.query.order_by(BinRecord.id_record.desc()).all()] 
     
     return render_template('listitems.html', listona=elenco)
 

@@ -4,7 +4,7 @@ sudo docker stop $(sudo docker ps -aq)
 echo STOP DONE
 
 echo BUILD BEGIN
-sudo docker build -t mick2k1/iotflask:latest.
+sudo docker build -t mick2k1/iotflask:latest .
 echo BUILD DONE
 
 echo RUN BEGIN
