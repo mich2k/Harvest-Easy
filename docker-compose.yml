@@ -6,7 +6,7 @@ services:
       context: ./flaskIOT
     ports:
       - 5000:5000
-    image: iotflask
+    image: mick2k1/iotflask
     container_name: iotproj
     environment:
       - TEMP=null
