@@ -23,7 +23,7 @@ services:
             PBF_URL: https://gmichele.it/modena.osm.pbf
             NOMINATIM_PASSWORD: password
         volumes:
-            - ~/nominatim/osm_extract/:/nominatim/data/
+#            - ~/nominatim/osm_extract/:/nominatim/data/
             - ~/nominatim/nominatim-data:/var/lib/postgresql/14/main
         shm_size: 256mb
 
