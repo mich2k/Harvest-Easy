@@ -1,12 +1,25 @@
-echo "This script will download the OSM extract of regione Emilia-Romagna"
+# DEPRECATED
+# DEPRECATED
+# DEPRECATED
+# DEPRECATED
+# DEPRECATED
+echo "! DEPRECATED !"
+echo ""
+echo ""
 
+
+
+echo "This script will download the OSM extract of regione Emilia-Romagna or Modena province"
+echo "If you use this script upgrade from PBF_URL TO PBF_PATH !"
 echo "Will also set-up the .osm.pbf file for docker-compose"
 
 echo ""
 
 OSM_EXTRACT_PATH="$HOME/nominatim/osm_extract/"
 OSM_EXTRACT_NAME="er.osn.pbf"
-OSM_EXTRACT_DOWNLOAD_URL="https://gmichele.it/er.osm.pbf"
+#OSM_EXTRACT_DOWNLOAD_URL="https://gmichele.it/er.osm.pbf"
+OSM_EXTRACT_DOWNLOAD_URL="https://gmichele.it/modena.osm.pbf"
+
 OSM_MD5="1ef9b08e9b0f1fad6e41d63e71e2a8ae"
 
 while true; do
