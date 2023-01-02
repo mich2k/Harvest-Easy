@@ -15,15 +15,17 @@ services:
         container_name: nominatim
         image: mediagis/nominatim:4.2
         restart: always
+        profiles:
+            - donotstart
         ports:
             - "8080:8080"
         environment:
-            PBF_PATH: /nominatim/data/er.osm.pbf
+            PBF_URL: https://gmichele.it/modena.osm.pbf
             NOMINATIM_PASSWORD: password
         volumes:
             - ~/nominatim/osm_extract/:/nominatim/data/
             - ~/nominatim/nominatim-data:/var/lib/postgresql/14/main
-        shm_size: 1gb
+        shm_size: 256mb
 
 volumes:
     nominatim-data:
