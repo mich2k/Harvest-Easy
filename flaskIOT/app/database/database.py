@@ -48,32 +48,6 @@ def addbin():
         return 'Error'
     return 'Done' 
 
-#ACCESSO DI UN UTENTE AL BIDONE
-@database_blueprint.route('/checkOp/<string:uid>&<int:id_bin>', methods=['GET'])
-@database_blueprint.route('/checkAdmin/<string:uid>&<int:id_bin>', methods=['GET'])
-@database_blueprint.route('/checkUser/<string:uid>&<int:id_bin>', methods=['GET'])
-@database_blueprint.route('/checkuid/<string:uid>&<int:id_bin>', methods=['GET'])
-def check(uid, id_bin):
-    users=User.query.all()
-    operators =Operator.query.all()
-    admins=Admin.query.all()
-    status_attuale= (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()).status
-    if(len(users)>0): 
-        for user in users:
-            if(uid == user.uid):
-                if(status_attuale==1): return {"code": 200}
-                else: return {"code": 201, "vicino": ""} #cerco il bidone più vicino
-    elif(len(admins)>0): 
-        for admin in admins:
-            if(uid == admin.uid):
-                if(status_attuale==1): return {"code": 200} 
-                else: return {"code": 201, "vicino": ""} #cerco il bidone più vicino
-    elif(len(operators)>0): 
-        for operator in operators:
-            if(uid == operator.uid): return {"code": 203}
-    else: 
-        return {"code": 202} 
-
 #AGGIUNTA DI UN USER
 @database_blueprint.route('/adduser', methods=['POST'])
 def adduser():
@@ -164,26 +138,35 @@ def addapartment():
         return 'Error'
     return 'Done'
 
-#ACCESSO AL BIDONE
-@database_blueprint.route('/checkAdmin/', methods=['POST'])
-@database_blueprint.route('/checkUser/', methods=['POST'])
-@database_blueprint.route('/checkOp/', methods=['POST'])
-def checkAccess():
-    msgJson = request.get_json()
-    uid_recv = msgJson['uid']
-    
-    if User.query().filter(User.uid == uid_recv) is not None:
-        return '200'
-    if Admin.query().filter(Admin.uid == uid_recv) is not None:
-        return '201'
-    
-    if Operator.query().filter(Operator.uid == uid_recv) is not None:
-        
-        #Aggiorno il timestamp dell'ultimo svuotamento del bidone i-esimo
-        db.session.Query(Bin).\
-            filter(Bin.id_bin == msgJson['id_bin']).\
-            update('ultimo_svuotamento', utils.Utils.randomTime(False))
-        return '202'
+#CheckAdmin per 
+
+
+
+#ACCESSO DI UN UTENTE AL BIDONE
+@database_blueprint.route('/checkOp/<string:uid>&<int:id_bin>', methods=['GET'])
+@database_blueprint.route('/checkAdmin/<string:uid>&<int:id_bin>', methods=['GET'])
+@database_blueprint.route('/checkUser/<string:uid>&<int:id_bin>', methods=['GET'])
+@database_blueprint.route('/checkuid/<string:uid>&<int:id_bin>', methods=['GET'])
+def check(uid, id_bin):
+    users=User.query.all()
+    operators =Operator.query.all()
+    admins=Admin.query.all()
+    status_attuale= (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()).status
+    if(len(users)>0): 
+        for user in users:
+            if(uid == user.uid):
+                if(status_attuale==1): return {"code": 200}
+                else: return {"code": 201, "vicino": ""} #cerco il bidone più vicino
+    elif(len(admins)>0): 
+        for admin in admins:
+            if(uid == admin.uid):
+                if(status_attuale==1): return {"code": 200} 
+                else: return {"code": 201, "vicino": ""} #cerco il bidone più vicino
+    elif(len(operators)>0): 
+        for operator in operators:
+            if(uid == operator.uid): return {"code": 203}
+    else: 
+        return {"code": 202} 
     
 #Print tables
 @database_blueprint.route('/items', methods=['GET'])

@@ -25,9 +25,9 @@
                                     callback(xobj.responseText);
                             }
                     };
-                    
-                    xobj.open('GET', 'points.json', true);
-                    xobj.setRequestHeader('Access-Control-Allow-Origin', '*')
+                    console.dir(xobj);
+                    xobj.open('GET', 'getmap', true);
+                    xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
                     xobj.send(null);
                 }
       
