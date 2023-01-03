@@ -25,9 +25,9 @@
                                     callback(xobj.responseText);
                             }
                     };
-                    
-                    xobj.open('GET', 'points.json', true);
-                    xobj.setRequestHeader('Access-Control-Allow-Origin', '*')
+                    console.dir(xobj);
+                    xobj.open('GET', 'static/points.json', true);
+                    xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
                     xobj.send(null);
                 }
       
@@ -57,7 +57,7 @@
                         var punto = listapunti[i];
                         L.marker([punto.lat, punto.lng])
                             .addTo(map)
-                            .bindPopup(punto.tipologia + "\n" + punto.apartment_name  + "\n" + punto.status + "\n" + punto.address)
+                            .bindPopup(punto.description + "\n" + punto.title)
                             .openPopup();
                             
                     }
