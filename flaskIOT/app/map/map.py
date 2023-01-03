@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 from os import getenv
 from app.database.tables import Apartment, Bin, BinRecord
 from app.database.__init__ import db
@@ -14,7 +14,7 @@ map_blueprint = Blueprint('map', __name__, template_folder='templates')
 
 @map_blueprint.route('/')
 def main():
-    return '<h1>Map</h1>'
+     return render_template('viewmap.html')
 
 #MAPPA COMPLETA CON TUTTI I BIDONI
 @map_blueprint.route('/getmap')
@@ -51,7 +51,7 @@ def getmap():
         "listaPunti": points
     }
 
-    with open('points.json', 'w') as outfile:
+    with open('app/map/points.json', 'w') as outfile:
         json.dump(viewmap, outfile)
 
     return viewmap
@@ -84,7 +84,7 @@ def getmaptipology(tipologia):
         "listaPunti": points
     }
 
-    with open('points.json', 'w') as outfile:
+    with open('app/map/points.json', 'w') as outfile:
         json.dump(viewmap, outfile)
 
     return viewmap

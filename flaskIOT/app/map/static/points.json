@@ -1,0 +1,73 @@
+{"updated":"20/11/2022 11:13:06","listaPunti":[
+{
+"id": 11,
+"description": "Politecnica Valencia",
+"title": 33.5,
+"lat": 39.481059,
+"lng": -0.341067
+}
+,
+{
+"id": 12,
+"description": "Univ. Winsconsin,",
+"title": 41,
+"lat": 43.076592,
+"lng": -89.412487
+}
+,
+{
+"id": 13,
+"description": "Cornell Univ.",
+"title": 23,
+"lat": 42.453449,
+"lng": -76.473503
+}
+,
+{
+"id": 14,
+"description": "<p>TU-Munchen</p>",
+"title": 22.4,
+"lat": 48.149660,
+"lng": 11.567860
+}
+,
+{
+"id": 15,
+"description": "NTUA (Athens)",
+"title": 22,
+"lat": 37.978377,
+"lng": 23.782707
+}
+,
+{
+"id": 16,
+"description": "BioImaging-San Diego",
+"title": 21,
+"lat": 32.881284,
+"lng": -117.173178
+}
+,
+{
+"id": 17,
+"description": "Limoges (F)",
+"title": 19.4,
+"lat": 45.833619,
+"lng": 1.261105
+}
+,
+{
+"id": 60,
+"description": "UAM (Madrid)",
+"title": 26,
+"lat": 40.546698,
+"lng": -3.694362
+}
+,
+{
+"id": 61,
+"description": "University of North Texas- College of Engineering",
+"title": 25,
+"lat": 33.253946,
+"lng": -97.152896
+}
+]}
