@@ -2,9 +2,9 @@
 
 # Docker-Compose
 
-Added docker compose
+docker-compose contains both our core flask image and our OSM dockerized image with the Modena province extract from OSM Planet image (OSM Server)
 
-check into the main path (and not flask path) where the `docker-compose.yml` file is located and execute:
+check into the project root path where the `docker-compose.yml` file is located and execute:
 
 ## Commands
 
