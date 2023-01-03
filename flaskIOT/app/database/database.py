@@ -138,7 +138,12 @@ def addapartment():
         return 'Error'
     return 'Done'
 
-#CheckAdmin per 
+#CheckAdmin per accesso al bidone
+@database_blueprint.route('/accessAdmin/<string:uid>', methods=['GET'])
+def login(uid):
+    if db.session.query(Admin.uid == uid) is not None:
+        return True
+    return False
 
 
 
