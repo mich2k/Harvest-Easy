@@ -11,19 +11,21 @@ services:
     environment:
       - TEMP=null
 
-    nominatim:
-        container_name: nominatim
-        image: mediagis/nominatim:4.2
-        restart: always
-        ports:
-            - "8080:8080"
-        environment:
-            PBF_PATH: /nominatim/data/er.osm.pbf
-            NOMINATIM_PASSWORD: password
-        volumes:
-            - ~/nominatim/osm_extract/:/nominatim/data/
-            - ~/nominatim/nominatim-data:/var/lib/postgresql/14/main
-        shm_size: 1gb
+  nominatim:
+    profiles:
+      - donotstart
+    container_name: nominatim
+    image: mediagis/nominatim:4.2
+    restart: always
+    ports:
+        - "8080:8080"
+    environment:
+        PBF_PATH: /nominatim/data/er.osm.pbf
+        NOMINATIM_PASSWORD: password
+    volumes:
+        - ~/nominatim/osm_extract/:/nominatim/data/
+        - ~/nominatim/nominatim-data:/var/lib/postgresql/14/main
+    shm_size: 1gb
 
 volumes:
     nominatim-data:
