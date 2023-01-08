@@ -28,7 +28,6 @@ def faker_instances(db):
     
     if act_timestamp is not None and act_filling is not None and act_state is not None:
         while(True):
-            print(next_filling, next_status, next_timestamp)
 
             if datetime.strptime(next_timestamp, "%Y-%m-%d %H:%M:%S") > datetime.strptime(act_timestamp[0], "%Y-%m-%d %H:%M:%S"):
                 next_timestamp = utils.Utils.randomTime()

@@ -28,7 +28,6 @@ def create_faker(db):
                    Apartment(apartment_name="Torri", city="Modena", street="via Viterbo", apartment_street_number=90, lat=44.622911, lng=10.937403,n_internals=100, associated_admin='rossi1'),
                    Apartment(apartment_name="Cuoppo", city="Modena", street="via Nervi", apartment_street_number=57, lat=44.621969, lng=10.931554,n_internals=258, associated_admin='mario2'),
                    Apartment(apartment_name="IDK", city="Modena", street="via Cividale", apartment_street_number=80, lat=44.627061, lng=10.918327,n_internals=50, associated_admin='luigi3')])
-    
     #Users
     db.session.add_all([User(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2001), "Fermi", 45),
                    User(Person(uid="rossi2", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2002), "Cuoppo", 67),

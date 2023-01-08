@@ -1,18 +1,22 @@
-from flask import Blueprint, request
-from app.database.tables import Apartment, BinRecord, Bin
-
+import requests
+from app.database.tables import *
 from os import getenv
 
-WEATHER_API_KEY = getenv('WEATHER_API_KEY')
+TOKEN = getenv('TG_TOKEN')
+ids = getenv('IDs').split(', ')
+URL = 'https://api.telegram.org/bot{}/sendMessage?chat_id='.format(TOKEN)
 
-trap_blueprint = Blueprint('trap', __name__)
-#Ricevo il dato, ottengo l'id e modifico lo status
+def trap(text):
+    return requests.get(URL+'{}&text= {}'.format(ids[0], text)).json()
 
-@trap_blueprint.route('/full')
-def change_status_f():
-    msgJson = request.get_json()
-    BinRecord.query()
+#Filled Bin 
+def full_state(filling):
+    pass    
 
-@trap_blueprint.route('/rigged')
-def change_status_r():
-    msgJson = request.get_json()
+#Overturned Bin
+def overturn(coord):
+    pass
+
+#Fired Bin
+def fire(co2):
+    pass

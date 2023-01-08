@@ -1,5 +1,6 @@
 version: '3.2'
 services:
+
   flask_app:
     build:
       dockerfile: Dockerfile
@@ -9,7 +10,19 @@ services:
     image: mick2k1/iotflask
     container_name: iotproj
     environment:
-      - TEMP=null
+      - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
+      - IDs=218369264, 41608202
+  bot_telegram:
+    build:
+        dockerfile: Dockerfile
+        context: ./telegramBot
+    ports:
+        - 8081:8081
+    image: 267759/botflask:1.0    
+    container_name: botflask
+    environment:
+        - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
+
   nominatim:
     container_name: nominatim
     image: mediagis/nominatim:4.2
@@ -22,7 +35,7 @@ services:
         PBF_URL: https://gmichele.it/modena.osm.pbf
         NOMINATIM_PASSWORD: password
     volumes:
-#          - ~/nominatim/osm_extract/:/nominatim/data/
+#       - ~/nominatim/osm_extract/:/nominatim/data/
         - ~/nominatim/nominatim-data:/var/lib/postgresql/14/main
     shm_size: 256mb
 

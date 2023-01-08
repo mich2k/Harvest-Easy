@@ -61,7 +61,6 @@ instance
 *.db
 *.sqlite
 
-
 # output
 
 *.out
