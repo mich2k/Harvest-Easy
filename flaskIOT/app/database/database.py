@@ -125,24 +125,18 @@ def addoperator():
 @database_blueprint.route('/addapartment', methods=['POST'])
 def addapartment():
     msgJson = request.get_json()
-    HERE_API_URL = f'https://geocode.search.hereapi.com/v1/geocode'
-    address = msgJson['city'] + msgJson['street'] + \
-        str(msgJson['street_number'])
+    URL = f'https://osm.gmichele.it/search'
+    address = msgJson['street'] + " " + str(msgJson['street_number']) + " " + msgJson['city']
     params = {
-        'q': address + 'italia',
-        'apiKey': HERE_API_KEY
+        'q': address + ' Italia', 
     }
-
-    req = requests.get(HERE_API_URL, params=params)
+    req = requests.get(URL, params=params)
     result = req.json()
-
-    # Use the first result
-    lat = result['items'][0]['position']['lat']
-    lng = result['items'][0]['position']['lng']
-
-    apartment = Apartment(apartment_name=msgJson['apartment_name'],
-                          city=msgJson['city'],
-                          street=msgJson['street'],
+    lat = result[0]['lat']
+    lng = result[0]['lon']
+    apartment = Apartment(apartment_name=msgJson['apartment_name'], 
+                          city=msgJson['city'], 
+                          street=msgJson['street'], 
                           lat=lat,
                           lng=lng,
                           apartment_street_number=msgJson['street_number'],
