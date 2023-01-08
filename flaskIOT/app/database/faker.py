@@ -10,7 +10,7 @@ fakers = [{'idbin':1,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.ra
           {'idbin':5,'tipologia':'plastica', 'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Torri'},
           {'idbin':6,'tipologia':'umido',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Cuoppo'},
           {'idbin':7,'tipologia':'plastica', 'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Cuoppo'},
-          {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'Cuoppo'}]
+          {'idbin':8,'tipologia':'carta',    'ultimo_svuotamento':utils.Utils.randomTime(), 'apartment_ID':'IDK'}]
 
 def create_faker(db):
     

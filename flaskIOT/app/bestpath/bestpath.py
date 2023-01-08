@@ -14,27 +14,22 @@ def main():
     return '<h1>Best Path</h1>'
 
 
-@path_blueprint.route('/routing')  
-def routing(): 
+@path_blueprint.route('/getdistances')  
+def getdistances(): 
     apartments = Apartment.query.all()
     coordinates=[] 
     
     for apartment in apartments:
         apartment_coordinate=[]
-        apartment_coordinate.append(apartment.lat)
         apartment_coordinate.append(apartment.lng)
+        apartment_coordinate.append(apartment.lat)
         coordinates.append(apartment_coordinate)
 
     body = {"locations": coordinates}
 
     headers = {
         'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
-        #'Authorization': OPENROUTESERVICE_KEY,
         'Content-Type': 'application/json; charset=utf-8'
     }
     call = requests.post('https://ors.gmichele.it/ors/v2/matrix/driving-car', json=body, headers=headers)
-    
-
     return call.json()
-
-    
