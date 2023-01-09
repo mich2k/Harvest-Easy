@@ -22,14 +22,11 @@ services:
         - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
         - URL=https://flask.gmichele.it/db/
 
-    gmichele_it:
+    nextjs_app:
       build:
         context: ./frontend_nextjs
-        dockerfile: Dockerfile
+        dockerfile: dev.Dockerfile
       container_name: nextjs_app
-      environment:
-        - VIRTUAL_HOST=www.gmichele.it,gmichele.it
-        - LETSENCRYPT_HOST=www.gmichele.it,gmichele.it
 
   nominatim:
     container_name: nominatim
