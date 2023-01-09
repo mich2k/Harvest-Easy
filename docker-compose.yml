@@ -22,6 +22,15 @@ services:
         - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
         - URL=flask.gmichele.it/db/
 
+    gmichele_it:
+      build:
+        context: ./frontend_nextjs
+        dockerfile: Dockerfile
+      container_name: nextjs_app
+      environment:
+        - VIRTUAL_HOST=www.gmichele.it,gmichele.it
+        - LETSENCRYPT_HOST=www.gmichele.it,gmichele.it
+
   nominatim:
     container_name: nominatim
     image: mediagis/nominatim:4.2
