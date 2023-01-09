@@ -30,11 +30,14 @@ def getmap():
         bins = Bin.query.filter(Bin.apartment_ID == apartment.apartment_name) 
         for bin in bins:
             point={}
-            #ultimo_bin_record=db.session.query(BinRecord).filter(BinRecord.associated_bin==bin.id_bin).filter(func.max(BinRecord.timestamp)).first()
-            #ultimo_bin_record=BinRecord.query(func.max(BinRecord.timestamp)).filter(BinRecord.associated_bin==bin.id_bin)
-            status= 1 #ultimo_bin_record.status
-            riempimento=0.7 #ultimo_bin_record.riempimento
-            status=getstringstatus(status)
+            ultimo_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(BinRecord.timestamp.desc()).first()
+            if(ultimo_bin_record is None):
+                status=None
+                riempimento=None
+            else:
+                status= ultimo_bin_record.status
+                riempimento=ultimo_bin_record.riempimento
+                status=getstringstatus(status)
             point['tipologia']= bin.tipologia
             point['apartment_name'] = apartment.apartment_name
             point['status'] = status
@@ -66,10 +69,14 @@ def getmaptipology(tipologia):
         bins = Bin.query.filter(Bin.apartment_ID==apartment.apartment_name).filter(Bin.tipologia==tipologia)
         for bin in bins: 
             point={}
-            #ultimo_bin_record=(BinRecord.query.filter(BinRecord.id_bin==bin.id_bin).order_by(BinRecord.timestamp.desc())).first()
-            status=1#ultimo_bin_record.status
-            riempimento=0.7 #ultimo_bin_record.riempimento
-            status=getstringstatus(status)
+            ultimo_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(BinRecord.timestamp.desc()).first()
+            if(ultimo_bin_record is None):
+                status=None
+                riempimento=None
+            else:
+                status= ultimo_bin_record.status
+                riempimento=ultimo_bin_record.riempimento
+                status=getstringstatus(status)
             point['apartment_name'] = apartment.apartment_name
             point['status'] = status
             point['id'] = bin.id_bin
