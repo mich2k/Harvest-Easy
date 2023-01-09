@@ -7,6 +7,7 @@ from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db
 from ..trap.trap import *
+from flask import jsonify
 
 
 HERE_API_KEY = getenv('HERE_KEY')
@@ -160,34 +161,35 @@ def check(uid, id_bin):
     users = User.query.all()
     operators = Operator.query.all()
     admins = Admin.query.all()
+   
     status_attuale = (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(
         BinRecord.timestamp.desc()).first()).status
     if (len(users) > 0):
         for user in users:
             if (uid == user.uid):
                 if (status_attuale == 1):
-                    return {"code": 200}
+                    return jsonify({"code": 200})
                 else:
                     # cerco il bidone più vicino
-                    return {"code": 201, "vicino": ""}
-    elif (len(admins) > 0):
+                    return jsonify({"code": 201, "vicino": ""})
+    if (len(admins) > 0):
         for admin in admins:
             if (uid == admin.uid):
                 if (status_attuale == 1):
-                    return {"code": 200}
+                    return jsonify({"code": 200})
                 else:
                     # cerco il bidone più vicino
-                    return {"code": 201, "vicino": ""}
-    elif (len(operators) > 0):
+                    return jsonify({"code": 201, "vicino": ""})
+    if (len(operators) > 0):
         for operator in operators:
             if (uid == operator.uid):
-                return {"code": 203}
-    else:
-        return {"code": 202}
+                return jsonify({"code": 203})
+    
+    return jsonify({"code": 202})
+
+
 
 # Print tables
-
-
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
 
