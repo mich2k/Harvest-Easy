@@ -1,5 +1,6 @@
 import requests
 import datetime
+from sqlalchemy import select
 from flask import render_template, request, Blueprint
 from os import getenv
 from app.database.tables import *
@@ -62,15 +63,16 @@ def addbin():
 @database_blueprint.route('/adduser', methods=['POST'])
 def adduser():
     msgJson = request.get_json()
-    user = User(Person(uid=msgJson['uid'],
-                       name=msgJson['name'],
-                       surname=msgJson['surname'],
-                       password=msgJson['password'],
-                       city=msgJson['city'],
-                       birth_year=msgJson['year']),
-                apartment_ID=msgJson['apartment_ID'],
-                internal_number=msgJson['internal_number'])
     try:
+        user = User(Person(uid=msgJson['uid'],
+                           name=msgJson['name'],
+                           surname=msgJson['surname'],
+                           password=msgJson['password'],
+                           city=msgJson['city'],
+                           birth_year=msgJson['year']),
+                    apartment_ID=msgJson['apartment_ID'],
+                    internal_number=msgJson['internal_number'])
+
         db.session.add(user)
         db.session.commit()
     except:
@@ -126,17 +128,18 @@ def addoperator():
 def addapartment():
     msgJson = request.get_json()
     URL = f'https://osm.gmichele.it/search'
-    address = msgJson['street'] + " " + str(msgJson['street_number']) + " " + msgJson['city']
+    address = msgJson['street'] + " " + \
+        str(msgJson['street_number']) + " " + msgJson['city']
     params = {
-        'q': address + ' Italia', 
+        'q': address + ' Italia',
     }
     req = requests.get(URL, params=params)
     result = req.json()
     lat = result[0]['lat']
     lng = result[0]['lon']
-    apartment = Apartment(apartment_name=msgJson['apartment_name'], 
-                          city=msgJson['city'], 
-                          street=msgJson['street'], 
+    apartment = Apartment(apartment_name=msgJson['apartment_name'],
+                          city=msgJson['city'],
+                          street=msgJson['street'],
                           lat=lat,
                           lng=lng,
                           apartment_street_number=msgJson['street_number'],
@@ -150,17 +153,7 @@ def addapartment():
         return 'Error'
     return 'Done'
 
-# CheckAdmin per accesso al bidone
-
-
-@database_blueprint.route('/accessAdmin/<string:uid>', methods=['GET'])
-def login(uid):
-    if db.session.query(Admin.uid == uid) is not None:
-        return True
-    return False
-
 # ACCESSO DI UN UTENTE AL BIDONE
-
 
 @database_blueprint.route('/checkuid/<string:uid>&<int:id_bin>', methods=['GET'])
 def check(uid, id_bin):
@@ -211,13 +204,15 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
 
     soglie = {"plastica": 0.9, "carta": 0.9,
               "vetro": 0.8, "umido": 0.7}  # soglie fisse
+
     # soglia dinamica per l'organico in base alla temperatura
     dd_umido = {"medie": 5, "alte": 3, "altissime": 2}
+
     limite_co2 = 10  # da modificare
     status_attuale = 1  # default del primo record del bidone
+
     bin_attuale = BinRecord.query.filter(BinRecord.associated_bin == id_bin)
     
-
     if (bin_attuale.count()):
         status_attuale = (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(
             BinRecord.timestamp.desc()).first()).status

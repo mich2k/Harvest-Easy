@@ -16,6 +16,17 @@ class Person():
         self.password = password
         self.city=city
         self.birth_year=birth_year
+        
+class UserTG():
+    id_user = db.Column('iduser', db.String, primary_key=True)
+    id_chat = db.Column('idchat', db.Integer)
+    logged = db.Column('logged', db.Boolean)
+    
+    def __init__(self, id_user: str, id_chat: int, logged = True) -> None:
+        self.id_user = id_user
+        self.id_chat = id_chat
+        self.logged = logged 
+    
 
 class Admin(Person, db.Model):
     __tablename__ = 'admin'
@@ -104,4 +115,25 @@ class Apartment(db.Model):
         self.n_internals = n_internals
         self.associated_admin = associated_admin
 
+"""class AlterationRecord(db.Model):
+    __tablename__ = 'alterationRecord'"""
+
+#Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram 
+
+class TelegramIDChatAdmin(UserTG, db.Model):
+    __tablename__ = 'idchatAdmin'
+
+    associated_admin = db.Column('associated_admin', db.String, db.ForeignKey('admin.uid'))
     
+    def __init__(self, user: UserTG, associated_admin: str) -> None:
+        super().__init__(user.id_user, user.id_chat, user.logged)
+        self.associated_admin = associated_admin
+    
+class TelegramIDChatUser(UserTG, db.Model):
+    __tablename__ = 'idchatUser'
+
+    associated_user = db.Column('associated_user', db.String, db.ForeignKey('user.uid'))
+    
+    def __init__(self, user: UserTG, associated_user: str) -> None:
+        super().__init__(user.id_user, user.id_chat, user.logged)
+        self.associated_user = associated_user
