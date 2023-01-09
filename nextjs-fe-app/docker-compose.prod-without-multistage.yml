@@ -2,7 +2,8 @@ version: '3'
 
 services:
   next-app:
-    container_name: next-app
+    container_name: iot-nextjs
+    image: mick2k1/iot-nextjs-fe
     build:
       context: ./next-app
       dockerfile: prod-without-multistage.Dockerfile
