@@ -162,8 +162,12 @@ def check(uid, id_bin):
     operators = Operator.query.all()
     admins = Admin.query.all()
    
-    status_attuale = (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(
-        BinRecord.timestamp.desc()).first()).status
+    ultimo_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(BinRecord.timestamp.desc()).first()
+    if(ultimo_bin_record is None):
+        status_attuale=None
+    else:
+        status_attuale= ultimo_bin_record.status
+
     if (len(users) > 0):
         for user in users:
             if (uid == user.uid):
