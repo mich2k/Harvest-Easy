@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask import request
-from app.database.tables import Apartment, Bin
+from app.database.tables import Apartment, Bin, BinRecord
 from app.database.__init__ import db
 import requests
 import numpy as np
@@ -18,8 +18,18 @@ def getneighbor():
     apartment_ID = Bin.query.filter(Bin.id_bin==id_bin)[0].apartment_ID
     lat_bin= Apartment.query.filter(Apartment.apartment_name==apartment_ID)[0].lat
     long_bin= Apartment.query.filter(Apartment.apartment_name==apartment_ID)[0].lng
-  
+    tipologia = Bin.query.filter(Bin.id_bin == id_bin).first().tipologia
     apartments = Apartment.query.all()
+    bins = Bin.query.filter(Bin.tipologia==tipologia)
+    for bin in bins:
+        ultimo_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(BinRecord.timestamp.desc()).first()
+        if(ultimo_bin_record is None):
+            status=None
+        else:
+            status= ultimo_bin_record.status
+        if (status == 1):
+            None
+
     coordinates=[] 
     index=0
     i=0
