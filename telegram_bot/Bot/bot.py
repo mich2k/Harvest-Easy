@@ -45,10 +45,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(id_chat, text="Si prega di inviare la richiesta di registrazione prima di procedere")
 
 
-async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    pass
-
-
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pass
 
@@ -57,7 +53,6 @@ if __name__ == '__main__':
     application = ApplicationBuilder().token(TOKEN).build()
 
     start_handler = CommandHandler('start', start)
-    status_handler = CommandHandler('status', status)
     help_handler = CommandHandler('help', helper)
 
     application.add_handler(start_handler)
