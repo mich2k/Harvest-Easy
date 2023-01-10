@@ -9,7 +9,7 @@ const Home: NextPage = () => {
     import("flowbite/dist/flowbite");
   }, []);
   const [apartment_key, setApartmentKey] = useState(0);
-  const [checked_state, setCheck] = useState('a');
+  const [checked_state, setCheck] = useState(true);
 
   return (
     <section className="h-full gradient-form bg-gray-200 md:h-screen">
@@ -58,9 +58,9 @@ const Home: NextPage = () => {
                         >
                           Log in
                         </button>
-                        <div className="form-check form-check-inline">
-                          <input className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" id="inlineCheckbox2" value="option2" />
-                          <label className="form-check-label inline-block text-gray-800" htmlFor="inlineCheckbox2">Confirm apartmend id</label>
+                        <div className="flex items-center mb-4">
+                          <input onChange={() => {setCheck(!checked_state); console.log(checked_state)}} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                            <label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Confirm apartment id</label>
                         </div>
                         <a className="text-gray-500" href="#!">Tutto apposto?</a>
                       </div>
