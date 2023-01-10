@@ -101,6 +101,7 @@ class Apartment(db.Model):
     lng = db.Column('lng', db.Float)
     apartment_street_number = db.Column('apartment_street_number', db.Integer, nullable=False)
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
+    
     # FK
     associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
     
