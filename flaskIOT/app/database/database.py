@@ -289,60 +289,64 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
     """
 
     # TODO rendere più fine
+    if(riempimento!=None):
+        # passaggio da pieno a non pieno e viceversa
+        if (status_attuale == 1 and float(riempimento) >= soglia_attuale):
+            full_state()
+            status_attuale = 2
 
-    # passaggio da pieno a non pieno e viceversa
-    if (status_attuale == 1 and float(riempimento) >= soglia_attuale):
-        full_state()
-        status_attuale = 2
+        if (status_attuale == 3 and float(riempimento) >= soglia_attuale):
+            full_state()
+            status_attuale = 4
 
-    if (status_attuale == 3 and float(riempimento) >= soglia_attuale):
-        full_state()
-        status_attuale = 4
+        if (status_attuale == 2 and float(riempimento) < soglia_attuale):
+            status_attuale = 1
+            db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
+                {'ultimo_svuotamento': datetime.datetime.now()})
+            db.session.commit()
 
-    if (status_attuale == 2 and float(riempimento) < soglia_attuale):
-        status_attuale = 1
-        db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-            {'ultimo_svuotamento': datetime.datetime.now()})
-        db.session.commit()
-
-    if (status_attuale == 4 and float(riempimento) < soglia_attuale):
-        status_attuale = 3
-        db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-            {'ultimo_svuotamento': datetime.datetime.now()})
-        db.session.commit()
+        if (status_attuale == 4 and float(riempimento) < soglia_attuale):
+            status_attuale = 3
+            db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
+                {'ultimo_svuotamento': datetime.datetime.now()})
+            db.session.commit()
 
     # passaggio da accappottato a dritto e viceversa
-    if (status_attuale == 3 and (roll < 45 and (abs(pitch-90) < 45))):
-        status_attuale = 1
+    if(roll!=None and pitch!=None):
+        if (status_attuale == 3 and (roll < 45 and (abs(pitch-90) < 45))):
+            status_attuale = 1
 
-    if (status_attuale == 1 and (roll >= 45 or (abs(pitch-90) >= 45))):
-        overturn()
-        status_attuale = 3
+        if (status_attuale == 1 and (roll >= 45 or (abs(pitch-90) >= 45))):
+            overturn()
+            status_attuale = 3
 
-    if (status_attuale == 4 and (roll < 45 and (abs(pitch-90) < 45))):
-        status_attuale = 2
+        if (status_attuale == 4 and (roll < 45 and (abs(pitch-90) < 45))):
+            status_attuale = 2
 
-    if (status_attuale == 2 and (roll >= 45 or (abs(pitch-90) >= 45))):
-        overturn()
-        status_attuale = 4
+        if (status_attuale == 2 and (roll >= 45 or (abs(pitch-90) >= 45))):
+            overturn()
+            status_attuale = 4
+    if(co2!=None):
+        # Caso in cui nel bidone ci dovesse essere un incendio
+        if (status_attuale == 3 and co2 < limite_co2):
+            status_attuale = 1
 
-    # Caso in cui nel bidone ci dovesse essere un incendio
-    if (status_attuale == 3 and co2 < limite_co2):
-        status_attuale = 1
+        if (status_attuale == 1 and co2 >= limite_co2):
+            fire()
+            status_attuale = 3
 
-    if (status_attuale == 1 and co2 >= limite_co2):
-        fire()
-        status_attuale = 3
+        if (status_attuale == 4 and co2 < limite_co2):
+            status_attuale = 2
 
-    if (status_attuale == 4 and co2 < limite_co2):
-        status_attuale = 2
-
-    if (status_attuale == 2 and co2 >= limite_co2):
-        fire()
-        status_attuale = 4
+        if (status_attuale == 2 and co2 >= limite_co2):
+            fire()
+            status_attuale = 4
 
     return status_attuale
 
+def set_previsione_status(id_bin, status_previsto):
+    db.session.query(Bin).filter(Bin.id_bin == id_bin).update({'previsione_status': status_previsto})
+    db.session.commit()
 
 def getstringstatus(status):
     if (status == 1):

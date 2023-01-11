@@ -5,6 +5,8 @@ import pandas as pd
 from prophet import Prophet
 import matplotlib as plt
 import csv
+from app.database.database import calcolastatus, set_previsione_status
+ 
 
 fbprophet_blueprint = Blueprint(
     'fbprophet', __name__, template_folder='templates', url_prefix='/fbprophet')
@@ -21,16 +23,14 @@ def getprevision():
     timestamp = []
     filling = []
     for bin in bins:  # per ogni bidone creo una previsione temporale
-
-        # Slicing con le ultime 30 istanze
-        bin_records = (BinRecord.query.filter_by(
-            BinRecord.id_bin == bin.id_bin).order_by(BinRecord.timestamp))[:30]
+        bin_records = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(BinRecord.timestamp.desc())[:30]
+        apartment_name = Bin.query.filter(Bin.id_bin==bin.id_bin)[0].apartment_ID
+        tipologia = Bin.query.filter(Bin.id_bin == bin.id_bin).first().tipologia
 
         for bin_record in bin_records:
             timestamp.append(bin_record.timestamp)
             filling.append(bin.riempimento)
 
-        # TODO SALVARE correttamente IL FILE
         with open('fillinglevel.csv', 'w') as csvfile:
             filewriter = csv.writer(csvfile, delimiter=',',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -44,10 +44,6 @@ def getprevision():
         df.columns = ['ds', 'y']
         df['ds'] = pd.to_datetime(df['ds'])
 
-        # Predictions are then made on a dataframe with a column ds containing the dates for which a prediction is to be made.
-        # You can get a suitable dataframe that extends into the future a specified number of days using the helper method Prophet.make_future_dataframe.
-        # By default it will also include the dates from the history, so we will see the model fit as well.
-
         m = Prophet()
         m.fit(df)
 
@@ -55,35 +51,21 @@ def getprevision():
         future.tail()
         forecast = m.predict(future)
 
-        # The forecast object here is a new dataframe that includes a column yhat with the forecast, as well as columns for components and uncertainty intervals.
         forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
 
-        fig1 = m.plot(forecast)
-        # datenow = datetime.now()
-        datenow = datetime(2022, 12, 24)
+        m.plot(forecast)
+
+        datenow = datetime.datetime.now()
         dateend = datenow + timedelta(days=5)
         datestart = dateend - timedelta(days=20)
         plt.xlim([datestart, dateend])
         plt.title("Bin/Filling Level forecast", fontsize=20)
         plt.xlabel("Day", fontsize=20)
         plt.ylabel("Filling level", fontsize=20)
-        plt.axvline(datenow, color="k", linestyle=":")
-        plt.show()
-
-        fig2 = m.plot_components(forecast)
+        plt.savefig("/Predizioni/%s/%s/Forecast.png" % (apartment_name, tipologia), format='png')
 
         prediction = forecast[['yhat']]
+        status_previsto=calcolastatus(bin.id_bin, prediction[0], None, None, None)
+        set_previsione_status(bin.id_bin, status_previsto)
 
-        # messaggio Json
-        msgJson = {
-            'id_bin': bin.id_bin,
-            'riempimento': prediction[0]
-        }
-        jsonify(msgJson)
-
-        # mando il json alla pagina trap/getstatus
-        # previsione ricevuta
-        status = 0
-        Bin.query().filter(Bin.id_bin == bin.id_bin).update(
-            {Bin.previsione_status: status}, synchronize_session=False)
         return 'done'
