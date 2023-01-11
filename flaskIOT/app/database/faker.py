@@ -44,7 +44,6 @@ def create_faker(db):
                         Operator(Person(uid="rossi11", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2004),id=500)])
     
     #Mich & Vinz Telegram profiles
-    ids = getenv('IDs').split(', ')
     db.session.add_all([
         TelegramIDChatUser(UserTG('@vinz20110', logged=False),'vinz'),
         TelegramIDChatUser(UserTG('@mick2k', logged=False),'chad')
