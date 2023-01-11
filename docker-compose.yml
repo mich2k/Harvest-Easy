@@ -16,15 +16,18 @@ services:
     build:
         dockerfile: Dockerfile
         context: ./telegram_bot
+
     image: 267759/botflask:1.0    
     container_name: botflask
     environment:
         - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
-        - URL=https://flask.gmichele.it/db/
+        - URL=http://iotproj:5000/db/
 
   nextjs_app:
     image: mick2k1/iot-nextjs-fe
     container_name: nextjs_app
+    ports:
+      - "3000:3000"
 
   nominatim:
     container_name: nominatim
