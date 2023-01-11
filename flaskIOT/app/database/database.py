@@ -1,6 +1,6 @@
 import requests
 import datetime
-from sqlalchemy import select
+from sqlalchemy import update
 from flask import render_template, request, Blueprint
 from os import getenv
 from app.database.tables import *
@@ -57,6 +57,8 @@ def addbin():
     except:
         return 'Error'
     return 'Done'
+
+#TODO Creare un'unica route per l'aggiunta di un utente/admin/operatore sfruttando un campo: role
 
 # AGGIUNTA DI UN USER
 
@@ -201,7 +203,8 @@ def stampaitems():
               Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
               User.query.order_by(User.uid.desc()).all(),
               Admin.query.order_by(Admin.uid.desc()).all(),
-              BinRecord.query.order_by(BinRecord.id_record.desc()).all()]
+              BinRecord.query.order_by(BinRecord.id_record.desc()).all(),
+              TelegramIDChatUser.query.all()]
 
     return render_template('listitems.html', listona=elenco)
 
@@ -352,3 +355,38 @@ def getstringstatus(status):
         return "manomesso e pieno"
     else:
         return "Error"
+
+#Getters
+@database_blueprint.route('/accessAdmin/<string:uid>&<string:password>', methods=['GET'])
+def login(uid, password):
+    found = False
+    for asw in db.session.query(Admin.uid == uid and Admin.password == password).all():
+        if asw[0]:
+            found = True
+            
+    return str(found)
+
+@database_blueprint.route('/checkUsername/<string:usr>', methods=['GET'])
+def checkUsername(usr):
+    found = False
+    for asw in db.session.query(TelegramIDChatUser.id_user == usr).all():
+        if asw[0]:
+            found = True
+            
+    return str(found)
+
+@database_blueprint.route('/checkSession/<string:chatid>&<string:userid>', methods=['GET'])
+def checkSession(userid):
+    found = False
+    for asw in db.session.query(TelegramIDChatUser.id_user == userid and TelegramIDChatAdmin.id_user == userid).all():
+        if asw[0]:
+            found = True
+            
+    return str(found)
+
+
+@database_blueprint.route('/setSession/<string:usr>', methods=['GET'])
+def setSession(usr):
+    db.session.execute(update(TelegramIDChatUser).where(TelegramIDChatUser.id_user == usr).values({'logged': True}))
+    db.session.commit()
+    return 'done'
