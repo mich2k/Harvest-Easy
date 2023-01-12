@@ -4,7 +4,7 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}", // Note the addition of the `app` directory.
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
-    "./app/**/*.{js,ts,jsx,tsx}", // Note the addition of the `app` directory.
+    "./app/**/*.{js,ts,jsx,tsx}",
     "node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
     "node_modules/flowbite/**/*.{js,jsx,ts,tsx}"
 
