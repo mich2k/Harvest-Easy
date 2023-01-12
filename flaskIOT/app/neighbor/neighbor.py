@@ -1,9 +1,6 @@
 from flask import Blueprint
-from flask import request
 from app.database.tables import Apartment, Bin, BinRecord
-from app.database.__init__ import db
 import requests
-import numpy as np
 import sys
   
 neighbor_blueprint = Blueprint('neighbor', __name__, template_folder='templates')
@@ -11,10 +8,8 @@ neighbor_blueprint = Blueprint('neighbor', __name__, template_folder='templates'
 def main():
     return '<h1>Neighbor Search</h1>'
 
-@neighbor_blueprint.route('/getneighbor', methods=['POST'])  
-def getneighbor(): 
-    msgJson = request.get_json()
-    id_bin = msgJson["id_bin"]
+@neighbor_blueprint.route('/getneighbor/<int:id_bin>', methods=['GET'])  
+def getneighbor(id_bin): 
     #dati del bidone pieno
     apartment_ID = Bin.query.filter(Bin.id_bin==id_bin)[0].apartment_ID
     lat_bin= Apartment.query.filter(Apartment.apartment_name==apartment_ID)[0].lat

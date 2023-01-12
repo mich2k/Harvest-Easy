@@ -1,12 +1,8 @@
 from flask import Blueprint
-from flask import Flask
 from app.database.tables import Apartment, Bin
-from os import getenv
 from flask import render_template
 import requests
 
-# you can set key as config
-#OPENROUTESERVICE_KEY = getenv('OPENROUTESERVICE_KEY')
 
 path_blueprint = Blueprint('path', __name__, template_folder='templates')
 @path_blueprint.route('/')

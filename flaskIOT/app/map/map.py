@@ -1,14 +1,9 @@
 from flask import Blueprint
-from os import getenv
 from app.database.tables import Apartment, Bin, BinRecord
-from app.database.__init__ import db
 from app.database.database import getstringstatus
 import json
-from sqlalchemy.sql.expression import func
 import datetime
-from flask import jsonify
 
-HERE_API_KEY = getenv('HERE_KEY')
 
 map_blueprint = Blueprint('map', __name__, template_folder='templates')
 
@@ -18,13 +13,8 @@ def main():
 
 #MAPPA COMPLETA CON TUTTI I BIDONI
 @map_blueprint.route('/getmap')
-#@map_blueprint.route('/getmap/<string:tipologia>')
 def getmap(): 
     apartments = Apartment.query.all()
-    #if (tipologia == None):
-        
-     #   pass
-
     points=[]
     for apartment in apartments:
         bins = Bin.query.filter(Bin.apartment_ID == apartment.apartment_name) 

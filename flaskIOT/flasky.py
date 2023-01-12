@@ -6,7 +6,7 @@ from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
 from app.map.map import map_blueprint
 from app.geofirstrecord.geofirstrecord import geofirstrecord_blueprint
-#from app.fbprophet.fbprophet import fbprophet_blueprint
+from app.fbprophet.fbprophet import fbprophet_blueprint
 from app.utils.utils import Utils
 from os import getenv
 
@@ -68,7 +68,7 @@ app.register_blueprint(database_blueprint, url_prefix='/db')
 app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
 app.register_blueprint(map_blueprint, url_prefix='/map')
-#app.register_blueprint(fbprophet_blueprint, url_prefix='/fbprophet')
+app.register_blueprint(fbprophet_blueprint, url_prefix='/pred')
 
 @app.route('/') 
 def testoHTML():

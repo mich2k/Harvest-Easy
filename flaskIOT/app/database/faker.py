@@ -1,4 +1,5 @@
 
+from os import getenv
 from .tables import *
 from ..utils import utils
 from .record_faker import faker_instances
@@ -30,8 +31,8 @@ def create_faker(db):
                    Apartment(apartment_name="IDK", city="Modena", street="via Cividale", apartment_street_number=80, lat=44.6280877, lng=10.9166076,n_internals=50, associated_admin='luigi3')])
     
     #Users
-    db.session.add_all([User(Person(uid="rossi1", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2001), "Fermi", 45),
-                   User(Person(uid="rossi2", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2002), "Cuoppo", 67),
+    db.session.add_all([User(Person(uid="vinz", name="Vincenzo", surname="Lapadula", password="ilovecondomini", city="Modena", birth_year=2001), "Fermi", 45),
+                   User(Person(uid="chad", name="Michele", surname="Giarletta", password="ilovecondomini", city="Avellino", birth_year=2002), "Cuoppo", 67),
                    User(Person(uid="rossi3", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2003), "Torri" , 78),
                    User(Person(uid="rossi4", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2004), "Cuoppo", 23),
                    User(Person(uid="rossi5", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2005), "Fermi", 33),
@@ -41,6 +42,12 @@ def create_faker(db):
     db.session.add_all([Operator(Person(uid="rossi8", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2004),id=158), 
                         Operator(Person(uid="rossi10", name="Mario", surname="Rossi", password="ilovecondomini", city="Modena", birth_year=2004),id=478), 
                         Operator(Person(uid="rossi11", name="Mario", surname="Rossi", password="ilovecondomini", city="Avellino", birth_year=2004),id=500)])
+    
+    #Mich & Vinz Telegram profiles
+    db.session.add_all([
+        TelegramIDChatUser(UserTG('@vinz20110', logged=False),'vinz'),
+        TelegramIDChatUser(UserTG('@mick2k', logged=False),'chad')
+    ])
     
     
     #BinRecords
