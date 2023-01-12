@@ -371,7 +371,7 @@ def login(uid, password):
     return str(found)
 
 @database_blueprint.route('/checkUsername/<string:usr>', methods=['GET'])
-def checkUsername(usr):
+def checkusername(usr):
     found = False
     for asw in db.session.query(TelegramIDChatUser.id_user == usr).all():
         if asw[0]:
@@ -380,7 +380,7 @@ def checkUsername(usr):
     return str(found)
 
 @database_blueprint.route('/checkSession/<string:chatid>&<string:userid>', methods=['GET'])
-def checkSession(userid):
+def checksession(userid):
     found = False
     for asw in db.session.query(TelegramIDChatUser.id_user == userid and TelegramIDChatAdmin.id_user == userid).all():
         if asw[0]:
@@ -390,7 +390,29 @@ def checkSession(userid):
 
 
 @database_blueprint.route('/setSession/<string:usr>', methods=['GET'])
-def setSession(usr):
+def setsession(usr):
     db.session.execute(update(TelegramIDChatUser).where(TelegramIDChatUser.id_user == usr).values({'logged': True}))
     db.session.commit()
     return 'done'
+
+# Getters, return json
+
+@database_blueprint.route('getbins/<string:city>', methods=['GET'])
+def getbins(city):
+    pass
+
+@database_blueprint.route('/getusers/<string:city>', methods=['GET'])
+def getusers(city):
+    pass
+
+@database_blueprint.route('/getypes/<string:apartment>', methods=['GET'])
+def getypes(city):
+    pass
+
+@database_blueprint.route('/getapartmentusers/<string:apartment>', methods=['GET'])
+def getapartmentusers(city):
+    pass
+
+@database_blueprint.route('/getbininfo/<string:idbin>', methods=['GET'])
+def getbininfo(idbin):
+    pass
