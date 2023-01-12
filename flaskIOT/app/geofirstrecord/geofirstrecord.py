@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, jsonify, request, Response
+from flask import Blueprint, flash, jsonify, make_response, Response, redirect
 from flask_restful import Api, Resource, url_for
 import flasky
 geofirstrecord_blueprint = Blueprint('geofirstrecord', __name__, template_folder='templates')
@@ -22,18 +22,20 @@ class GeoFirstRecordResourceful(Resource):
         
 
 class GeoFirstRecord(Resource):
-    def get(self):
-        response = Response()
+    def get(self, apartment_id):
+        """response = Response()
         data = {}
         time = flasky.getUtils().get_local_time
         data['message'] = 'Hello from geofirstrecord module!'
         data['time'] = time.__str__()
-        data['url'] = url_for('geofirstrecord.geofirstrecord')
-        response = jsonify(data)
-        response.status = 200
-        return response
-
-
-
-api.add_resource(GeoFirstRecord, '/')
-api.add_resource(GeoFirstRecordResourceful, '/<string:key>/<string:username>')
+        data['apartment_id'] = apartment_id
+        response.status = 413
+        response.json_module = jsonify(data)"""
+        
+        page = redirect('https://hero.gmichele.it')
+        page.set_cookie('somecookiename', apartment_id)
+        
+        return page
+        
+api.add_resource(GeoFirstRecord, '/<string:apartment_id>')
+api.add_resource(GeoFirstRecordResourceful, '/')

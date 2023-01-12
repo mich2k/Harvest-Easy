@@ -32,6 +32,10 @@ class Utils:
         return random.random()
 
     @property
+    def get_local_time(self):
+        return datetime.now()
+    
+    @property
     def get_timestamp(self):
         return datetime.timestamp(datetime.now())
 
