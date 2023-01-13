@@ -392,28 +392,64 @@ def setsession(usr):
 
 # Getters for SuperUsers, return json
 
-@database_blueprint.route('getbins/<string:city>', methods=['GET'])
+@database_blueprint.route('/getbins/<string:city>', methods=['GET'])
 def getbins(city):
-    db.session.query(Bin.apartment_ID == (db.session.query(Apartment.city == city))).all()
-    return 'done'
+    
+    # Subquery: 
+    sq = db.session.query(Apartment.apartment_name).where(Apartment.city == city)
+    
+    # Query:  
+    res = db.session.query(Bin).filter(Bin.apartment_ID.in_(sq)).all()
+
+    return render_template('resultquery.html', lista=res)
+
 
 @database_blueprint.route('/getusers/<string:city>', methods=['GET'])
 def getusers(city):
-    return 'done'
+        
+    # Subquery: 
+    sq = db.session.query(Apartment.apartment_name).where(Apartment.city == city)
+    
+    # Query:  
+    res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
+
+    return render_template('resultquery.html', lista=res)
 
 
 @database_blueprint.route('/getypes/<string:apartment>', methods=['GET'])
 def getypes(apartment):
-    return 'done'
+    
+    # Subquery: 
+    sq = db.session.query(Apartment.apartment_name).where(Apartment.apartment_name == apartment)
+    
+    # Query:  
+    res = db.session.query(Bin.tipologia).filter(Bin.apartment_ID.in_(sq)).all()
+
+    return render_template('resultquery.html', lista=res)
 
 @database_blueprint.route('/getapartmentusers/<string:apartment>', methods=['GET'])
 def getapartmentusers(apartment):
-    return 'done'
+    
+    # Subquery: 
+    sq = db.session.query(Apartment.apartment_name).where(Apartment.apartment_name == apartment)
+    
+    # Query:  
+    res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
+
+    return render_template('resultquery.html', lista=res)
 
 @database_blueprint.route('/getbininfo/<string:idbin>', methods=['GET'])
 def getbininfo(idbin):
-    return 'done'
+    
+    # Query:  
+    res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
+
+    return render_template('resultquery.html', lista=res)
 
 @database_blueprint.route('/getApartment/<string:name>', methods=['GET'])
 def getapartment(name):
-    return 'done'
+     
+    # Query:  
+    res = db.session.query(Apartment).where(Apartment.apartment_name == name).all()
+
+    return render_template('resultquery.html', lista=res)
