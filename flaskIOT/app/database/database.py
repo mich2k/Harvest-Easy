@@ -85,16 +85,10 @@ def adduser():
 # AGGIUNTA DI UN ADMIN
 
 
-@database_blueprint.route('/addadmin', methods=['POST'])
-def addadmin():
-    msgJson = request.get_json()
-
-    admin = Admin(Person(uid=msgJson['uid'],
-                         name=msgJson['name'],
-                         surname=msgJson['surname'],
-                         password=msgJson['password'],
-                         city=msgJson['city'],
-                         birth_year=msgJson['year']))
+@database_blueprint.route('/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>', methods=['GET'])
+def addadmin(uid, name, surname, password, city, birth_year):
+    admin = Admin(Person(uid, name,surname, password, city, birth_year))
+    
     try:
         db.session.add(admin)
         db.session.commit()
@@ -129,27 +123,28 @@ def addoperator():
 
 @database_blueprint.route('/addapartment', methods=['POST'])
 def addapartment():
-    msgJson = request.get_json()
-    URL = f'https://osm.gmichele.it/search'
-    address = msgJson['street'] + " " + \
-        str(msgJson['street_number']) + " " + msgJson['city']
-    params = {
-        'q': address + ' Italia',
-    }
-    req = requests.get(URL, params=params)
-    result = req.json()
-    lat = result[0]['lat']
-    lng = result[0]['lon']
-    apartment = Apartment(apartment_name=msgJson['apartment_name'],
-                          city=msgJson['city'],
-                          street=msgJson['street'],
-                          lat=lat,
-                          lng=lng,
-                          apartment_street_number=msgJson['street_number'],
-                          n_internals=msgJson['n_internals'],
-                          associated_admin=msgJson['associated_admin'])
-
     try:
+        msgJson = request.get_json()
+        URL = f'https://osm.gmichele.it/search'
+        address = msgJson['street'] + " " + \
+            str(msgJson['street_number']) + " " + msgJson['city']
+        params = {
+            'q': address + ' Italia',
+        }
+        req = requests.get(URL, params=params)
+        result = req.json()
+        lat = result[0]['lat']
+        lng = result[0]['lon']
+        apartment = Apartment(apartment_name=msgJson['apartment_name'],
+                              city=msgJson['city'],
+                              street=msgJson['street'],
+                              lat=lat,
+                              lng=lng,
+                              apartment_street_number=msgJson['street_number'],
+                              n_internals=msgJson['n_internals'],
+                              associated_admin=msgJson['associated_admin'])
+    
+        
         db.session.add(apartment)
         db.session.commit()
     except:
@@ -395,24 +390,30 @@ def setsession(usr):
     db.session.commit()
     return 'done'
 
-# Getters, return json
+# Getters for SuperUsers, return json
 
 @database_blueprint.route('getbins/<string:city>', methods=['GET'])
 def getbins(city):
-    pass
+    db.session.query(Bin.apartment_ID == (db.session.query(Apartment.city == city))).all()
+    return 'done'
 
 @database_blueprint.route('/getusers/<string:city>', methods=['GET'])
 def getusers(city):
-    pass
+    return 'done'
+
 
 @database_blueprint.route('/getypes/<string:apartment>', methods=['GET'])
-def getypes(city):
-    pass
+def getypes(apartment):
+    return 'done'
 
 @database_blueprint.route('/getapartmentusers/<string:apartment>', methods=['GET'])
-def getapartmentusers(city):
-    pass
+def getapartmentusers(apartment):
+    return 'done'
 
 @database_blueprint.route('/getbininfo/<string:idbin>', methods=['GET'])
 def getbininfo(idbin):
-    pass
+    return 'done'
+
+@database_blueprint.route('/getApartment/<string:name>', methods=['GET'])
+def getapartment(name):
+    return 'done'

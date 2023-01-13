@@ -113,8 +113,7 @@ class BinRecord(db.Model):
         self.timestamp = jsonObj['timestamp']
      
     def __repr__(self) -> str:
-        return 'BinRecord(id_record: {}, status: {}, temperature: {}, humidity: {}, riempimento: {}, timestamp: {})'.format(self.id_record, self.status, self.temperature, self.humidity, self.riempimento, self.timestamp)
-
+        return 'BinRecord(id_record: {}, status: {}, temperature: {}, humidity: {}, riempimento: {}, timestamp: {}, associated_bin: {})'.format(self.id_record, self.status, self.temperature, self.humidity, self.riempimento, self.timestamp, self.associated_bin)
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'

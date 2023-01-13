@@ -46,7 +46,7 @@ def create_faker(db):
     #Mich & Vinz Telegram profiles
     db.session.add_all([
         TelegramIDChatUser(UserTG('@vinz20110', logged=False),'vinz'),
-        TelegramIDChatUser(UserTG('@mick2k', logged=False),'chad')
+        TelegramIDChatUser(UserTG('@mich2k', logged=False),'chad')
     ])
     
     
