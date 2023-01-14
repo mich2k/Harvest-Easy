@@ -45,9 +45,10 @@ class Operator(Person, db.Model):
     def __init__(self, x: Person, id: int) -> None:
         super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
         self.id_operator = id
-        
+
     def __repr__(self) -> str:
         return 'Operator(uid: {}, name: {}, surname: {}, city: {}, birth_year: {}, id_operator: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year, self.id_operator)
+
 
 class User(Person, db.Model):
     __tablename__ = 'user'
@@ -60,9 +61,10 @@ class User(Person, db.Model):
         super().__init__(p.uid, p.name, p.surname, p.password, p.city, p.birth_year)
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
-        
+
     def __repr__(self) -> str:
         return 'User(uid: {}, name: {}, surname: {}, city:{}, birth_year:{}, internal_number: {}, apartment_ID: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year, self.internal_number, self.apartment_ID)
+
 
 class Bin(db.Model):
     __tablename__ = 'bin'
@@ -83,7 +85,7 @@ class Bin(db.Model):
         self.apartment_ID = jsonObj['apartment_ID']
         # da decommentare solo per il faker
         self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
-    
+
     def __repr__(self) -> str:
         return 'Bin(id_bin: {}, tipologia: {}, previsione_status: {}, ultimo_svuotamento: {}, apartment_ID: {})'.format(self.id_bin, self.tipologia, self.previsione_status, self.ultimo_svuotamento, self.apartment_ID)
 
@@ -111,9 +113,10 @@ class BinRecord(db.Model):
         self.riempimento = jsonObj['riempimento']
         # da decommentare solo per creare il faker
         self.timestamp = jsonObj['timestamp']
-     
+
     def __repr__(self) -> str:
         return 'BinRecord(id_record: {}, status: {}, temperature: {}, humidity: {}, riempimento: {}, timestamp: {}, associated_bin: {})'.format(self.id_record, self.status, self.temperature, self.humidity, self.riempimento, self.timestamp, self.associated_bin)
+
 
 class Apartment(db.Model):
     __tablename__ = 'apartment'
@@ -128,7 +131,7 @@ class Apartment(db.Model):
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
 
     # FK
-    associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
+    associated_admin = db.Column('associated_admin', db.String, db.ForeignKey('admin.uid'))
 
     def __init__(self, apartment_name: str, city: str, street: str, lat: str, lng: str,
                  apartment_street_number: int, n_internals: int, associated_admin: str):
@@ -144,11 +147,8 @@ class Apartment(db.Model):
     def __repr__(self) -> str:
         return 'Apartment(Apartment Name: {}, city: {}, street: {}, lat: {}, lng: {}, Apartment Street Number: {}, N Internals: {}, Associated Admin: {})'.format(self.apartment_name, self.city, self.street, self.lat, self.lng, self.apartment_street_number, self.n_internals, self.associated_admin)
 
-"""class AlterationRecord(db.Model):
-    __tablename__ = 'alterationRecord'"""
 
 # Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram
-
 
 class TelegramIDChatAdmin(UserTG, db.Model):
     __tablename__ = 'idchatAdmin'
@@ -170,5 +170,35 @@ class TelegramIDChatUser(UserTG, db.Model):
     def __init__(self, user: UserTG, associated_user: str) -> None:
         super().__init__(user.id_user, user.logged)
         self.associated_user = associated_user
+
     def __repr__(self) -> str:
         return 'user_id: {}, logged: {}, associated_user: {}'.format(self.id_user, self.logged, self.associated_user)
+
+
+class LeaderBoard(db.Model):
+    __tablename__ = 'leaderboard'
+    
+    record_id = db.Column('idrecord', db.Integer, primary_key=True)    
+    score = db.Column('score', db.Integer, default=0)
+    associated_bin = db.Column('associatedbin', db.String, db.ForeignKey('bin.id_bin'))
+    associated_user = db.Column('user', db.String, db.ForeignKey('user.uid'))
+    #alteration_solved = db.Column('alteration_solved', db.ARRAY(db.String), default=[])
+    
+    def __init__(self, score, associated_bin, associated_user) -> None:
+        self.score = score
+        self.associated_bin = associated_bin
+        self.associated_user = associated_user
+
+class AlterationRecord(db.Model):
+    __tablename__ = 'alterationRecord'
+    
+    alteration_id = db.Column('record', db.Integer, primary_key=True)
+    type_of_event = db.Column('event', db.String)
+    is_notified = db.Column('is_notified', db.Boolean)
+    associated_bin = db.Column('associated_bin', db.String, db.ForeignKey('bin.id_bin'))
+    timestamp = db.Column('event_timestamp', db.String, default=datetime.now())
+     
+    def __init__(self, type_of_event, is_notified, associated_bin) -> None:
+        self.type_of_event = type_of_event
+        self.is_notified = is_notified
+        self.associated_bin = associated_bin

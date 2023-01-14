@@ -392,64 +392,58 @@ def setsession(usr):
 
 # Getters for SuperUsers, return json
 
-@database_blueprint.route('/getbins/<string:city>', methods=['GET'])
+# Get: TUTTI I BIN DI UNA CITTÁ
+@database_blueprint.route('/getBins/<string:city>', methods=['GET'])
 def getbins(city):
     
-    # Subquery: 
+    # Subquery: Tutti gli appartamenti della cittá indicata 
     sq = db.session.query(Apartment.apartment_name).where(Apartment.city == city)
     
-    # Query:  
+    # Query: Tutti i bin negli appartamenti selezionati
     res = db.session.query(Bin).filter(Bin.apartment_ID.in_(sq)).all()
 
     return render_template('resultquery.html', lista=res)
 
-
-@database_blueprint.route('/getusers/<string:city>', methods=['GET'])
+# Get: TUTTI GLI UTENTI DI UNA CITTÁ
+@database_blueprint.route('/getUsers/<string:city>', methods=['GET'])
 def getusers(city):
         
-    # Subquery: 
+    # Subquery: Tutti gli appartamenti della cittá indicata
     sq = db.session.query(Apartment.apartment_name).where(Apartment.city == city)
     
-    # Query:  
+    # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
     return render_template('resultquery.html', lista=res)
 
-
+# Get: tutti i tipi di bidone nell'appartamento indicato
 @database_blueprint.route('/getypes/<string:apartment>', methods=['GET'])
 def getypes(apartment):
     
-    # Subquery: 
-    sq = db.session.query(Apartment.apartment_name).where(Apartment.apartment_name == apartment)
-    
-    # Query:  
-    res = db.session.query(Bin.tipologia).filter(Bin.apartment_ID.in_(sq)).all()
+    res = db.session.query(Bin.tipologia).filter(Bin.apartment_ID == apartment).all()
 
     return render_template('resultquery.html', lista=res)
 
-@database_blueprint.route('/getapartmentusers/<string:apartment>', methods=['GET'])
+# Get: user dell'appartamento indicato
+@database_blueprint.route('/getApartmentUsers/<string:apartment>', methods=['GET'])
 def getapartmentusers(apartment):
     
-    # Subquery: 
-    sq = db.session.query(Apartment.apartment_name).where(Apartment.apartment_name == apartment)
-    
-    # Query:  
-    res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
+    res = db.session.query(User).filter(User.apartment_ID == apartment).all()
 
     return render_template('resultquery.html', lista=res)
 
-@database_blueprint.route('/getbininfo/<string:idbin>', methods=['GET'])
+# Get: tutte le info associate al bidone indicato
+@database_blueprint.route('/getBinInfo/<string:idbin>', methods=['GET'])
 def getbininfo(idbin):
     
-    # Query:  
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
 
     return render_template('resultquery.html', lista=res)
 
+# Get: ottengo tutte le informazioni dell'appartamento indicato
 @database_blueprint.route('/getApartment/<string:name>', methods=['GET'])
 def getapartment(name):
-     
-    # Query:  
+      
     res = db.session.query(Apartment).where(Apartment.apartment_name == name).all()
 
     return render_template('resultquery.html', lista=res)
