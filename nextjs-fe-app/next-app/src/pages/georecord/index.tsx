@@ -10,13 +10,17 @@ import { useRouter } from 'next/router'
 const Home: NextPage = () => {
 
 
+  const [apartment_id, setApartmentId] = useState('empty');
   const [checked_state, setCheck] = useState(true);
+
+  const router = useRouter();
 
  
 
   useEffect(() => {
     import("flowbite/dist/flowbite");
      
+    setApartmentId(String(router.query['ap_id']));
 
   }, []);
 
@@ -41,8 +45,10 @@ const Home: NextPage = () => {
                         src="https://e7.pngegg.com/pngimages/165/760/png-clipart-s-s-c-napoli-2017-audi-cup-stadio-san-paolo-football-uefa-champions-league-football-ssc-napoli-2017-audi-cup.png"
                         alt="logo"
                       />
-                      <h4 className="text-xl font-semibold mt-1 mb-8 pb-1">the smartest bin among the smartest.</h4>
-                      <h5 className="text-l font-italic mt-1 mb-4 pb-1">Welcome, please log in </h5>
+                      <h4 className="text-xl font-semibold mt-1 mb-8 pb-1">Apartment registration tool</h4>
+                      <h5 className="text-l font-italic mt-1 mb-4 pb-1">You are trying to initialize the following apartment: </h5>
+                      <span className="font-bold"> query: {router.query['ap_id']}</span>
+                      <span className="font-bold">  local storage:{apartment_id}</span>
                     </div>
                     <form>
                       <p className="mb-4">Please access with given credentials</p>
