@@ -131,7 +131,7 @@ class Apartment(db.Model):
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
 
     # FK
-    associated_admin = db.Column(db.String, db.ForeignKey('admin.uid'))
+    associated_admin = db.Column('associated_admin', db.String, db.ForeignKey('admin.uid'))
 
     def __init__(self, apartment_name: str, city: str, street: str, lat: str, lng: str,
                  apartment_street_number: int, n_internals: int, associated_admin: str):
@@ -178,15 +178,27 @@ class TelegramIDChatUser(UserTG, db.Model):
 class LeaderBoard(db.Model):
     __tablename__ = 'leaderboard'
     
-    record_id = db.Column()    
-    score = db.Column()
-    associated_bin = db.Column()
-    associated_user = db.Column()
+    record_id = db.Column('idrecord', db.Integer, primary_key=True)    
+    score = db.Column('score', db.Integer, default=0)
+    associated_bin = db.Column('associatedbin', db.String, db.ForeignKey('bin.id_bin'))
+    associated_user = db.Column('user', db.String, db.ForeignKey('user.uid'))
+    #alteration_solved = db.Column('alteration_solved', db.ARRAY(db.String), default=[])
+    
+    def __init__(self, score, associated_bin, associated_user) -> None:
+        self.score = score
+        self.associated_bin = associated_bin
+        self.associated_user = associated_user
 
 class AlterationRecord(db.Model):
     __tablename__ = 'alterationRecord'
     
-    alteration_id = db.Column()
-    type_of_event = db.Column()
-    is_notified = db.Column()
-    associated_bin = db.Column()
+    alteration_id = db.Column('record', db.Integer, primary_key=True)
+    type_of_event = db.Column('event', db.String)
+    is_notified = db.Column('is_notified', db.Boolean)
+    associated_bin = db.Column('associated_bin', db.String, db.ForeignKey('bin.id_bin'))
+    timestamp = db.Column('event_timestamp', db.String, default=datetime.now())
+     
+    def __init__(self, type_of_event, is_notified, associated_bin) -> None:
+        self.type_of_event = type_of_event
+        self.is_notified = is_notified
+        self.associated_bin = associated_bin

@@ -8,11 +8,12 @@ URL = 'https://api.telegram.org/bot{}/sendMessage?chat_id='.format(TOKEN)
 
 # Filled Bin
 
-
-def full_state(chat_ids, filling):
+def full_state(apartment, filling):
+    #Notificare a User, Admin
     text = 'Attenzione!\nLivello di riempimento del bidone:{}'.format(str(filling))
-    for chat_id in chat_ids:
-        requests.get(URL + '{}&text={}'.format(chat_id, text))
+    """"for chat_id in chat_ids:
+        requests.get(URL + '{}&text={}'.format(chat_id, text))"""
+    # Contattare getneighbor : via, nome dell'appartamento, città e tipologia rifiuto
 
 # Overturned Bin
 
