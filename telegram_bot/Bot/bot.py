@@ -6,35 +6,41 @@ from os import getenv
 TOKEN = getenv('TG_TOKEN')
 url = getenv('URL')
 
-# Quando il bot viene startato deve capire se l'ID chat si trova nel database
-# Se Admin allora registra i nuovi bidoni nell'appartamento
-# Se User deve essere guidato nella comprensione dell'app
-
-
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    pass
+    welcome_message = ''
+    await update.message.reply_text(welcome_message)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     id_user = update.effective_user.name
-    if requests.get(url + 'checkUsername/{}'.format(id_user)).content.decode('UTF-8') == 'True':
-        requests.get(url + 'setSession/{}'.format(id_user))
-        await update.message.reply_text('Sessione salvata')
+    
+    if requests.get(url + f'checkUsername/{id_user}').content.decode('UTF-8') == 'True':
+        requests.get(url + f'setSession/{id_user}')
+        await update.message.reply_text(f'Sessione salvata, benvenuto: {id_user}')
 
     else:
         await update.message.reply_text("Utente non registrato, contatti l'amministratore condominiale.")
 
 
 async def get_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    pass
+    
+    id_user = update.effective_user.name
+    
+    if requests.get(url + f'getSession/{id_user}').content.decode('UTF-8') == 'True':
+        resp = requests.get(url + f'getScore/{id_user}').content.decode('UTF-8')
+        await update.message.reply_text(resp)
+    else:
+        await update.message.reply_text('Inizializzi il bot')
 
 
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    pass
+    help_text = ''
+    await update.message.reply_text(help_text)
 
 
 if __name__ == '__main__':
+    
     application = ApplicationBuilder().token(TOKEN).build()
 
     welcome_handler = ChatMemberHandler(welcome, ChatMemberHandler.CHAT_MEMBER)

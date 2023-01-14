@@ -1,4 +1,5 @@
 from datetime import datetime
+from flask import Response
 from os import getenv
 import random
 
@@ -25,11 +26,19 @@ class Utils:
             time_string = str(datetime.utcnow().replace(microsecond=0))
         return time_string
     
-    def get_random_int(low: int, upper: int):
+    def get_random_int( low: int, upper: int):
         return random.randint(low, upper)
     
     def get_random():
         return random.random()
+    
+    def get_response(code, message):
+        response = Response()
+        response.status = code
+        response.data = message
+        response.content_type = 'text/plain'
+        response.mimetype = 'text/plain'
+        return response
 
     @property
     def get_local_time(self):

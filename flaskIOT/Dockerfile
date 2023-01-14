@@ -59,6 +59,7 @@ COPY requirements.txt requirements.txt
 
 
 ENV PATH="${PATH}:/home/flasky/.local/bin"
+ENV FAKER='True'
 RUN python -m venv venv
 RUN  python -m pip install --upgrade pip
 RUN  python3 -m pip install --upgrade pip

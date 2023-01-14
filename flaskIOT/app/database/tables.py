@@ -66,6 +66,16 @@ class User(Person, db.Model):
         return 'User(uid: {}, name: {}, surname: {}, city:{}, birth_year:{}, internal_number: {}, apartment_ID: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year, self.internal_number, self.apartment_ID)
 
 
+class Superuser(Person, db.Model):
+    __tablename__ = 'superuser'
+
+    def __init__(self, x: Person) -> None:
+        super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
+
+    def __repr__(self) -> str:
+        return 'Superuser(uid: {}, name: {}, surname: {}, city: {}, birth_year: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year)
+
+
 class Bin(db.Model):
     __tablename__ = 'bin'
     id_bin = db.Column('id_bin', db.Integer, primary_key=True)
@@ -131,7 +141,8 @@ class Apartment(db.Model):
     n_internals = db.Column('n_internals', db.Integer, nullable=False)
 
     # FK
-    associated_admin = db.Column('associated_admin', db.String, db.ForeignKey('admin.uid'))
+    associated_admin = db.Column(
+        'associated_admin', db.String, db.ForeignKey('admin.uid'))
 
     def __init__(self, apartment_name: str, city: str, street: str, lat: str, lng: str,
                  apartment_street_number: int, n_internals: int, associated_admin: str):
@@ -150,17 +161,6 @@ class Apartment(db.Model):
 
 # Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram
 
-class TelegramIDChatAdmin(UserTG, db.Model):
-    __tablename__ = 'idchatAdmin'
-
-    associated_admin = db.Column(
-        'associated_admin', db.String, db.ForeignKey('admin.uid'))
-
-    def __init__(self, user: UserTG, associated_admin: str) -> None:
-        super().__init__(user.id_user, user.logged)
-        self.associated_admin = associated_admin
-
-
 class TelegramIDChatUser(UserTG, db.Model):
     __tablename__ = 'idchatUser'
 
@@ -177,27 +177,31 @@ class TelegramIDChatUser(UserTG, db.Model):
 
 class LeaderBoard(db.Model):
     __tablename__ = 'leaderboard'
-    
-    record_id = db.Column('idrecord', db.Integer, primary_key=True)    
+
+    record_id = db.Column('idrecord', db.Integer, primary_key=True)
     score = db.Column('score', db.Integer, default=0)
-    associated_bin = db.Column('associatedbin', db.String, db.ForeignKey('bin.id_bin'))
+    associated_bin = db.Column(
+        'associatedbin', db.String, db.ForeignKey('bin.id_bin'))
     associated_user = db.Column('user', db.String, db.ForeignKey('user.uid'))
-    #alteration_solved = db.Column('alteration_solved', db.ARRAY(db.String), default=[])
-    
+    alteration_solved = db.Column('alteration_solved', db.String, default='')
+
     def __init__(self, score, associated_bin, associated_user) -> None:
         self.score = score
         self.associated_bin = associated_bin
         self.associated_user = associated_user
 
+
 class AlterationRecord(db.Model):
     __tablename__ = 'alterationRecord'
-    
+
     alteration_id = db.Column('record', db.Integer, primary_key=True)
     type_of_event = db.Column('event', db.String)
-    is_notified = db.Column('is_notified', db.Boolean)
-    associated_bin = db.Column('associated_bin', db.String, db.ForeignKey('bin.id_bin'))
+    is_notified = db.Column('is_notified', db.Boolean, )
+    is_solved = db.Column('is_solved', db.Boolean, default=False)
+    associated_bin = db.Column(
+        'associated_bin', db.String, db.ForeignKey('bin.id_bin'))
     timestamp = db.Column('event_timestamp', db.String, default=datetime.now())
-     
+
     def __init__(self, type_of_event, is_notified, associated_bin) -> None:
         self.type_of_event = type_of_event
         self.is_notified = is_notified

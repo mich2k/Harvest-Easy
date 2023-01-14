@@ -1,17 +1,20 @@
 import requests
 import datetime
 from sqlalchemy import update
-from flask import render_template, request, Blueprint
+from flask import render_template, request, Blueprint, session, redirect
 from os import getenv
 from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db
+from ..utils.utils import Utils
 from ..trap.trap import *
 from flask import jsonify
 
 
 HERE_API_KEY = getenv('HERE_KEY')
 WEATHER_KEY = getenv('WEATHER_KEY')
+
+
 database_blueprint = Blueprint(
     'database', __name__, template_folder='templates', url_prefix='/db')
 
@@ -21,10 +24,34 @@ database_blueprint = Blueprint(
 
 @database_blueprint.route('/')
 def createDB():
-    db.drop_all()
-    db.create_all()
-    create_faker(db)
-    return 'Done'
+    """
+    Verifico che il database non sia stato già istanziato
+    Questo eviterà di perdere i nuovi record
+    """
+    if 'db_created' not in session:
+        db.drop_all()
+        db.create_all()
+
+        session['db_created'] = '/db'
+
+        print('Done')
+
+        if getenv('FAKER') == 'True':
+            create_faker(db)
+            
+        """
+        Nel caso si fosse arrivati alla route /db per redirect
+        allora sarà necessario ritornare alla route precedente
+        quindi si farà un redirect ad essa
+        """
+        if 'last_url' in session:
+            return redirect(session['last_url'])
+
+        return Utils.get_response(200, 'Done')
+
+    
+    return Utils.get_response(500, 'Already done')
+
 
 # AGGIUNTA DI INFORMAZIONI SUL BIDONE
 # Le informazioni saranno inviate mediante JSON ogni N secondi.
@@ -33,16 +60,15 @@ def createDB():
 @database_blueprint.route('/addrecord', methods=['POST'])
 def addrecord():
     msgJson = request.get_json()
+    
     msgJson["status"] = calcolastatus(
         msgJson["id_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"], msgJson['co2'])
+    
+    sf = BinRecord(msgJson)
+    db.session.add(sf)
+    db.session.commit()
 
-    try:
-        sf = BinRecord(msgJson)
-        db.session.add(sf)
-        db.session.commit()
-    except:
-        return 'Error'
-    return 'Done'
+    return Utils.get_response(200, 'Done')
 
 # AGGIUNTA DI UN BIDONE
 
@@ -51,14 +77,12 @@ def addrecord():
 def addbin():
     msgJson = request.get_json()
 
-    try:
-        db.session.add(Bin(msgJson))
-        db.session.commit()
-    except:
-        return 'Error'
-    return 'Done'
+    db.session.add(Bin(msgJson))
+    db.session.commit()
 
-#TODO Creare un'unica route per l'aggiunta di un utente/admin/operatore sfruttando un campo: role
+    return Utils.get_response(200, 'Done')
+
+# TODO Creare un'unica route per l'aggiunta di un utente/admin/operatore sfruttando un campo: role
 
 # AGGIUNTA DI UN USER
 
@@ -66,8 +90,8 @@ def addbin():
 @database_blueprint.route('/adduser', methods=['POST'])
 def adduser():
     msgJson = request.get_json()
-    try:
-        user = User(Person(uid=msgJson['uid'],
+    
+    user = User(Person(uid=msgJson['uid'],
                            name=msgJson['name'],
                            surname=msgJson['surname'],
                            password=msgJson['password'],
@@ -76,25 +100,23 @@ def adduser():
                     apartment_ID=msgJson['apartment_ID'],
                     internal_number=msgJson['internal_number'])
 
-        db.session.add(user)
-        db.session.commit()
-    except:
-        return 'Error'
-    return 'OK'
+    db.session.add(user)
+    db.session.commit()
+
+    return Utils.get_response(200, 'Done')
 
 # AGGIUNTA DI UN ADMIN
 
 
 @database_blueprint.route('/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>', methods=['GET'])
 def addadmin(uid, name, surname, password, city, birth_year):
-    admin = Admin(Person(uid, name,surname, password, city, birth_year))
+    admin = Admin(Person(uid, name, surname, password, city, birth_year))
+
     
-    try:
-        db.session.add(admin)
-        db.session.commit()
-    except:
-        return 'Error'
-    return 'Done'
+    db.session.add(admin)
+    db.session.commit()
+    
+    return Utils.get_response(200, 'Done')
 
 # AGGIUNTA DI UN OPERATORE
 
@@ -109,12 +131,10 @@ def addoperator():
                                city=msgJson['city'],
                                birth_year=msgJson['year']),
                         id=msgJson['id'])
-    try:
-        db.session.add(operator)
-        db.session.commit()
-    except:
-        return 'Error'
-    return 'Done'
+    
+    db.session.add(operator)
+    db.session.commit()
+    return Utils.get_response(200, 'Done')
 
 # AGGIUNTA DI UN APARTMENT
 # inserire qui lat e long dell'appartamento tramite chiamata ad API
@@ -143,27 +163,33 @@ def addapartment():
                               apartment_street_number=msgJson['street_number'],
                               n_internals=msgJson['n_internals'],
                               associated_admin=msgJson['associated_admin'])
-    
-        
+
         db.session.add(apartment)
         db.session.commit()
     except:
         return 'Error'
-    return 'Done'
+    return Utils.get_response(200, 'Done')
 
 # ACCESSO DI UN UTENTE AL BIDONE
 
+
 @database_blueprint.route('/checkuid/<string:uid>&<int:id_bin>', methods=['GET'])
 def check(uid, id_bin):
-    users = User.query.all()
-    operators = Operator.query.all()
-    admins = Admin.query.all()
-   
-    ultimo_bin_record = BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()
-    if(ultimo_bin_record is None):
-        status_attuale=None
+    
+    try:
+        users = User.query.all()
+        operators = Operator.query.all()
+        admins = Admin.query.all()
+
+        ultimo_bin_record = BinRecord.query.filter(
+            BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()
+    except:
+        return 'Error'
+    
+    if (ultimo_bin_record is None):
+        status_attuale = None
     else:
-        status_attuale= ultimo_bin_record.status
+        status_attuale = ultimo_bin_record.status
 
     if (len(users) > 0):
         for user in users:
@@ -185,15 +211,14 @@ def check(uid, id_bin):
         for operator in operators:
             if (uid == operator.uid):
                 return jsonify({"code": 203})
-    
-    return jsonify({"code": 202})
 
+    return jsonify({"code": 202})
 
 
 # Print tables
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
-
+    
     elenco = [Bin.query.order_by(Bin.id_bin.desc()).all(),
               Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
               User.query.order_by(User.uid.desc()).all(),
@@ -216,7 +241,7 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
     status_attuale = 1  # default del primo record del bidone
 
     bin_attuale = BinRecord.query.filter(BinRecord.associated_bin == id_bin)
-    
+
     if (bin_attuale.count()):
         status_attuale = (BinRecord.query.filter(BinRecord.associated_bin == id_bin).order_by(
             BinRecord.timestamp.desc()).first()).status
@@ -284,7 +309,7 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
     """
 
     # TODO rendere più fine
-    if(riempimento!=None):
+    if (riempimento != None):
         # passaggio da pieno a non pieno e viceversa
         if (status_attuale == 1 and float(riempimento) >= soglia_attuale):
             full_state()
@@ -307,7 +332,7 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
             db.session.commit()
 
     # passaggio da accappottato a dritto e viceversa
-    if(roll!=None and pitch!=None):
+    if (roll != None and pitch != None):
         if (status_attuale == 3 and (roll < 45 and (abs(pitch-90) < 45))):
             status_attuale = 1
 
@@ -321,7 +346,7 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
         if (status_attuale == 2 and (roll >= 45 or (abs(pitch-90) >= 45))):
             overturn()
             status_attuale = 4
-    if(co2!=None):
+    if (co2 != None):
         # Caso in cui nel bidone ci dovesse essere un incendio
         if (status_attuale == 3 and co2 < limite_co2):
             status_attuale = 1
@@ -339,9 +364,12 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
 
     return status_attuale
 
+
 def set_previsione_status(id_bin, status_previsto):
-    db.session.query(Bin).filter(Bin.id_bin == id_bin).update({'previsione_status': status_previsto})
+    db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
+        {'previsione_status': status_previsto})
     db.session.commit()
+
 
 def getstringstatus(status):
     if (status == 1):
@@ -355,15 +383,18 @@ def getstringstatus(status):
     else:
         return "Error"
 
-#Getters
+# Getters
+
+
 @database_blueprint.route('/accessAdmin/<string:uid>&<string:password>', methods=['GET'])
 def login(uid, password):
     found = False
     for asw in db.session.query(Admin.uid == uid and Admin.password == password).all():
         if asw[0]:
             found = True
-            
+
     return str(found)
+
 
 @database_blueprint.route('/checkUsername/<string:usr>', methods=['GET'])
 def checkusername(usr):
@@ -371,79 +402,120 @@ def checkusername(usr):
     for asw in db.session.query(TelegramIDChatUser.id_user == usr).all():
         if asw[0]:
             found = True
-            
+
     return str(found)
 
-@database_blueprint.route('/checkSession/<string:chatid>&<string:userid>', methods=['GET'])
+
+@database_blueprint.route('/checkSession/<string:userid>', methods=['GET'])
 def checksession(userid):
     found = False
-    for asw in db.session.query(TelegramIDChatUser.id_user == userid and TelegramIDChatAdmin.id_user == userid).all():
+    for asw in db.session.query(TelegramIDChatUser.id_user == userid).all():
         if asw[0]:
             found = True
-            
+
     return str(found)
 
 
 @database_blueprint.route('/setSession/<string:usr>', methods=['GET'])
 def setsession(usr):
-    db.session.execute(update(TelegramIDChatUser).where(TelegramIDChatUser.id_user == usr).values({'logged': True}))
+    db.session.execute(update(TelegramIDChatUser).where(
+        TelegramIDChatUser.id_user == usr).values({'logged': True}))
     db.session.commit()
-    return 'done'
+
+    return Utils.get_response(200, 'Done')
 
 # Getters for SuperUsers, return json
 
 # Get: TUTTI I BIN DI UNA CITTÁ
+
+
 @database_blueprint.route('/getBins/<string:city>', methods=['GET'])
 def getbins(city):
-    
-    # Subquery: Tutti gli appartamenti della cittá indicata 
-    sq = db.session.query(Apartment.apartment_name).where(Apartment.city == city)
-    
+
+    # Subquery: Tutti gli appartamenti della cittá indicata
+    sq = db.session.query(Apartment.apartment_name).where(
+        Apartment.city == city)
+
     # Query: Tutti i bin negli appartamenti selezionati
     res = db.session.query(Bin).filter(Bin.apartment_ID.in_(sq)).all()
 
     return render_template('resultquery.html', lista=res)
 
 # Get: TUTTI GLI UTENTI DI UNA CITTÁ
+
+
 @database_blueprint.route('/getUsers/<string:city>', methods=['GET'])
 def getusers(city):
-        
+
     # Subquery: Tutti gli appartamenti della cittá indicata
-    sq = db.session.query(Apartment.apartment_name).where(Apartment.city == city)
-    
+    sq = db.session.query(Apartment.apartment_name).where(
+        Apartment.city == city)
+
     # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
     return render_template('resultquery.html', lista=res)
 
 # Get: tutti i tipi di bidone nell'appartamento indicato
+
+
 @database_blueprint.route('/getypes/<string:apartment>', methods=['GET'])
 def getypes(apartment):
-    
-    res = db.session.query(Bin.tipologia).filter(Bin.apartment_ID == apartment).all()
+
+    res = db.session.query(Bin.tipologia).filter(
+        Bin.apartment_ID == apartment).all()
 
     return render_template('resultquery.html', lista=res)
 
 # Get: user dell'appartamento indicato
+
+
 @database_blueprint.route('/getApartmentUsers/<string:apartment>', methods=['GET'])
 def getapartmentusers(apartment):
-    
+
     res = db.session.query(User).filter(User.apartment_ID == apartment).all()
 
     return render_template('resultquery.html', lista=res)
 
 # Get: tutte le info associate al bidone indicato
+
+
 @database_blueprint.route('/getBinInfo/<string:idbin>', methods=['GET'])
 def getbininfo(idbin):
-    
+
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
 
     return render_template('resultquery.html', lista=res)
 
 # Get: ottengo tutte le informazioni dell'appartamento indicato
+
+
 @database_blueprint.route('/getApartment/<string:name>', methods=['GET'])
 def getapartment(name):
-      
-    res = db.session.query(Apartment).where(Apartment.apartment_name == name).all()
+
+    res = db.session.query(Apartment).where(
+        Apartment.apartment_name == name).all()
 
     return render_template('resultquery.html', lista=res)
+
+# Get: ottengo lo score di un utente
+
+
+@database_blueprint.route('/getScore/<string:usr>', methods=['GET'])
+def getscore(usr):
+
+    res = db.session.query(LeaderBoard).where(
+        LeaderBoard.associated_user == usr).all()
+
+    return render_template('resultquery.html', lista=res)
+
+# Get: ottengo la sessione dell'utente
+
+
+@database_blueprint.route('/getSession/<string:usr>', methods=['GET'])
+def getsession(usr):
+
+    if db.session.query(TelegramIDChatUser).where(TelegramIDChatUser.id_user == usr).all():
+        return str(True)
+
+    return str(False)
