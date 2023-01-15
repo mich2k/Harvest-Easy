@@ -15,7 +15,7 @@ fbprophet_blueprint = Blueprint(
 
 @fbprophet_blueprint.route('/')
 def main():
-    return '<h1>FbProphet</h1>'
+    return '<h1>Prophet</h1>'
 
 
 @fbprophet_blueprint.route('/getprevision')
@@ -71,7 +71,7 @@ def getprevision():
         plt.xlabel("Day", fontsize=20)
         plt.ylabel("Filling level", fontsize=20)
         
-        plt.savefig("./predictions/%s/%s/forecast.png" %
+        plt.savefig("./out/predictions/%s/%s/forecast.png" %
                     (apartment_name, tipologia), format='png')
         """
         forecast.to_csv('prediction_%s_%s.csv' % (apartment_name, tipologia))
