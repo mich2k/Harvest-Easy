@@ -238,9 +238,10 @@ def stampaitems():
 
 @database_blueprint.route('/dataAdmin/<string:uid>', methods=['GET'])
 def dataAdmin(uid):
-    print([str(elem.__dict__) for elem in Admin.query.where(Admin.uid == uid).all()])
-    lista = [str(elem.__dict__.pop('_sa_instance_state')) for elem in Admin.query.where(Admin.uid == uid).all()]
-    return json.loads(lista[0].replace('\'', '"'))
+    lista = [elem.__dict__ for elem in Admin.query.where(Admin.uid == uid).all()]
+    lista[0].pop('_sa_instance_state')
+
+    return lista[0]
     
 
 @database_blueprint.route('/accessAdmin/<string:uid>&<string:password>', methods=['GET'])
@@ -299,10 +300,10 @@ def getbins(city):
 
     # Query: Tutti i bin negli appartamenti selezionati
     res = Bin.query.filter(Bin.apartment_ID.in_(sq)).all()
-    print(res)
-    for elem in res:
-        out.append(elem)
     
+    for elem in res:
+        elem.__dict__.pop('_sa_instance_state')
+        out.append(elem.__dict__)
 
     return out
 

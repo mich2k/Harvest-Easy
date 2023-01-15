@@ -81,9 +81,6 @@ class Bin(db.Model):
         # da decommentare solo per il faker
         self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
     
-    def __repr__(self) -> dict:
-        return self.__dict__
-        
 class BinRecord(db.Model):
     __tablename__ = 'binRecord'
     id_record = db.Column('id_record', db.Integer, primary_key=True)
