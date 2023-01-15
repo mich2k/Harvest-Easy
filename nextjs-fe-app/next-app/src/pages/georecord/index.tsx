@@ -78,7 +78,6 @@ const Home: NextPage = () => {
         }
     }
 
-
     if (isLoading) {
         return (
             <section className="grid h-screen place-items-center">
