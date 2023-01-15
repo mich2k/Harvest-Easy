@@ -238,7 +238,7 @@ def dataAdmin(uid):
     return Utils.sa_dic2json(res)
 
 
-@database_blueprint.route('/accessAdmin/<string:uid>&<string:password>', methods=['GET'])
+@database_blueprint.route('/checkAdmin/<string:uid>&<string:password>', methods=['GET'])
 def login(uid, password):
 
     access_allowed = False
