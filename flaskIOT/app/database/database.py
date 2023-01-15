@@ -1,5 +1,5 @@
 import requests
-import datetime
+from datetime import datetime
 from sqlalchemy import update
 from flask import render_template, request, Blueprint
 from os import getenv
@@ -222,14 +222,13 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
             BinRecord.timestamp.desc()).first()).status
 
     tipologia = (Bin.query.filter(Bin.id_bin == id_bin)).first().tipologia
+    apartment_ID = (Bin.query.filter(Bin.id_bin == id_bin)).first().apartment_ID
     soglia_attuale = 0
 
     if (tipologia == "umido"):
-        now = datetime.datetime.now()
+        now = datetime.now()
         mese = now.month
         if (mese >= 4 and mese <= 10):  # mesi caldi
-            apartment_ID = (Bin.query.filter(
-                Bin.id_bin == id_bin)).first().apartment_ID
             lat = (Apartment.query.filter(
                 Apartment.apartment_name == apartment_ID)).first().lat
             lon = (Apartment.query.filter(
@@ -259,9 +258,9 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
 
             timestamp = Bin.query.filter(
                 Bin.id_bin == id_bin).first().ultimo_svuotamento
-            last_date = datetime.datetime.strptime(
+            last_date = datetime.strptime(
                 timestamp, "%Y-%m-%d %H:%M:%S")
-            now = datetime.datetime.now()
+            now = datetime.now()
 
             # temperature alte + sono passo più di deltagiorni
             if ((now-last_date).days > dd_time and dd_time > 0):
@@ -287,23 +286,23 @@ def calcolastatus(id_bin, riempimento, roll, pitch, co2):
     if(riempimento!=None):
         # passaggio da pieno a non pieno e viceversa
         if (status_attuale == 1 and float(riempimento) >= soglia_attuale):
-            full_state()
+            full_state(apartment_ID, riempimento)
             status_attuale = 2
 
         if (status_attuale == 3 and float(riempimento) >= soglia_attuale):
-            full_state()
+            full_state(apartment_ID, riempimento)
             status_attuale = 4
 
         if (status_attuale == 2 and float(riempimento) < soglia_attuale):
             status_attuale = 1
             db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-                {'ultimo_svuotamento': datetime.datetime.now()})
+                {'ultimo_svuotamento': datetime.now()})
             db.session.commit()
 
         if (status_attuale == 4 and float(riempimento) < soglia_attuale):
             status_attuale = 3
             db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-                {'ultimo_svuotamento': datetime.datetime.now()})
+                {'ultimo_svuotamento': datetime.now()})
             db.session.commit()
 
     # passaggio da accappottato a dritto e viceversa

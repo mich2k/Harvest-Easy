@@ -44,7 +44,7 @@ def getmap():
         "listaPunti": points
     }
 
-    with open('points.json', 'w') as outfile:
+    with open('./app/map/points.json', 'w') as outfile:
         json.dump(viewmap, outfile)
 
     return viewmap
@@ -82,7 +82,7 @@ def getmaptipology(tipologia):
         "listaPunti": points
     }
 
-    with open('points.json', 'w') as outfile:
+    with open('./app/map/points.json', 'w') as outfile:
         json.dump(viewmap, outfile)
 
     return viewmap
