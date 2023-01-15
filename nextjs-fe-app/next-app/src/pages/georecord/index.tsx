@@ -31,7 +31,6 @@ const Home: NextPage = () => {
 
     useEffect(() => {
         import("flowbite/dist/flowbite");
-        console.log(router.asPath);
     }, []);
 
     useEffect(() => {
@@ -82,11 +81,15 @@ const Home: NextPage = () => {
 
     if (isLoading) {
         return (
-            <section className="flex items-center justify-center w-screen">
+            <section className="grid h-screen place-items-center">
+                <span className='grid justify-items'></span>
+                <span className='grid justify-items'></span>
                 <ReactLoading type={"cylon"} color={"gray"} height={"10%"} width={"10%"} />
-                <div className='w-max'></div>
-                    <span className='text-l text-stone-500	 font-italic mt-1 mb-4 pb-1'>Loading...</span>
-            </section>
+                Loading...
+                <span className='grid justify-items'></span>
+                <span className='grid justify-items'></span>
+                <span className='grid justify-items'></span>
+            </section >
         );
     }
     else {
