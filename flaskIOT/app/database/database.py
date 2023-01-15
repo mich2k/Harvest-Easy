@@ -1,5 +1,4 @@
 import requests
-import datetime
 from sqlalchemy import update
 from flask import render_template, request, Blueprint, session, redirect, jsonify
 from os import getenv
@@ -7,7 +6,7 @@ from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
-import json
+
 URL = 'https://osm.gmichele.it/search'
 
 # Lo userò per verificare se il DB è stato già creato
@@ -22,24 +21,21 @@ database_blueprint = Blueprint(
 
 @database_blueprint.route('/')
 def createDB():
-    
     """
     Verifico che il database non sia stato già istanziato
     Questo eviterà di perdere i nuovi record
     """
-    
+
     if not db_manager.already_done:
-                
+
         db.drop_all()
         db.create_all()
 
         if getenv('FAKER') == 'True':
             create_faker(db)
-        
-        
+
         db_manager.setstatus(db, True)
 
-                  
         """
         Nel caso si fosse arrivati alla route /db per redirect
         allora sarà necessario ritornare alla route precedente
@@ -50,7 +46,6 @@ def createDB():
 
         return Utils.get_response(200, 'Done')
 
-    
     return Utils.get_response(500, 'Already done')
 
 
@@ -61,10 +56,10 @@ def createDB():
 @database_blueprint.route('/addrecord', methods=['POST'])
 def addrecord():
     msgJson = request.get_json()
-    
+
     msgJson["status"] = Utils.calcolastatus(db,
-        msgJson["id_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"], msgJson['co2'])
-    
+                                            msgJson["id_bin"], msgJson["riempimento"], msgJson["roll"], msgJson["pitch"], msgJson['co2'])
+
     sf = BinRecord(msgJson)
     db.session.add(sf)
     db.session.commit()
@@ -91,15 +86,15 @@ def addbin():
 @database_blueprint.route('/adduser', methods=['POST'])
 def adduser():
     msgJson = request.get_json()
-    
+
     user = User(Person(uid=msgJson['uid'],
-                           name=msgJson['name'],
-                           surname=msgJson['surname'],
-                           password=msgJson['password'],
-                           city=msgJson['city'],
-                           birth_year=msgJson['year']),
-                    apartment_ID=msgJson['apartment_ID'],
-                    internal_number=msgJson['internal_number'])
+                       name=msgJson['name'],
+                       surname=msgJson['surname'],
+                       password=msgJson['password'],
+                       city=msgJson['city'],
+                       birth_year=msgJson['year']),
+                apartment_ID=msgJson['apartment_ID'],
+                internal_number=msgJson['internal_number'])
 
     db.session.add(user)
     db.session.commit()
@@ -113,10 +108,9 @@ def adduser():
 def addadmin(uid, name, surname, password, city, birth_year):
     admin = Admin(Person(uid, name, surname, password, city, birth_year))
 
-    
     db.session.add(admin)
     db.session.commit()
-    
+
     return Utils.get_response(200, 'Done')
 
 # AGGIUNTA DI UN OPERATORE
@@ -132,7 +126,7 @@ def addoperator():
                                city=msgJson['city'],
                                birth_year=msgJson['year']),
                         id=msgJson['id'])
-    
+
     db.session.add(operator)
     db.session.commit()
     return Utils.get_response(200, 'Done')
@@ -144,22 +138,22 @@ def addoperator():
 
 @database_blueprint.route('/addapartment', methods=['POST'])
 def addapartment():
-    
+
     msgJson = request.get_json()
-    
+
     address = msgJson['street'] + " " + \
         str(msgJson['street_number']) + " " + msgJson['city']
-    
+
     params = {
         'q': address + ' Italia',
     }
-    
+
     req = requests.get(URL, params=params)
     result = req.json()
-    
+
     lat = result[0]['lat']
     lng = result[0]['lon']
-    
+
     apartment = Apartment(apartment_name=msgJson['apartment_name'],
                           city=msgJson['city'],
                           street=msgJson['street'],
@@ -170,7 +164,7 @@ def addapartment():
                           associated_admin=msgJson['associated_admin'])
 
     db.session.add(apartment)
-        
+
     db.session.commit()
 
     return Utils.get_response(200, 'Done')
@@ -180,14 +174,13 @@ def addapartment():
 
 @database_blueprint.route('/checkuid/<string:uid>&<int:id_bin>', methods=['GET'])
 def check(uid, id_bin):
-    
+
     users = User.query.all()
     operators = Operator.query.all()
     admins = Admin.query.all()
     ultimo_bin_record = BinRecord.query.filter(
         BinRecord.associated_bin == id_bin).order_by(BinRecord.timestamp.desc()).first()
 
-    
     if (ultimo_bin_record is None):
         status_attuale = None
     else:
@@ -201,7 +194,7 @@ def check(uid, id_bin):
                 else:
                     # cerco il bidone più vicino
                     return jsonify({"code": 201, "vicino": ""})
-    
+
     if (len(admins) > 0):
         for admin in admins:
             if (uid == admin.uid):
@@ -210,7 +203,7 @@ def check(uid, id_bin):
                 else:
                     # cerco il bidone più vicino
                     return jsonify({"code": 201, "vicino": ""})
-    
+
     if (len(operators) > 0):
         for operator in operators:
             if (uid == operator.uid):
@@ -222,27 +215,28 @@ def check(uid, id_bin):
 # Print tables
 @database_blueprint.route('/items', methods=['GET'])
 def stampaitems():
-    
+    res = []
     elenco = [Bin.query.order_by(Bin.id_bin.desc()).all(),
               Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
               User.query.order_by(User.uid.desc()).all(),
               Admin.query.order_by(Admin.uid.desc()).all(),
               BinRecord.query.order_by(BinRecord.id_record.desc()).all(),
               TelegramIDChatUser.query.all()]
-
-    return render_template('listitems.html', listona=elenco)
+    
+    for queries in elenco:
+        res.append({queries[0].__tablename__:Utils.sa_dic2json(queries)})
+    
+    return res
 
 # Getters
 
 
-
 @database_blueprint.route('/dataAdmin/<string:uid>', methods=['GET'])
 def dataAdmin(uid):
-    lista = [elem.__dict__ for elem in Admin.query.where(Admin.uid == uid).all()]
-    lista[0].pop('_sa_instance_state')
+    res = Admin.query.where(Admin.uid == uid).all()
 
-    return lista[0]
-    
+    return Utils.sa_dic2json(res)
+
 
 @database_blueprint.route('/accessAdmin/<string:uid>&<string:password>', methods=['GET'])
 def login(uid, password):
@@ -251,8 +245,8 @@ def login(uid, password):
     for asw in db.session.query(Admin.uid == uid and Admin.password == password).all():
         if asw[0]:
             access_allowed = True
-            
-    return Utils.get_json(200, {'allowed':access_allowed})
+
+    return Utils.get_json(200, {'allowed': access_allowed})
 
 
 @database_blueprint.route('/checkUsername/<string:usr>', methods=['GET'])
@@ -262,7 +256,7 @@ def checkusername(usr):
         if asw[0]:
             found = True
 
-    return Utils.get_json(200, {'found':found})
+    return Utils.get_json(200, {'found': found})
 
 
 @database_blueprint.route('/checkSession/<string:userid>', methods=['GET'])
@@ -291,8 +285,6 @@ def setsession(usr):
 @database_blueprint.route('/getBins/<string:city>', methods=['GET'])
 def getbins(city):
 
-    out = []
-
     # Subquery: Tutti gli appartamenti della cittá indicata
     db.session.query()
     sq = db.session.query(Apartment.apartment_name).where(
@@ -300,12 +292,8 @@ def getbins(city):
 
     # Query: Tutti i bin negli appartamenti selezionati
     res = Bin.query.filter(Bin.apartment_ID.in_(sq)).all()
-    
-    for elem in res:
-        elem.__dict__.pop('_sa_instance_state')
-        out.append(elem.__dict__)
 
-    return out
+    return Utils.sa_dic2json(res)
 
 # Get: TUTTI GLI UTENTI DI UNA CITTÁ
 
@@ -320,7 +308,7 @@ def getusers(city):
     # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
-    return Utils.get_response(200, res)
+    return Utils.sa_dic2json(res)
 
 # Get: tutti i tipi di bidone nell'appartamento indicato
 
@@ -331,7 +319,7 @@ def getypes(apartment):
     res = db.session.query(Bin.tipologia).filter(
         Bin.apartment_ID == apartment).all()
 
-    return Utils.get_response(200, res)
+    return Utils.sa_dic2json(res)
 
 # Get: user dell'appartamento indicato
 
@@ -341,9 +329,7 @@ def getapartmentusers(apartment):
 
     res = db.session.query(User).filter(User.apartment_ID == apartment).all()
 
-    return render_template('resultquery.html', lista=res)
-    
-    #return Utils.get_response(200, jsonify(res[0]))
+    return Utils.sa_dic2json(res)
 
 # Get: tutte le info associate al bidone indicato
 
@@ -353,7 +339,7 @@ def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
 
-    return Utils.get_response(200, res)
+    return Utils.sa_dic2json(res)
 
 # Get: ottengo tutte le informazioni dell'appartamento indicato
 
@@ -364,7 +350,7 @@ def getapartment(name):
     res = db.session.query(Apartment).where(
         Apartment.apartment_name == name).all()
 
-    return Utils.get_response(200, res)
+    return Utils.sa_dic2json(res)
 
 # Get: ottengo lo score di un utente
 
@@ -375,7 +361,7 @@ def getscore(usr):
     res = db.session.query(LeaderBoard).where(
         LeaderBoard.associated_user == usr).all()
 
-    return Utils.get_response(200, res)
+    return Utils.sa_dic2json(res)
 
 # Get: ottengo la sessione dell'utente
 

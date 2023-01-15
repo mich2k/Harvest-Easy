@@ -9,7 +9,7 @@ def db_handler(error):
     # Il path che ha generato l'eccezione viene inserito all'interno del dizionario relativo alla sessione
     session['last_url'] = request.url
     
-    print(f"Warning! An error occured in: {request.url}" + str(error))
+    print(f"Warning! An error occured in: {request.url}\n" + str(error))
     
     return redirect('http://127.0.0.1:5000/db')
 

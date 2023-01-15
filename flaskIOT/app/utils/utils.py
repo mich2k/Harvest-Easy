@@ -192,6 +192,16 @@ class Utils:
     def get_random():
         return random.random()
     
+    def sa_dic2json(query):
+        
+        res = []
+        
+        for elem in query:
+            elem.__dict__.pop('_sa_instance_state')
+            res.append(elem.__dict__)
+            
+        return res
+    
     def get_response(code, message):
         response = Response()
         response.status = code
@@ -200,14 +210,6 @@ class Utils:
         response.mimetype = 'text/plain'
         return response
 
-    def get_json(code, list):
-        response = Response()
-        response.data = json.dumps(list)
-        response.status = code
-        response.content_type = 'application/json'
-        response.mimetype = 'application/json'
-        return response
-    
     @property
     def get_local_time(self):
         return datetime.now()
