@@ -3,7 +3,7 @@ from flask import Response
 from os import getenv
 from ..database.tables import *
 from ..trap.trap import *
-import random, requests
+import random, requests, json
 
 class Utils:
         
@@ -200,6 +200,14 @@ class Utils:
         response.mimetype = 'text/plain'
         return response
 
+    def get_json(code, list):
+        response = Response()
+        response.data = json.dumps(list)
+        response.status = code
+        response.content_type = 'application/json'
+        response.mimetype = 'application/json'
+        return response
+    
     @property
     def get_local_time(self):
         return datetime.now()

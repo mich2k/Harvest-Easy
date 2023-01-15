@@ -15,8 +15,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     id_user = update.effective_user.name
     
-    if requests.get(url + f'checkUsername/{id_user}').content.decode('UTF-8') == 'True':
-        requests.get(url + f'setSession/{id_user}')
+    if requests.get(url + f'checkUsername/{id_user}').content['found']:
+        requests.get(url + f'setelegramSession/{id_user}')
         await update.message.reply_text(f'Sessione salvata, benvenuto: {id_user}')
 
     else:

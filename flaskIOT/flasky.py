@@ -15,7 +15,13 @@ from flask_cors import CORS
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
-CORS(app)
+
+CORS(app, resource={
+    r"/db/*":{
+        'origins':'*'
+    }   
+})
+
 myconfig = Config
 app.config.from_object(myconfig)
 myutils = Utils()

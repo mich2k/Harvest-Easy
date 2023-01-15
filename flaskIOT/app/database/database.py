@@ -7,7 +7,7 @@ from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
-
+import json
 URL = 'https://osm.gmichele.it/search'
 
 # Lo userò per verificare se il DB è stato già creato
@@ -235,14 +235,23 @@ def stampaitems():
 # Getters
 
 
+
+@database_blueprint.route('/dataAdmin/<string:uid>', methods=['GET'])
+def dataAdmin(uid):
+    print([str(elem.__dict__) for elem in Admin.query.where(Admin.uid == uid).all()])
+    lista = [str(elem.__dict__.pop('_sa_instance_state')) for elem in Admin.query.where(Admin.uid == uid).all()]
+    return json.loads(lista[0].replace('\'', '"'))
+    
+
 @database_blueprint.route('/accessAdmin/<string:uid>&<string:password>', methods=['GET'])
 def login(uid, password):
-    found = False
+
+    access_allowed = False
     for asw in db.session.query(Admin.uid == uid and Admin.password == password).all():
         if asw[0]:
-            found = True
-
-    return Utils.get_response(200, str(found))
+            access_allowed = True
+            
+    return Utils.get_json(200, {'allowed':access_allowed})
 
 
 @database_blueprint.route('/checkUsername/<string:usr>', methods=['GET'])
@@ -252,7 +261,7 @@ def checkusername(usr):
         if asw[0]:
             found = True
 
-    return Utils.get_response(200, str(found))
+    return Utils.get_json(200, {'found':found})
 
 
 @database_blueprint.route('/checkSession/<string:userid>', methods=['GET'])
@@ -262,10 +271,10 @@ def checksession(userid):
         if asw[0]:
             found = True
 
-    return Utils.get_response(200, str(found))
+    return Utils.get_json(200, found)
 
 
-@database_blueprint.route('/setSession/<string:usr>', methods=['GET'])
+@database_blueprint.route('/setelegramSession/<string:usr>', methods=['GET'])
 def setsession(usr):
     db.session.execute(update(TelegramIDChatUser).where(
         TelegramIDChatUser.id_user == usr).values({'logged': True}))
@@ -281,14 +290,21 @@ def setsession(usr):
 @database_blueprint.route('/getBins/<string:city>', methods=['GET'])
 def getbins(city):
 
+    out = []
+
     # Subquery: Tutti gli appartamenti della cittá indicata
+    db.session.query()
     sq = db.session.query(Apartment.apartment_name).where(
         Apartment.city == city)
 
     # Query: Tutti i bin negli appartamenti selezionati
-    res = db.session.query(Bin).filter(Bin.apartment_ID.in_(sq)).all()
+    res = Bin.query.filter(Bin.apartment_ID.in_(sq)).all()
+    print(res)
+    for elem in res:
+        out.append(elem)
+    
 
-    return Utils.get_response(200, jsonify(res))
+    return out
 
 # Get: TUTTI GLI UTENTI DI UNA CITTÁ
 
@@ -303,7 +319,7 @@ def getusers(city):
     # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
-    return Utils.get_response(200, jsonify(res))
+    return Utils.get_response(200, res)
 
 # Get: tutti i tipi di bidone nell'appartamento indicato
 
@@ -314,7 +330,7 @@ def getypes(apartment):
     res = db.session.query(Bin.tipologia).filter(
         Bin.apartment_ID == apartment).all()
 
-    return Utils.get_response(200, jsonify(res))
+    return Utils.get_response(200, res)
 
 # Get: user dell'appartamento indicato
 
@@ -336,7 +352,7 @@ def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
 
-    return Utils.get_response(200, jsonify(res))
+    return Utils.get_response(200, res)
 
 # Get: ottengo tutte le informazioni dell'appartamento indicato
 
@@ -347,7 +363,7 @@ def getapartment(name):
     res = db.session.query(Apartment).where(
         Apartment.apartment_name == name).all()
 
-    return Utils.get_response(200, jsonify(res))
+    return Utils.get_response(200, res)
 
 # Get: ottengo lo score di un utente
 
@@ -358,7 +374,7 @@ def getscore(usr):
     res = db.session.query(LeaderBoard).where(
         LeaderBoard.associated_user == usr).all()
 
-    return Utils.get_response(200, jsonify(res))
+    return Utils.get_response(200, res)
 
 # Get: ottengo la sessione dell'utente
 

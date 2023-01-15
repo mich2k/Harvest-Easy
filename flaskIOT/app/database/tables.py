@@ -34,9 +34,6 @@ class Admin(Person, db.Model):
     def __init__(self, x: Person) -> None:
         super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
 
-    def __repr__(self) -> str:
-        return 'Admin(uid: {}, name: {}, surname: {}, city: {}, birth_year: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year)
-
 
 class Operator(Person, db.Model):
     __tablename__ = 'operator'
@@ -45,10 +42,6 @@ class Operator(Person, db.Model):
     def __init__(self, x: Person, id: int) -> None:
         super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
         self.id_operator = id
-
-    def __repr__(self) -> str:
-        return 'Operator(uid: {}, name: {}, surname: {}, city: {}, birth_year: {}, id_operator: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year, self.id_operator)
-
 
 class User(Person, db.Model):
     __tablename__ = 'user'
@@ -62,19 +55,11 @@ class User(Person, db.Model):
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
 
-    def __repr__(self) -> str:
-        return 'User(uid: {}, name: {}, surname: {}, city:{}, birth_year:{}, internal_number: {}, apartment_ID: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year, self.internal_number, self.apartment_ID)
-
-
 class Superuser(Person, db.Model):
     __tablename__ = 'superuser'
 
     def __init__(self, x: Person) -> None:
         super().__init__(x.uid, x.name, x.surname, x.password, x.city, x.birth_year)
-
-    def __repr__(self) -> str:
-        return 'Superuser(uid: {}, name: {}, surname: {}, city: {}, birth_year: {})'.format(self.uid, self.name, self.surname, self. city, self.birth_year)
-
 
 class Bin(db.Model):
     __tablename__ = 'bin'
@@ -95,11 +80,10 @@ class Bin(db.Model):
         self.apartment_ID = jsonObj['apartment_ID']
         # da decommentare solo per il faker
         self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
-
-    def __repr__(self) -> str:
-        return 'Bin(id_bin: {}, tipologia: {}, previsione_status: {}, ultimo_svuotamento: {}, apartment_ID: {})'.format(self.id_bin, self.tipologia, self.previsione_status, self.ultimo_svuotamento, self.apartment_ID)
-
-
+    
+    def __repr__(self) -> dict:
+        return self.__dict__
+        
 class BinRecord(db.Model):
     __tablename__ = 'binRecord'
     id_record = db.Column('id_record', db.Integer, primary_key=True)
@@ -123,9 +107,6 @@ class BinRecord(db.Model):
         self.riempimento = jsonObj['riempimento']
         # da decommentare solo per creare il faker
         self.timestamp = jsonObj['timestamp']
-
-    def __repr__(self) -> str:
-        return 'BinRecord(id_record: {}, status: {}, temperature: {}, humidity: {}, riempimento: {}, timestamp: {}, associated_bin: {})'.format(self.id_record, self.status, self.temperature, self.humidity, self.riempimento, self.timestamp, self.associated_bin)
 
 
 class Apartment(db.Model):
@@ -155,9 +136,6 @@ class Apartment(db.Model):
         self.n_internals = n_internals
         self.associated_admin = associated_admin
 
-    def __repr__(self) -> str:
-        return 'Apartment(Apartment Name: {}, city: {}, street: {}, lat: {}, lng: {}, Apartment Street Number: {}, N Internals: {}, Associated Admin: {})'.format(self.apartment_name, self.city, self.street, self.lat, self.lng, self.apartment_street_number, self.n_internals, self.associated_admin)
-
 
 # Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram
 
@@ -170,11 +148,8 @@ class TelegramIDChatUser(UserTG, db.Model):
     def __init__(self, user: UserTG, associated_user: str) -> None:
         super().__init__(user.id_user, user.logged)
         self.associated_user = associated_user
-
-    def __repr__(self) -> str:
-        return 'user_id: {}, logged: {}, associated_user: {}'.format(self.id_user, self.logged, self.associated_user)
-
-
+        
+        
 class LeaderBoard(db.Model):
     __tablename__ = 'leaderboard'
 
