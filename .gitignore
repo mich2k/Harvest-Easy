@@ -65,9 +65,9 @@ instance
 
 *.out
 *.txt
-
-Zone.Identifier
+*.csv
 *.Identifier
+out
 
 
 # nextjs

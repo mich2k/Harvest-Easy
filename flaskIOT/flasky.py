@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from config import Config
 from app.database.__init__ import db
 from app.database.database import database_blueprint
@@ -7,15 +7,23 @@ from app.bestpath.bestpath import path_blueprint
 from app.map.map import map_blueprint
 from app.geofirstrecord.geofirstrecord import geofirstrecord_blueprint
 from app.fbprophet.fbprophet import fbprophet_blueprint
+from app.handler.error_handler import handler_blueprint
 from app.utils.utils import Utils
 from os import getenv
+from flask_cors import CORS
 
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
+
+CORS(app, resource={
+    r"/db/*":{
+        'origins':'*'
+    }   
+})
+
 myconfig = Config
 app.config.from_object(myconfig)
-
 myutils = Utils()
 
 def getUtils():
@@ -70,8 +78,11 @@ app.register_blueprint(path_blueprint, url_prefix='/bpath')
 app.register_blueprint(map_blueprint, url_prefix='/map')
 app.register_blueprint(fbprophet_blueprint, url_prefix='/pred')
 
+app.register_blueprint(handler_blueprint)
+
 @app.route('/') 
 def testoHTML():
+    session.clear()
     return '<h1>Smart Bin</h1>'
 
 @app.route('/esp', methods=['POST'])

@@ -10,20 +10,20 @@ import { useRouter } from 'next/router'
 const Home: NextPage = () => {
 
 
-  const [apartment_id, setApartmentId] = useState('empty');
   const [checked_state, setCheck] = useState(true);
 
-  const router = useRouter();
 
- 
 
   useEffect(() => {
     import("flowbite/dist/flowbite");
-     
-    setApartmentId(String(router.query['ap_id']));
+
 
   }, []);
 
+
+  const onLogInButtonClick = () => {
+    console.log('ok');
+  }
 
 
 
@@ -46,9 +46,7 @@ const Home: NextPage = () => {
                         alt="logo"
                       />
                       <h4 className="text-xl font-semibold mt-1 mb-8 pb-1">the smartest bin among the smartest.</h4>
-                      <h5 className="text-l font-italic mt-1 mb-4 pb-1">You are trying to initialize the following apartment: </h5>
-                      <span className="font-bold"> {router.query['ap_id']} 
-                      {apartment_id}</span>
+                      <h5 className="text-l font-italic mt-1 mb-4 pb-1">Welcome, please log in </h5>
                     </div>
                     <form>
                       <p className="mb-4">Please access with given credentials</p>
@@ -74,11 +72,12 @@ const Home: NextPage = () => {
                           type="button"
                           data-mdb-ripple="true"
                           data-mdb-ripple-color="light"
+                          onClick={onLogInButtonClick}
                         >
                           Log in
                         </button>
                         <div className="flex items-center mb-4">
-                          <input onChange={() => { setCheck(!checked_state); console.log(checked_state) }} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                          <input onChange={() => { setCheck(!checked_state);}} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                           <label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Confirm apartment id</label>
                         </div>
                         <a className="text-gray-500" href="#!">Tutto apposto?</a>
