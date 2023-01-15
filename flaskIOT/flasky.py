@@ -10,10 +10,12 @@ from app.fbprophet.fbprophet import fbprophet_blueprint
 from app.handler.error_handler import handler_blueprint
 from app.utils.utils import Utils
 from os import getenv
+from flask_cors import CORS
 
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
+CORS(app)
 myconfig = Config
 app.config.from_object(myconfig)
 myutils = Utils()

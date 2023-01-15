@@ -7,7 +7,7 @@ TOKEN = getenv('TG_TOKEN')
 url = getenv('URL')
 
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    welcome_message = ''
+    welcome_message = 'Questo è un messaggio di benvenutos'
     await update.message.reply_text(welcome_message)
 
 
@@ -35,7 +35,7 @@ async def get_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    help_text = ''
+    help_text = 'Aiutati che lo SmartBIN ti aiuta'
     await update.message.reply_text(help_text)
 
 

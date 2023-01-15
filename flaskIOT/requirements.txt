@@ -54,3 +54,4 @@ tzlocal==4.2
 urllib3==1.26.12
 Werkzeug==2.2.2
 zipp==3.10.0
+flask-cors==3.0.10
