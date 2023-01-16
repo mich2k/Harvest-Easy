@@ -6,8 +6,7 @@ import pandas as pd
 from prophet import Prophet
 import matplotlib.pyplot as plt
 import csv
-from app.database.database import calcolastatus, set_previsione_status
-from prophet.plot import plot_plotly, plot_components_plotly
+from app.utils.utils import Utils
 
 fbprophet_blueprint = Blueprint(
     'fbprophet', __name__, template_folder='templates', url_prefix='/pred')
@@ -68,14 +67,14 @@ def getprevision():
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
             
-            plt.savefig("Predizioni/%s/%s/Forecast.png" %
+            plt.savefig("./out/predictions/%s/%s/Forecast.png" %
                         (apartment_name, tipologia), format='png')
             
             forecast.to_csv('./app/fbprophet/predictions/%s/prediction_%s.csv' % (apartment_name, tipologia))
             prediction = forecast[['yhat']].values
-            status_previsto = calcolastatus(
+            status_previsto = Utils.calcolastatus(
                 bin.id_bin, prediction[0], None, None, None)
             
-            set_previsione_status(bin.id_bin, status_previsto)
+            Utils.set_previsione_status(bin.id_bin, status_previsto)
   
     return 'done'
