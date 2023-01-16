@@ -67,7 +67,7 @@ def getprevision():
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
             
-            plt.savefig("Predizioni/%s/%s/Forecast.png" %
+            plt.savefig("./out/predictions/%s/%s/Forecast.png" %
                         (apartment_name, tipologia), format='png')
             
             forecast.to_csv('./app/fbprophet/predictions/%s/prediction_%s.csv' % (apartment_name, tipologia))
