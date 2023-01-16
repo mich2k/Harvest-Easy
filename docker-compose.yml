@@ -11,6 +11,7 @@ services:
     container_name: iotproj
     environment:
       - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
+      - FAKER=True
   bot_telegram:
     build:
         dockerfile: Dockerfile
