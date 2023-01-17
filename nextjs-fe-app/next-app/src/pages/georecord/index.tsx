@@ -26,7 +26,6 @@ const Home: NextPage = () => {
 
     useEffect(() => {
         setLoading(true);
-        console.log(isGeoAllowanceGiven);
         if (isGeoAllowanceGiven) {
             setLoading(false);
         }
