@@ -291,7 +291,7 @@ def getbins(city):
         Apartment.city == city)
 
     # Query: Tutti i bin negli appartamenti selezionati
-    res = Bin.query.filter(Bin.apartment_ID.in_(sq)).all()
+    res = Bin.query().filter(Bin.apartment_ID.in_(sq)).all()
 
     return Utils.sa_dic2json(res)
 

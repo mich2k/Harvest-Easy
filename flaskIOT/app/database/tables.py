@@ -78,6 +78,7 @@ class Bin(db.Model):
         self.id_bin = jsonObj['idbin']
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
+        
         # da decommentare solo per il faker
         self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
     

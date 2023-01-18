@@ -14,8 +14,9 @@ const Home: NextPage = () => {
     const [user_lastname, setUserLastName] = useState<string>();
     const [apartment_name, setApartmentName] = useState<string>();
     const [estimated_fill_date, setEstimatedFillDate] = useState<string>(new Date().toJSON());
+    const [today_date, setTodayDate] = useState<string>("default_user");
 
-
+    const [user_role, setUserRole] = useState<string>("default_user");
 
 
     useEffect(() => {
@@ -28,7 +29,7 @@ const Home: NextPage = () => {
     }
 
     useEffect(() => {
-
+        setApartmentName(new Date(estimated_fill_date));
         setUserFistName("Mario");
         setUserLastName("Rossi");
         setApartmentName("Fermi")
@@ -40,7 +41,7 @@ const Home: NextPage = () => {
     return (
 
         <section className="h-full gradient-form bg-blue-100 md:h-screen">
-            <div className="container py-12 px-6 h-full">
+            <div suppressHydrationWarning className="container py-12 px-6 h-full">
                 <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
                     <div className="xl:w-10/12">
                         <div className="block bg-white shadow-lg rounded-lg">
@@ -69,7 +70,7 @@ const Home: NextPage = () => {
                                     <div className="text-right mt-4">
                                         Estimated filling:
                                         <div>
-                                            {new Date(estimated_fill_date).toLocaleDateString()}
+                                            {estimated_fill_date}
                                         </div>
                                     </div>
                                     <div>
@@ -100,7 +101,7 @@ const Home: NextPage = () => {
                                 >
                                     <div className="text-black px-4 py-6 md:p-12 md:mx-6">
                                         <h4 className="text-xl font-semibold mb-6">Right card.</h4>
-                                        <p className="text-sm">
+                                        <div className="text-sm">
                                             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                                             tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                                             quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
@@ -109,7 +110,7 @@ const Home: NextPage = () => {
                                             Spiega che roba è.
 
                                             Bidone fantastico bellissimo me lo sposo guarda eccomi ciao.
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

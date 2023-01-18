@@ -13,6 +13,8 @@ services:
       - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
       - FAKER=True
   bot_telegram:
+    profiles:
+      - donotstart
     build:
         dockerfile: Dockerfile
         context: ./telegram_bot
@@ -25,6 +27,8 @@ services:
 
   nextjs_app:
     image: mick2k1/iot-nextjs-fe
+    profiles:
+      - donotstart
     container_name: nextjs_app
     ports:
       - "3000:3000"
