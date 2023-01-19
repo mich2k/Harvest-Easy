@@ -1,6 +1,6 @@
 from datetime import datetime
 from .__init__ import db
-
+from flasky import bcrypt
 
 class Person():
     uid = db.Column('uid', db.String, primary_key=True, nullable=False)
@@ -14,7 +14,7 @@ class Person():
         self.uid = uid
         self.name = name
         self.surname = surname
-        self.password = password
+        self.password = bcrypt.generate_password_hash(password)
         self.city = city
         self.birth_year = birth_year
 
@@ -78,6 +78,7 @@ class Bin(db.Model):
         self.id_bin = jsonObj['idbin']
         self.tipologia = jsonObj['tipologia']
         self.apartment_ID = jsonObj['apartment_ID']
+        
         # da decommentare solo per il faker
         self.ultimo_svuotamento = jsonObj['ultimo_svuotamento']
     

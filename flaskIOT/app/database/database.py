@@ -6,6 +6,7 @@ from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
+from flasky import bcrypt
 
 URL = 'https://osm.gmichele.it/search'
 
@@ -242,7 +243,7 @@ def dataAdmin(uid):
 def login(uid, password):
 
     access_allowed = False
-    for asw in db.session.query(Admin.uid == uid and Admin.password == password).all():
+    for asw in db.session.query(Admin.uid == uid and bcrypt.check_password_hash(Admin.password, password)).all():
         if asw[0]:
             access_allowed = True
 
@@ -291,7 +292,7 @@ def getbins(city):
         Apartment.city == city)
 
     # Query: Tutti i bin negli appartamenti selezionati
-    res = Bin.query.filter(Bin.apartment_ID.in_(sq)).all()
+    res = Bin.query().filter(Bin.apartment_ID.in_(sq)).all()
 
     return Utils.sa_dic2json(res)
 
