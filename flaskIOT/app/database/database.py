@@ -1,6 +1,6 @@
 import requests
 from sqlalchemy import update
-from flask import render_template, request, Blueprint, session, redirect, jsonify
+from flask import request, Blueprint, session, redirect, jsonify
 from os import getenv
 from app.database.tables import *
 from .faker import create_faker
