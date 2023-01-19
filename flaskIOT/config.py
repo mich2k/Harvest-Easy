@@ -29,3 +29,6 @@ class Config:
 
     CACHE_TYPE = "simple"  # Flask-Caching related configs
     CACHE_DEFAULT_TIMEOUT =  100
+    
+    BCRYPT_LOG_ROUNDS = 13
+

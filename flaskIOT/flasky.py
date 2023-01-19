@@ -12,9 +12,14 @@ from app.utils.utils import Utils
 from os import getenv
 from flask_cors import CORS
 
+from flask_bcrypt import Bcrypt
+
+
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
+
+bcrypt = Bcrypt(app)
 
 CORS(app, resource={
     r"/db/*":{
