@@ -106,11 +106,11 @@ class Utils:
         if riempimento != None:
             # passaggio da pieno a non pieno e viceversa
             if status_attuale == 1 and float(riempimento) >= soglia_attuale:
-                full_state(apartment_ID, riempimento)
+                full_state(id_bin, apartment_ID, riempimento)
                 status_attuale = 2
 
             if status_attuale == 3 and float(riempimento) >= soglia_attuale:
-                full_state(apartment_ID, riempimento)
+                full_state(id_bin, apartment_ID, riempimento)
                 status_attuale = 4
 
             if status_attuale == 2 and float(riempimento) < soglia_attuale:
@@ -185,7 +185,7 @@ class Utils:
             rtime = int(random.random() * 86400)
             dtime = int(random.random() * 360)
 
-            year = random.randrange(2022, 2050)
+            year = 2022 #random.randrange(2022, 2023)
             month = int(dtime / 30) if int(dtime / 30) != 0 else int(dtime / 30) + 1
             day = int(dtime / 12) if int(dtime / 12) != 0 else int(dtime / 12) + 1
             hours = int(rtime / 3600)

@@ -12,7 +12,7 @@ def full_state(idbin, apartment, filling):
 
     # Notificare a User, Admin
     text = "Attenzione!\nLivello di riempimento del bidone:{}".format(str(filling))
-
+    
     # Contattare getneighbor : via, nome dell'appartamento, città e tipologia rifiuto
 
     chat_ids = TelegramIDChatUser

@@ -1,6 +1,6 @@
 from datetime import datetime
 from .__init__ import db
-from flasky import bcrypt
+#from flasky import bcrypt
 
 
 class Person:
@@ -23,7 +23,7 @@ class Person:
         self.uid = uid
         self.name = name
         self.surname = surname
-        self.password = bcrypt.generate_password_hash(password)
+        #self.password = bcrypt.generate_password_hash(password)
         self.city = city
         self.birth_year = birth_year
 

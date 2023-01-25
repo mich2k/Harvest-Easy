@@ -6,7 +6,7 @@ from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
-from flasky import bcrypt
+#from flasky import bcrypt
 
 URL = "https://osm.gmichele.it/search"
 
@@ -277,7 +277,7 @@ def login(uid, password):
 
     access_allowed = False
     for asw in db.session.query(
-        Admin.uid == uid and bcrypt.check_password_hash(Admin.password, password)
+        #Admin.uid == uid and bcrypt.check_password_hash(Admin.password, password)
     ).all():
         if asw[0]:
             access_allowed = True
