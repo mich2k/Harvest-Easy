@@ -33,8 +33,8 @@ def createDB():
         db.drop_all()
         db.create_all()
 
-        if getenv("FAKER") == "True":
-            create_faker(db)
+        #if getenv("FAKER") == "True":
+        create_faker(db)
 
         db_manager.setstatus(db, True)
 

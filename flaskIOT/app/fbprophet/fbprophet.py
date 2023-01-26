@@ -97,7 +97,7 @@ def getprevision3(apartment_name, tipologia):
 
 @fbprophet_blueprint.route("/createprevision/<int:time>")
 def createprevision(time):
-    if time == 0:
+    if time == 0:   #se tempo non inserito(0), default 5 giorni
         time = 5
     for bin in Bin.query.all():  # per ogni bidone creo una previsione temporale
         bin_records = BinRecord.query.filter(
