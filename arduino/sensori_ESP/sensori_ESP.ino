@@ -7,14 +7,14 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
-#define ID_BIN "plastic bin"
+#define ID_BIN 1
 #define DHTPIN 23     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT11  //definisco di quale tipo di sensore DHT deve essere utilizzato
 #define PIN_CO2 34   // Analogical pin connected to the CO2 sensor
 #define PINTrigger 19  // Trigger pin of ultrasonic sensor 
 #define PINEcho 18  // Echo pin connected of ultrasonic sensor 
 #define altezza 50
-#define SERVER_ADDR "https://flask.gmichele.it/"
+#define SERVER_ADDR "https://flask.gmichele.it/db/addrecord"//"https://flask.gmichele.it/"
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
 #endif
@@ -36,7 +36,6 @@ const int MPU_addr=0x68;
 int16_t AcX, AcY, AcZ;
 //int16_t GyX, GyY, GyZ;
 
-String msg1, msg2, msg3;
 
 void connectToWiFi() {
     WiFi.begin(ssid, password); 
@@ -49,9 +48,9 @@ void connectToWiFi() {
 
 void setup() {
   Serial.begin(9600);
-  //pinMode(PINTrigger, OUTPUT);
-  //pinMode(PINEcho, INPUT);
-  //pinMode(PIN_CO2, INPUT);
+  pinMode(PINTrigger, OUTPUT);
+  pinMode(PINEcho, INPUT);
+  pinMode(PIN_CO2, INPUT);
   timestamp = millis();
 
   connectToWiFi();
@@ -73,7 +72,7 @@ void loop() {
   if(WiFi.status() == WL_CONNECTED){
     //DHT11
     // attendo qualche secondo affinchè il sensore si stabilizzi ed abbia il tempo di effettuare la lettura dei dati.
-    if (millis() - timestamp > 2000) {
+    if (millis() - timestamp > 8000) {
       int humidity = (int) dht.readHumidity(); //readHumidity() restituisce un valore di tipo float.
       int temperature = (int) dht.readTemperature();  // Read temperature as Celsius (the default)
     
@@ -90,7 +89,8 @@ void loop() {
       digitalWrite(PINTrigger, LOW); // imposta l'uscita del trigger LOW
       int durata = pulseIn(PINEcho, HIGH); // calcolo del tempo attraverso il pin di echo
       int distanza = durata / 58.31;
-      
+     
+      float riempimento = float((altezza-distanza))/float(altezza);
       //SENSORE DI CO2
       int co2 = analogRead(PIN_CO2);
     
@@ -109,56 +109,42 @@ void loop() {
       */
       pitch = (atan2(AcX, sqrt(AcY * AcY + AcZ * AcZ)) * 180.0) / M_PI;
       roll = (atan2(AcY, sqrt(AcX * AcX + AcZ * AcZ)) * 180.0) / M_PI;
-      yaw = (atan2(sqrt(AcX * AcX + AcZ * AcZ), AcZ) * 180.0) / M_PI;
+      //yaw = (atan2(sqrt(AcX * AcX + AcZ * AcZ), AcZ) * 180.0) / M_PI;
       
       //CREAZIONE DEI PACCHETTI
       //pacchetto con i valori rilevati da salvare in db
-      jsonMsg1["idbin"] = ID_BIN;
+      String msg1="";
+      jsonMsg1["id_bin"] = ID_BIN;
       jsonMsg1["temperature"] = temperature;
       jsonMsg1["humidity"] = humidity;
-      jsonMsg1["riempimento"] = (altezza-distanza)/altezza;
-
-      //pacchetto con i valori per controllare ed eventualmente segnalare ribaltamento
-      jsonMsg1["idbin"] = ID_BIN;
-      jsonMsg2["roll"] = roll; //0 gradi
-      jsonMsg2["pitch"] = pitch;  //90 gradi
-      jsonMsg2["yaw"] = yaw;  //90 gradi
-      
-      //pacchetto con il valore di co2 per controllare ed eventualmente segnalare incendio
-      jsonMsg1["idbin"] = ID_BIN;
-      jsonMsg3["co2"] = co2;
+      jsonMsg1["riempimento"] = riempimento;
+      jsonMsg1["roll"] = roll; //0 gradi
+      jsonMsg1["pitch"] = pitch;  //90 gradi
+      //jsonMsg2["yaw"] = yaw;  //90 gradi
+      jsonMsg1["co2"] = co2;
       
       serializeJson(jsonMsg1, msg1);
-      serializeJson(jsonMsg2, msg2);
-      serializeJson(jsonMsg3, msg3);
       Serial.println(msg1);
-      Serial.println(msg2);
-      Serial.println(msg3);
-
-      httpPOSTJSON(String(SERVER_ADDR + 'database/additem/'), msg1);
-      httpPOSTJSON(String(SERVER_ADDR + 'checkribaltamento/'), msg2);
-      httpPOSTJSON(String(SERVER_ADDR + 'checkincendio/'), msg3);
+      Serial.println("\n");
+      http.begin(SERVER_ADDR);
+      http.addHeader("Content-Type", "application/json"); // Specify content-type header
+      int httpResponseCode = http.POST(msg1); 
+      
+      if (httpResponseCode>0) {
+        String resp = http.getString(); 
+        Serial.print(httpResponseCode);
+        Serial.println("\n");
+      }
+      else {
+        Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+        Serial.println("\n");
+      }
+      http.end();
       timestamp = millis();
     }
   }
   else{
-    Serial.println("Errore di connessione");
+    Serial.println("Errore di connessione\n");
   }
 }
-
-String httpPOSTJSON(String serverName, String msg) {
-  http.begin(serverName);
-  http.addHeader("Content-Type", "application/json"); // Specify content-type header
-  int httpResponseCode = http.POST(msg); 
-  
-  if (httpResponseCode>0) {
-    String resp = http.getString(); 
-    Serial.print(httpResponseCode);
-  }
-  else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
-  http.end();
-}
-
