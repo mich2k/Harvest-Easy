@@ -60,7 +60,7 @@ def addrecord():
     msgJson = request.get_json()
 
     msgJson["status"] = 1 
-    """
+
     Utils.calcolastatus(
         db,
         msgJson["id_bin"],
@@ -69,7 +69,7 @@ def addrecord():
         msgJson["pitch"],
         msgJson["co2"],
     )
-    """
+
     sf = BinRecord(msgJson)
     db.session.add(sf)
     db.session.commit()

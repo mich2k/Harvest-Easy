@@ -126,7 +126,7 @@ class BinRecord(db.Model):
         self.humidity = jsonObj["humidity"]
         self.riempimento = jsonObj["riempimento"]
         # da decommentare solo per creare il faker
-        self.timestamp = jsonObj["timestamp"]
+        #self.timestamp = jsonObj["timestamp"]
 
 
 class Apartment(db.Model):

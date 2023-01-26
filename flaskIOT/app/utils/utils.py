@@ -129,18 +129,18 @@ class Utils:
 
         # passaggio da accappottato a dritto e viceversa
         if roll != None and pitch != None:
-            if status_attuale == 3 and (roll < 45 and (abs(pitch - 90) < 45)):
+            if status_attuale == 3 and (abs(roll) < 30 and (abs(pitch - 90) < 30)):
                 status_attuale = 1
 
-            if status_attuale == 1 and (roll >= 45 or (abs(pitch - 90) >= 45)):
-                overturn()
+            if status_attuale == 1 and (abs(roll) >= 30 or (abs(pitch - 90) >= 30)):
+                overturn(id_bin, apartment_ID, 90)
                 status_attuale = 3
 
-            if status_attuale == 4 and (roll < 45 and (abs(pitch - 90) < 45)):
+            if status_attuale == 4 and (abs(roll) < 30 and (abs(pitch - 90) < 30)):
                 status_attuale = 2
 
-            if status_attuale == 2 and (roll >= 45 or (abs(pitch - 90) >= 45)):
-                overturn()
+            if status_attuale == 2 and (abs(roll) >= 30 or (abs(pitch - 90) >= 30)):
+                overturn(id_bin, apartment_ID, 90)
                 status_attuale = 4
         if co2 != None:
             # Caso in cui nel bidone ci dovesse essere un incendio
@@ -148,14 +148,14 @@ class Utils:
                 status_attuale = 1
 
             if status_attuale == 1 and co2 >= limite_co2:
-                fire()
+                fire(id_bin, apartment_ID, co2)
                 status_attuale = 3
 
             if status_attuale == 4 and co2 < limite_co2:
                 status_attuale = 2
 
             if status_attuale == 2 and co2 >= limite_co2:
-                fire()
+                fire(id_bin, apartment_ID, co2)
                 status_attuale = 4
 
         return status_attuale
