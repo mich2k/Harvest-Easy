@@ -120,7 +120,7 @@ class BinRecord(db.Model):
     )
 
     def __init__(self, jsonObj):
-        self.associated_bin = jsonObj["associated_bin"]
+        self.associated_bin = jsonObj["id_bin"]
         self.status = jsonObj["status"]
         self.temperature = jsonObj["temperature"]
         self.humidity = jsonObj["humidity"]
