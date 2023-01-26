@@ -27,7 +27,7 @@ class Utils:
         # soglia dinamica per l'organico in base alla temperatura
         dd_umido = {"medie": 5, "alte": 3, "altissime": 2}
 
-        limite_co2 = 10  # da modificare
+        limite_co2 = 2000  # 2000ppm
         status_attuale = 1  # default del primo record del bidone
 
         bin_attuale = BinRecord.query.filter(BinRecord.associated_bin == id_bin)
