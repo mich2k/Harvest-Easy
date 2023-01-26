@@ -8,7 +8,7 @@ sample = {
     "temperature": 0,  # randomvalue
     "humidity": 0,  # randomvalue
     "riempimento": 0.0,  # randomvalue
-    "associated_bin": 1,  # randomvalue
+    "id_bin": 1,  # randomvalue
     "timestamp": "0",
 }
 
@@ -17,7 +17,7 @@ threshold = 0.9
 
 def faker_instances(db):
     # Campiono un bidone a caso
-    selected_bin = sample["associated_bin"] = utils.Utils.get_random_int(1, 8)
+    selected_bin = sample["id_bin"] = utils.Utils.get_random_int(1, 8)
 
     # Prelevo l'ultima istanza del bin selezionato casualmente
     act_timestamp = (
