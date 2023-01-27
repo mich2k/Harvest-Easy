@@ -270,7 +270,7 @@ def create_faker(db):
 
     # BinRecords
     for i in range(50):
-        db.session.add(BinRecord(faker_instances(db)))
+        db.session.add(BinRecord(faker_instances()))
 
     db.session.commit()
     return True

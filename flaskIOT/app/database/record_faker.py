@@ -15,61 +15,47 @@ sample = {
 threshold = 0.9
 
 
-def faker_instances(db):
+def faker_instances():
     # Campiono un bidone a caso
     selected_bin = sample["id_bin"] = utils.Utils.get_random_int(1, 8)
 
     # Prelevo l'ultima istanza del bin selezionato casualmente
-    act_timestamp = (
-        db.session.query(BinRecord.timestamp)
-        .filter(BinRecord.associated_bin == selected_bin)
-        .order_by(BinRecord.timestamp.desc())
-        .first()
-    )
-    act_filling = (
-        db.session.query(BinRecord.riempimento)
-        .filter(BinRecord.associated_bin == selected_bin)
-        .order_by(BinRecord.riempimento.desc())
-        .first()
-    )
-    act_state = (
-        db.session.query(BinRecord.status)
-        .filter(BinRecord.associated_bin == selected_bin)
-        .order_by(BinRecord.status.desc())
-        .first()
-    )
+    act_record = (
+            BinRecord.query.filter(BinRecord.associated_bin == selected_bin)
+            .order_by(BinRecord.timestamp.desc())
+            .first()
+        )
 
     # Campiono
     next_timestamp = utils.Utils.randomTime()
     next_filling = utils.Utils.get_random()
     next_status = 1
 
-    if act_timestamp is not None and act_filling is not None and act_state is not None:
+    if act_record is not None: 
         while True:
-
             if datetime.strptime(
                 next_timestamp, "%Y-%m-%d %H:%M:%S"
-            ) > datetime.strptime(act_timestamp[0], "%Y-%m-%d %H:%M:%S"):
+            ) > datetime.strptime(act_record.timestamp, "%Y-%m-%d %H:%M:%S"):
                 next_timestamp = utils.Utils.randomTime()
                 continue
+            
+            # Mi mantengo nello stato attuale
+            if (act_record.status == 1 and next_filling < threshold) or (
+                act_record.status == 2 and next_filling >= threshold
+            ):
+                next_status = act_record.status
+                break
 
-            if next_filling > act_filling[0]:
+            #cambio stato
+            if act_record.status == 2 and next_filling < threshold:
+                next_status = 1
+            if act_record.status == 1 and next_filling >= threshold:
+                next_status = 2
+            break
+    else:
+        if(next_filling >= threshold):
+            next_status=2
 
-                # Mi mantengo nello stato attuale
-                if (act_state == 1 and next_filling < threshold) or (
-                    act_state == 2 and next_filling >= threshold
-                ):
-                    next_status = act_state
-                    break
-
-                else:
-                    if act_state == 2 and next_filling < threshold:
-                        next_status = 1
-                    if act_state == 1 and next_filling >= threshold:
-                        next_status = 2
-                    break
-            else:
-                next_filling = utils.Utils.get_random()
 
     sample["riempimento"] = next_filling
     sample["status"] = next_status

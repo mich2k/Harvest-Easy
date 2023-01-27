@@ -58,8 +58,7 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
-
-    msgJson["status"] = 1
+    msgJson["status"] = 1 
     """
     Utils.calcolastatus(
         db,

@@ -50,9 +50,9 @@ def getneighbor(id_bin):
             apartment_coordinate.append(apartments[i].lng)
             apartment_coordinate.append(apartments[i].lat)
             coordinates.append(apartment_coordinate)
-
+    if(len(coordinates)<2):
+        return 'Nessun vicino disponibile'
     body = {"locations": coordinates}
-
     headers = {
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
         "Content-Type": "application/json; charset=utf-8",
@@ -78,4 +78,4 @@ def getneighbor(id_bin):
         .apartment_name
     )
     vicino = Apartment.query.filter(Apartment.apartment_name == apartment_name).first()
-    return vicino.street + " " + str(vicino.apartment_street_number)
+    return {"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name}
