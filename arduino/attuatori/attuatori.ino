@@ -7,10 +7,14 @@
 #include <stdlib.h>
 #include <HTTPClient.h>
 
-#define ID_BIN "plastic bin"
+#define ID_BIN 1
 #define SERVER_ADDR "https://flask.gmichele.it/"
 #define RST_PIN         22       //pin di reset    
 #define SS_PIN          21       //pin di selezione
+#define SCK             18
+#define MISO            19
+#define MOSI            23
+#define SDA             21
 
 HTTPClient http;
 StaticJsonDocument<1024> jsonMsg1;
@@ -73,38 +77,65 @@ void loop() {
       Serial.print(inStringHex);
       Serial.println();
 
-      //CREAZIONE DEL PACCHETTO 
-      //pacchetto con il valore di UID per controllare se l'utente ha disponibilità di accesso
-      jsonMsg1["idbin"] = ID_BIN;
-      jsonMsg1["UID"] = inStringDec;
-      serializeJson(jsonMsg1, msg1);
-      Serial.println(msg1);
-      http.begin(String(SERVER_ADDR + 'database/checkUID'));
-      http.addHeader("Content-Type", "application/json"); // Specify content-type header
-      int respCode1 = http.POST(msg1);
-      checkrisp(respCode1);
+
+      //controllare se l'utente ha disponibilità di accesso
+      String serverPath= "https://flask.gmichele.it/db/checkuid/" + String(inStringHex) + "&" + String(ID_BIN);
+      http.begin(serverPath.c_str());
+      //http.addHeader("Content-Type", "application/json"); // Specify content-type header
+      int respCode1 = http.GET();
+      String risp = "{}"; 
+      if (respCode1>0) {
+        Serial.print("HTTP Response code: ");
+        Serial.println(respCode1);
+        risp = http.getString();
+      }
+      else {
+        Serial.print("Error code: ");
+        Serial.println(respCode1);
+      }
       http.end();
-      
+      myObject = JSON.parse(risp);
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+      }
+      //JSONVar keys = myObject.keys(); //via, numero
+      String code = myObject["code"];
+      Serial.println(code);
+      checkrisp(201); //respCode1
+      http.end();
       inStringHex = "";
       inStringDec = "";
     }
-
+    
       //AGGIORNO IL DISPLAY ogni 30 minuti
     if ((millis() - lastTime) > timerDelay) {
-      String serverPath = String(SERVER_ADDR) + 'database/getsensor?idbin='+ String(ID_BIN);
+      String serverPath = "https://flask.gmichele.it/db/getrecord/" + String(ID_BIN);
       sensorReadings = httpGETRequest(serverPath.c_str());
-      myObject = JSON.parse(sensorReadings);
-      if (JSON.typeof(myObject) == "undefined") {
-        Serial.println("Parsing input failed!");
-        return;
+      http.begin(serverPath.c_str());
+      int respCode2 = http.GET();
+      String risp2 = "{}"; 
+      if (respCode2>0) {
+        Serial.print("HTTP Response code: ");
+        Serial.println(respCode2);
+        risp = http.getString();
       }
-    
+      else {
+        Serial.print("Error code: ");
+        Serial.println(respCode2);
+      }
+      http.end();
+      myObject = JSON.parse(risp2); //stato, temperatura, livello di riempimento
       Serial.print("JSON object = ");
       Serial.println(myObject);
-      JSONVar keys = myObject.keys(); //stato, temperatura, livello di riempimento
-      String status_attuale = myObject[keys[0]];
-      int temperatura = int(myObject[keys[1]]);
-      int riempimento = int(myObject[keys[2]]);
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+      }
+      
+      String status_attuale = myObject["stato"];
+      int temperatura = int(myObject["temperatura"]);
+      int riempimento = int(myObject["riempimento"]);
 
       Serial.print("status_attuale = ");
       Serial.println(status_attuale);
@@ -112,6 +143,7 @@ void loop() {
       Serial.println(temperatura);
       Serial.print("riempimento = ");
       Serial.println(riempimento);
+
       lastTime = millis();
     }
   }
@@ -123,57 +155,58 @@ void checkrisp(int respCode){
   if(respCode > 0){ 
 	  if(respCode == 200){ //se utente è autorizzato e il bidone vuoto
 		//visualizzo "Autorizzato"
+      return;
 	  }
 
     if(respCode == 201){  //se utente è autorizzato ma il bidone è pieno 
       //visualizzo "autorizzato""
-      //visualizzo bidone più vicino
-      String serverPath = String(SERVER_ADDR) + 'neighbor/?idbin=' + String(ID_BIN);
-      sensorReadings = httpGETRequest(serverPath.c_str());
+      //visualizzo appartamento più vicino
+      String serverPath = "https://flask.gmichele.it/neighbor/getneighbor/" + String(ID_BIN);
+      http.begin(serverPath.c_str());
+      Serial.println(serverPath.c_str());
+      Serial.println("\n");
+      int httpResponseCode = http.GET();
+      String sensorReadings = "{}"; 
+      
+      if (httpResponseCode>0) {
+        Serial.print("HTTP Response code: ");
+        Serial.println(httpResponseCode);
+        sensorReadings = http.getString();
+      }
+      else {
+        Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+      }
+      http.end();
       myObject = JSON.parse(sensorReadings);
+      Serial.println(myObject);
       if (JSON.typeof(myObject) == "undefined") {
         Serial.println("Parsing input failed!");
         return;
-        }
-      JSONVar keys = myObject.keys(); //via, numero
-      String via = myObject[keys[0]];
-      int numero = int(myObject[keys[1]]);
+      }
+      String via = myObject["street"];
+      int numero = int(myObject["number"]);
       Serial.print("via = ");
       Serial.println(via);
       Serial.print("numero = ");
       Serial.println();
+      return;
 	  }
 
     if(respCode == 202){  //se utente non è autorizzato 
       //visualizzo "Non autorizzato"
+      return;
     }
 
     if(respCode == 203){  //se utente è OPERATORE/ADMIN 
       //visualizzo "autorizzato"
       //aziono il servo
+      return;
     }
     
   }else{
     Serial.print("Errore: ");
     Serial.println(respCode);
+    return;
   }
-}
-
-String httpGETRequest(const char* serverName) {
-  http.begin(serverName);
-  int httpResponseCode = http.GET();
-  
-  String payload = "{}"; 
-  
-  if (httpResponseCode>0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-    payload = http.getString();
-  }
-  else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
-  http.end();
-  return payload;
 }

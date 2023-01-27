@@ -78,4 +78,5 @@ def getneighbor(id_bin):
         .apartment_name
     )
     vicino = Apartment.query.filter(Apartment.apartment_name == apartment_name).first()
-    return {"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name}
+    return {"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name,
+    "lat": vicino.lat, "lng": vicino.lng}

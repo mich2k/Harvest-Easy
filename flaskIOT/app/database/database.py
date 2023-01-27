@@ -383,6 +383,21 @@ def getbininfo(idbin):
 
     return Utils.sa_dic2json(res)
 
+@database_blueprint.route("/getrecord/<string:idbin>", methods=["GET"])
+def getbininfo(idbin):
+
+    ultimo_bin_record = (
+            BinRecord.query.filter(BinRecord.associated_bin == idbin)
+            .order_by(BinRecord.timestamp.desc())
+            .first()
+        )
+    
+    return {
+        "status": ultimo_bin_record.status,
+        "temperatura": ultimo_bin_record.temperature,
+        "riempimento": ultimo_bin_record.riempimento
+    }
+
 
 # Get: ottengo tutte le informazioni dell'appartamento indicato
 

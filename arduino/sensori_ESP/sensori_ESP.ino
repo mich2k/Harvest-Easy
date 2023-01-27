@@ -14,14 +14,14 @@
 #define PINTrigger 19  // Trigger pin of ultrasonic sensor 
 #define PINEcho 18  // Echo pin connected of ultrasonic sensor 
 #define altezza 50
-#define SERVER_ADDR "https://flask.gmichele.it/db/addrecord"//"https://flask.gmichele.it/"
+#define SERVER_ADDR "https://flask.gmichele.it/db/addrecord"
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
 #endif
 
 DHT dht(DHTPIN, DHTTYPE);
 HTTPClient http;
-StaticJsonDocument<1024> jsonMsg1, jsonMsg2, jsonMsg3;
+StaticJsonDocument<1024> jsonMsg1;
 
 const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
 const char* password = "altalena";// Qui va inserita la password di rete
@@ -89,7 +89,8 @@ void loop() {
       digitalWrite(PINTrigger, LOW); // imposta l'uscita del trigger LOW
       int durata = pulseIn(PINEcho, HIGH); // calcolo del tempo attraverso il pin di echo
       int distanza = durata / 58.31;
-     
+      Serial.println(distanza);
+      Serial.println("\n");
       float riempimento = float((altezza-distanza))/float(altezza);
       //SENSORE DI CO2
       int co2 = analogRead(PIN_CO2);
@@ -122,6 +123,7 @@ void loop() {
       jsonMsg1["pitch"] = pitch;  //90 gradi
       //jsonMsg2["yaw"] = yaw;  //90 gradi
       jsonMsg1["co2"] = co2;
+      jsonMsg1["timestamp"]="";
       
       serializeJson(jsonMsg1, msg1);
       Serial.println(msg1);
@@ -148,3 +150,4 @@ void loop() {
     Serial.println("Errore di connessione\n");
   }
 }
+

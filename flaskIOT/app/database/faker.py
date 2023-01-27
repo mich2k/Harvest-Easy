@@ -172,6 +172,18 @@ def create_faker(db):
             ),
             User(
                 Person(
+                    uid="d3370a8",
+                    name="Alessia",
+                    surname="Saporita",
+                    password="ilovecondomini",
+                    city="Modena",
+                    birth_year=2000,
+                ),
+                "Torri",
+                45,
+            ),
+            User(
+                Person(
                     uid="rossi3",
                     name="Mario",
                     surname="Rossi",
