@@ -3,8 +3,7 @@ from flask import Response
 from os import getenv
 from ..database.tables import *
 from ..trap.trap import *
-import random, requests
-
+import random, requests 
 
 class Utils:
 

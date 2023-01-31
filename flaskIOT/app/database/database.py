@@ -6,7 +6,6 @@ from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
-#from flasky import bcrypt
 
 URL = "https://osm.gmichele.it/search"
 
@@ -100,12 +99,13 @@ def adduser():
 
     user = User(
         Person(
-            uid=msgJson["uid"],
+            username=msgJson["username"],
             name=msgJson["name"],
             surname=msgJson["surname"],
             password=msgJson["password"],
             city=msgJson["city"],
             birth_year=msgJson["year"],
+            card_number=msgJson["card_number"]
         ),
         apartment_ID=msgJson["apartment_ID"],
         internal_number=msgJson["internal_number"],
@@ -119,7 +119,7 @@ def adduser():
 
 # AGGIUNTA DI UN ADMIN
 
-
+"""
 @database_blueprint.route(
     "/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>",
     methods=["GET"],
@@ -131,7 +131,7 @@ def addadmin(uid, name, surname, password, city, birth_year):
     db.session.commit()
 
     return Utils.get_response(200, "Done")
-
+"""
 
 # AGGIUNTA DI UN OPERATORE
 
@@ -141,12 +141,13 @@ def addoperator():
     msgJson = request.get_json()
     operator = Operator(
         Person(
-            uid=msgJson["uid"],
+            username=msgJson["username"],
             name=msgJson["name"],
             surname=msgJson["surname"],
             password=msgJson["password"],
             city=msgJson["city"],
             birth_year=msgJson["year"],
+            card_number=msgJson["card_number"],
         ),
         id=msgJson["id"],
     )
@@ -206,7 +207,7 @@ def check(uid, id_bin):
 
     users = User.query.all()
     operators = Operator.query.all()
-    admins = Admin.query.all()
+    #admins = Admin.query.all()
     ultimo_bin_record = (
         BinRecord.query.filter(BinRecord.associated_bin == id_bin)
         .order_by(BinRecord.timestamp.desc())
@@ -220,13 +221,13 @@ def check(uid, id_bin):
 
     if len(users) > 0:
         for user in users:
-            if uid == user.uid:
+            if uid == user.card_number:
                 if status_attuale == 1:
                     return jsonify({"code": 200})
                 else:
-                    # cerco il bidone più vicino
-                    return jsonify({"code": 201, "vicino": ""})
-
+                    #cerco il bidone più vicino
+                    return jsonify({"code": 201})
+    """
     if len(admins) > 0:
         for admin in admins:
             if uid == admin.uid:
@@ -234,11 +235,11 @@ def check(uid, id_bin):
                     return jsonify({"code": 200})
                 else:
                     # cerco il bidone più vicino
-                    return jsonify({"code": 201, "vicino": ""})
-
+                    return jsonify({"code": 201})
+    """
     if len(operators) > 0:
         for operator in operators:
-            if uid == operator.uid:
+            if uid == operator.card_number:
                 return jsonify({"code": 203})
 
     return jsonify({"code": 202})
@@ -251,8 +252,8 @@ def stampaitems():
     elenco = [
         Bin.query.order_by(Bin.id_bin.desc()).all(),
         Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
-        User.query.order_by(User.uid.desc()).all(),
-        Admin.query.order_by(Admin.uid.desc()).all(),
+        User.query.order_by(User.username.desc()).all(),
+        #Admin.query.order_by(Admin.uid.desc()).all(),
         BinRecord.query.order_by(BinRecord.id_record.desc()).all(),
         TelegramIDChatUser.query.all(),
     ]
@@ -262,10 +263,9 @@ def stampaitems():
 
     return res
 
-
+ 
 # Getters
-
-
+"""
 @database_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
 def dataAdmin(uid):
     res = Admin.query.where(Admin.uid == uid).all()
@@ -278,13 +278,13 @@ def login(uid, password):
 
     access_allowed = False
     for asw in db.session.query(
-        #Admin.uid == uid and bcrypt.check_password_hash(Admin.password, password)
+        Admin.uid == uid and bcrypt.check_password_hash(Admin.password, password)
     ).all():
         if asw[0]:
             access_allowed = True
 
     return Utils.get_json(200, {"allowed": access_allowed})
-
+"""
 
 @database_blueprint.route("/checkUsername/<string:usr>", methods=["GET"])
 def checkusername(usr):
@@ -384,7 +384,7 @@ def getbininfo(idbin):
     return Utils.sa_dic2json(res)
 
 @database_blueprint.route("/getrecord/<string:idbin>", methods=["GET"])
-def getbininfo(idbin):
+def getbinrecord(idbin):
 
     ultimo_bin_record = (
             BinRecord.query.filter(BinRecord.associated_bin == idbin)

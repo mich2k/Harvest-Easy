@@ -8,18 +8,18 @@ from app.map.map import map_blueprint
 from app.geofirstrecord.geofirstrecord import geofirstrecord_blueprint
 from app.fbprophet.fbprophet import fbprophet_blueprint
 from app.handler.error_handler import handler_blueprint
+from app.login.login import login_blueprint
 from app.utils.utils import Utils
 from os import getenv
 from flask_cors import CORS
-
-from flask_bcrypt import Bcrypt
+from app.login.__init__ import login_manager, bcrypt
 
 
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
 
-bcrypt = Bcrypt(app)
+
 
 CORS(app, resource={
     r"/db/*":{
@@ -75,6 +75,10 @@ else:
 #Inizializzazione DB
 db.init_app(app)
 
+#Inizializzazione Bcrypt e LoginManager
+bcrypt = bcrypt.init_app(app)
+login_manager.init_app(app)
+
 #Registrazione Blueprint
 app.register_blueprint(geofirstrecord_blueprint, url_prefix='/geofr')
 app.register_blueprint(database_blueprint, url_prefix='/db')
@@ -82,8 +86,8 @@ app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
 app.register_blueprint(map_blueprint, url_prefix='/map')
 app.register_blueprint(fbprophet_blueprint, url_prefix='/pred')
-
 app.register_blueprint(handler_blueprint)
+app.register_blueprint(login_blueprint)
 
 @app.route('/') 
 def testoHTML():

@@ -1,7 +1,7 @@
-from os import getenv
 from .tables import *
 from ..utils import utils
 from .record_faker import faker_instances
+from app.login.login import generate_password
 
 fakers = [
     {
@@ -60,43 +60,46 @@ def create_faker(db):
     # Bin
     for faker in fakers:
         db.session.add(Bin(faker))
-
+    """
     # Admin
     db.session.add_all(
         [
             Admin(
                 Person(
-                    uid="rossi1",
+                    username="rossi1",
                     name="Mario",
                     surname="Rossi",
-                    password="ilovecondomini",
+                    password='mariorossi',
                     city="Modena",
                     birth_year=2000,
+                    card_number="d3370a8"
                 )
             ),
             Admin(
                 Person(
-                    uid="mario2",
+                    username="mario2",
                     name="Mario",
                     surname="Verdi",
-                    password="ilovecondomini",
+                    password='marioverdi',
                     city="Avellino",
                     birth_year=2000,
+                    card_number="d3370a9"
                 )
             ),
             Admin(
                 Person(
-                    uid="luigi3",
+                    username="luigi3",
                     name="Luigi",
                     surname="Rossi",
-                    password="ilovecondomini",
+                    password="luigirossi",
                     city="Moliterno",
                     birth_year=2000,
+                    card_number="d3370a0"
                 )
             ),
         ]
     )
-
+    """
     # Apartments
     db.session.add_all(
         [
@@ -108,7 +111,7 @@ def create_faker(db):
                 lat=44.6194014,
                 lng=10.9217465,
                 n_internals=155,
-                associated_admin="rossi1",
+                #associated_admin="rossi1",
             ),
             Apartment(
                 apartment_name="Torri",
@@ -118,7 +121,7 @@ def create_faker(db):
                 lat=44.6229105,
                 lng=10.9374034,
                 n_internals=100,
-                associated_admin="rossi1",
+                #associated_admin="rossi1",
             ),
             Apartment(
                 apartment_name="Cuoppo",
@@ -128,7 +131,7 @@ def create_faker(db):
                 lat=44.6219696,
                 lng=10.931554,
                 n_internals=258,
-                associated_admin="mario2",
+                #associated_admin="mario2",
             ),
             Apartment(
                 apartment_name="IDK",
@@ -138,7 +141,7 @@ def create_faker(db):
                 lat=44.6280877,
                 lng=10.9166076,
                 n_internals=50,
-                associated_admin="luigi3",
+                #associated_admin="luigi3",
             ),
         ]
     )
@@ -148,84 +151,91 @@ def create_faker(db):
         [
             User(
                 Person(
-                    uid="vinz",
+                    username="vinz",
                     name="Vincenzo",
                     surname="Lapadula",
-                    password="ilovecondomini",
+                    password=generate_password("vincenzolapadula"), 
                     city="Modena",
                     birth_year=2001,
+                    card_number="d3370a5"
                 ),
                 "Fermi",
                 45,
             ),
             User(
                 Person(
-                    uid="chad",
+                    username="chad",
                     name="Michele",
                     surname="Giarletta",
-                    password="ilovecondomini",
+                    password=generate_password("michelegiarletta"), 
                     city="Avellino",
                     birth_year=2002,
+                    card_number="d3370a6"
                 ),
                 "Cuoppo",
                 67,
             ),
             User(
                 Person(
-                    uid="d3370a8",
+                    username="ale",
                     name="Alessia",
                     surname="Saporita",
-                    password="ilovecondomini",
+                    password=generate_password("alessiasaporita"), 
                     city="Modena",
                     birth_year=2000,
+                    card_number="d3370a8"
                 ),
-                "Torri",
+                "Fermi",
                 45,
             ),
             User(
                 Person(
-                    uid="rossi3",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="nenna",
+                    name="Elena",
+                    surname="Berselli",
+                    password=generate_password("elenaberselli"), 
                     city="Modena",
-                    birth_year=2003,
+                    birth_year=2000,
+                    card_number="d3370b8"
                 ),
                 "Torri",
                 78,
             ),
             User(
                 Person(
-                    uid="rossi4",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="lollo",
+                    name="Lorenzo",
+                    surname="Venturelli",
+                    password=generate_password("lorenzoventurelli"),
                     city="Avellino",
                     birth_year=2004,
+                    card_number="d337018"
                 ),
                 "Cuoppo",
                 23,
             ),
             User(
                 Person(
-                    uid="rossi5",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="abby",
+                    name="Abeer",
+                    surname="Jelali",
+                    password=generate_password("abeerjelali"), 
                     city="Modena",
                     birth_year=2005,
+                    card_number="d337028"
                 ),
                 "Fermi",
                 33,
             ),
             User(
                 Person(
-                    uid="rossi6",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="turro",
+                    name="Alessio",
+                    surname="Turrini",
+                    password=generate_password("alessioturrini"),
                     city="Moliterno",
                     birth_year=2006,
+                    card_number="d337038"
                 ),
                 "IDK",
                 12,
@@ -238,37 +248,40 @@ def create_faker(db):
         [
             Operator(
                 Person(
-                    uid="rossi8",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="mattia",
+                    name="Mattia",
+                    surname="Gualtieri",
+                    password= generate_password("mattiagualtieri"), 
                     city="Avellino",
                     birth_year=2004,
+                    card_number="d337048"
                 ),
                 id=158,
             ),
             Operator(
                 Person(
-                    uid="rossi10",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="guido",
+                    name="Guido",
+                    surname="Benevelli",
+                    password=generate_password("guidobenevelli"),
                     city="Modena",
                     birth_year=2004,
+                    card_number="d3375a8",
                 ),
                 id=478,
             ),
             Operator(
                 Person(
-                    uid="rossi11",
-                    name="Mario",
-                    surname="Rossi",
-                    password="ilovecondomini",
+                    username="rasta",
+                    name="Gabriele",
+                    surname="Rastelli",
+                    password=generate_password("gabrielerastelli"), 
                     city="Avellino",
                     birth_year=2004,
+                    card_number="d337068"
                 ),
                 id=500,
-            ),
+            )
         ]
     )
 

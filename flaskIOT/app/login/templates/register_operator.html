@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <style>
+        .validation_error{
+        color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}<br>
+                {{ form.name }}<br>
+                {{ form.surname }}<br>
+                {{ form.username }}<br>
+                {{ form.password }}<br>
+                {{ form.city }}<br>
+                {{ form.birth_year }}<br>
+                {{ form.card_number }}<br>
+                {{ form.id_operator }}<br>
+                {{ form.submit }}<br>
+                {% if form.errors %}
+                {{ form.errors }}
+                {% endif %}
+            </form>
+            <a href="{{ url_for('login.loginoperator') }}">Already have an account? Log In</a>
+        </div>
+    </div>
+</body>
+
+</html>
