@@ -1,3 +1,5 @@
+import redis
+
 class Config:
 
     # General Flask Config
@@ -17,10 +19,12 @@ class Config:
     DEBUG = False
     TESTING = False #True
 
-    SESSION_TYPE = 'sqlalchemy' #'redis'
+    SESSION_TYPE = 'sqlalchemy' #"redis"
     SESSION_SQLALCHEMY_TABLE = 'sessions'
     SESSION_COOKIE_NAME = 'my_cookieGetFace'
     SESSION_PERMANENT = True
+    SESSION_USE_SIGNER = True
+    #SESSION_REDIS = redis.from_url("redis://127.0.0.1:6379")
 
     # Database
     SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"  # = 'mysql://username:password@localhost/db_name'

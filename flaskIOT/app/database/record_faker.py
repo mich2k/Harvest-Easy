@@ -3,6 +3,7 @@ from .tables import Bin, BinRecord
 from datetime import datetime
 import random
 
+
 sample = {
     "status": 1,
     "temperature": 0,  # randomvalue

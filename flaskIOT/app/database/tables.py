@@ -1,9 +1,5 @@
 from datetime import datetime
-from .__init__ import db
-from flask_login import UserMixin
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.validators import InputRequired, ValidationError
+from .__init__ import db, ma
 
 
 class Person:
@@ -11,7 +7,7 @@ class Person:
     username = db.Column("username", db.String(20), nullable=False, unique=True)
     name = db.Column("name", db.String)
     surname = db.Column("surname", db.String)
-    password = db.Column("password", db.String(), nullable=False)
+    password = db.Column("password", db.Text, nullable=False)
     city = db.Column("city", db.String)
     birth_year = db.Column("birth_year", db.Integer)
     card_number = db.Column("card_number", db.String)
@@ -43,15 +39,15 @@ class UserTG:
         self.id_user = id_user
         self.logged = logged
 
-"""
-class Admin(Person, db.Model, UserMixin):
+
+class Admin(Person, db.Model):
     __tablename__ = "admin"
 
     def __init__(self, x: Person) -> None:
         super().__init__(x.username, x.name, x.surname, x.password, x.city, x.birth_year, x.card_number)
-"""
 
-class Operator(Person, db.Model, UserMixin):
+
+class Operator(Person, db.Model):
     __tablename__ = "operator"
     id_operator = db.Column("idOperator", db.Integer)
 
@@ -60,7 +56,7 @@ class Operator(Person, db.Model, UserMixin):
         self.id_operator = id
 
 
-class User(Person, db.Model, UserMixin):
+class User(Person, db.Model):
     __tablename__ = "user"
     internal_number = db.Column("internal_number", db.Integer)
     # FK
@@ -72,82 +68,6 @@ class User(Person, db.Model, UserMixin):
         super().__init__(p.username, p.name, p.surname, p.password, p.city, p.birth_year, p.card_number)
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
-
-class RegisterFormUser(FlaskForm):
-    username = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Username"})
-    name = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Name"})
-    surname = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Surname"})
-    city = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "City"})
-    birth_year = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Birth Year"})
-    internal_number = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Internal Number"})
-    password = PasswordField(validators=[
-                            InputRequired()], render_kw={"placeholder": "Password"})
-    apartment_name = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Apartment Name"})
-    card_number = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Card Number"})
-    submit = SubmitField('Register', validators=None)
-
-    def validate_username(self, username):
-        existing_user_username = User.query.filter(
-            User.username==username.data).first()
-        #existing_admin_username = Admin.query.filter(
-         #   Admin.username==username.data).first()
-        if existing_user_username: #or existing_admin_username:
-            raise ValidationError(
-                'That username already exists. Please choose a different one.')
-
-
-class LoginFormUser(FlaskForm):
-    username = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Username"})
-
-    password = PasswordField(validators=[
-                             InputRequired()], render_kw={"placeholder": "Password"})
-
-    submit = SubmitField('Login')
-
-
-class RegisterFormOperator(FlaskForm):
-    username = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Username"})
-    name = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Name"})
-    surname = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Surname"})
-    city = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "City"})
-    birth_year = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Birth Year"})
-    password = PasswordField(validators=[
-                            InputRequired()], render_kw={"placeholder": "Password"})
-    card_number = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Card Number"})
-    id_operator = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Id Operator"})
-    submit = SubmitField('Register', validators=None)
-
-    def validate_username(self, username):
-        existing_operator_username = Operator.query.filter(
-            Operator.username==username.data).first()
-        if existing_operator_username : #or existing_admin_username:
-            raise ValidationError(
-                'That username already exists. Please choose a different one.')
-
-class LoginFormOperator(FlaskForm):
-    username = StringField(validators=[
-                           InputRequired()], render_kw={"placeholder": "Username"})
-
-    password = PasswordField(validators=[
-                             InputRequired()], render_kw={"placeholder": "Password"})
-
-    submit = SubmitField('Login')
 
 
 class Superuser(Person, db.Model):
@@ -224,12 +144,12 @@ class Apartment(db.Model):
         "apartment_street_number", db.Integer, nullable=False
     )
     n_internals = db.Column("n_internals", db.Integer, nullable=False)
-    """
+  
     # FK
     associated_admin = db.Column(
         "associated_admin", db.String, db.ForeignKey("admin.username")
     )
-    """
+
     def __init__(
         self,
         apartment_name: str,
@@ -239,7 +159,7 @@ class Apartment(db.Model):
         lng: str,
         apartment_street_number: int,
         n_internals: int,
-        #associated_admin: str,
+        associated_admin: str,
     ):
         self.apartment_name = apartment_name
         self.city = city
@@ -248,7 +168,7 @@ class Apartment(db.Model):
         self.lng = lng
         self.apartment_street_number = apartment_street_number
         self.n_internals = n_internals
-        #self.associated_admin = associated_admin
+        self.associated_admin = associated_admin
 
 
 # Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram

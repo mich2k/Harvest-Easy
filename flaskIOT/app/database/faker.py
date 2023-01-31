@@ -60,7 +60,7 @@ def create_faker(db):
     # Bin
     for faker in fakers:
         db.session.add(Bin(faker))
-    """
+
     # Admin
     db.session.add_all(
         [
@@ -69,7 +69,7 @@ def create_faker(db):
                     username="rossi1",
                     name="Mario",
                     surname="Rossi",
-                    password='mariorossi',
+                    password=generate_password("mariorossi"),
                     city="Modena",
                     birth_year=2000,
                     card_number="d3370a8"
@@ -80,7 +80,7 @@ def create_faker(db):
                     username="mario2",
                     name="Mario",
                     surname="Verdi",
-                    password='marioverdi',
+                    password=generate_password("marioverdi"),
                     city="Avellino",
                     birth_year=2000,
                     card_number="d3370a9"
@@ -91,7 +91,7 @@ def create_faker(db):
                     username="luigi3",
                     name="Luigi",
                     surname="Rossi",
-                    password="luigirossi",
+                    password=generate_password("luigirossi"),
                     city="Moliterno",
                     birth_year=2000,
                     card_number="d3370a0"
@@ -99,7 +99,7 @@ def create_faker(db):
             ),
         ]
     )
-    """
+    
     # Apartments
     db.session.add_all(
         [
@@ -111,7 +111,7 @@ def create_faker(db):
                 lat=44.6194014,
                 lng=10.9217465,
                 n_internals=155,
-                #associated_admin="rossi1",
+                associated_admin="rossi1",
             ),
             Apartment(
                 apartment_name="Torri",
@@ -121,7 +121,7 @@ def create_faker(db):
                 lat=44.6229105,
                 lng=10.9374034,
                 n_internals=100,
-                #associated_admin="rossi1",
+                associated_admin="rossi1",
             ),
             Apartment(
                 apartment_name="Cuoppo",
@@ -131,7 +131,7 @@ def create_faker(db):
                 lat=44.6219696,
                 lng=10.931554,
                 n_internals=258,
-                #associated_admin="mario2",
+                associated_admin="mario2",
             ),
             Apartment(
                 apartment_name="IDK",
@@ -141,7 +141,7 @@ def create_faker(db):
                 lat=44.6280877,
                 lng=10.9166076,
                 n_internals=50,
-                #associated_admin="luigi3",
+                associated_admin="luigi3",
             ),
         ]
     )

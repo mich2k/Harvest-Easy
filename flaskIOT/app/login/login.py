@@ -1,144 +1,263 @@
-from sqlalchemy import update
-from flask import request, Blueprint, session, redirect, jsonify
+from flask import request, Blueprint, session, jsonify
 from os import getenv
 from app.database.tables import *
 from app.database.__init__ import db
 from ..utils.utils import Utils
-from flask import render_template, url_for
-from flask_login import login_user, login_required, logout_user, current_user
-from app.login.__init__ import bcrypt, login_manager
+from app.login.__init__ import bcrypt
+
 
 login_blueprint = Blueprint(
     "login", __name__, template_folder="templates", url_prefix="/login"
 )
 
-SECRET_KEY = getenv("SECRET_KEY")
-login_manager.login_view = 'login.login'
+@login_blueprint.route("/logout", methods=["POST"])
+def logout_user():
+    session.pop("user_id")
+    return "200"
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
-@login_blueprint.route("/")
-def home():
-    return render_template('home.html')
+@login_blueprint.route("/@me")
+def get_current_user():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    user = User.query.filter_by(id=user_id).first()
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "surname": user.surname,
+        "city": user.city,
+        "internal_number": user.internal_number,
+        "birth_year": user.birth_year,
+        "card_number": user.card_number,
+        "apartment_ID": user.apartment_ID
+    }) 
 
 
 #USER
 
-@login_blueprint.route('/userhome', methods=['GET', 'POST'])
-def userhome():
-    return render_template('userhome.html')
-
 @login_blueprint.route('/loginuser', methods=['GET', 'POST'])
 def loginuser():
-    form = LoginFormUser()
+    msgJson = request.get_json()
+    password = msgJson["password"]
+    username = msgJson["username"]
+    
+    user = User.query.filter(
+        User.username==username).first()
+    if user is None: 
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not bcrypt.check_password_hash(user.password, password):
+        return jsonify({"error": "Unauthorized"}), 401
 
-    if form.validate_on_submit():
-        user = User.query.filter(User.username==form.username.data).first()
-        if user:
-            if bcrypt.check_password_hash(user.password, form.password.data):
-                login_user(user)
-                return redirect(url_for('login.dashboarduser'))
-        """
-        if admin:
-            if bcrypt.check_password_hash(admin.password, form.password.data):
-                login_user(admin)
-                return redirect(url_for('login.dashboard'))
-        """
+    session["user_id"]=user.id
 
-    return render_template('login_user.html', form=form)
-
-@login_blueprint.route('/dashboarduser', methods=['GET', 'POST'])
-@login_required
-def dashboarduser():
-    return render_template('dashboarduser.html')
-
-@login_blueprint.route('/logoutuser', methods=['GET', 'POST'])
-@login_required
-def logoutuser():
-    logout_user()
-    return redirect(url_for('login.loginuser'))
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "surname": user.surname,
+        "city": user.city,
+        "internal_number": user.internal_number,
+        "birth_year": user.birth_year,
+        "card_number": user.card_number,
+        "apartment_ID": user.apartment_ID
+    })           
+       
 
 @ login_blueprint.route('/registeruser', methods=['GET', 'POST'])
 def registeruser():
-    form = RegisterFormUser()
-    if form.validate_on_submit():
-        new_user = User(
-                Person(
-                    username=form.username.data,
-                    name=form.name.data,
-                    surname=form.surname.data,
-                    password=bcrypt.generate_password_hash(form.password.data, 10).decode('utf-8'), 
-                    city=form.city.data,
-                    birth_year=form.birth_year.data,
-                    card_number=form.card_number.data
-                ),
-                form.apartment_name.data,
-                form.internal_number.data,
-            )
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login.loginuser'))
+    msgJson = request.get_json()
+    name = msgJson["name"]
+    surname = msgJson["surname"]
+    password = msgJson["password"]
+    city = msgJson["city"]
+    username = msgJson["username"]
+    birth_year = msgJson["birth_year"]
+    card_number = msgJson["card_number"]
+    apartment_ID = msgJson["apartment_ID"]
+    internal_number = msgJson["internal_number"]
+    existing_user_username = User.query.filter(
+            User.username==username).first() is not None
+    if existing_user_username: 
+            return jsonify({"error": "Username already exists"}), 409
+    
+    new_user = User(
+            Person(
+                username=username,
+                name=name,
+                surname=surname,
+                password=generate_password(password), 
+                city=city,
+                birth_year=birth_year,
+                card_number=card_number
+            ),
+            apartment_ID,
+            internal_number,
+        )
+    db.session.add(new_user)
+    db.session.commit()
 
-    return render_template('register_user.html', form=form)
+    session["user_id"] = new_user.id
+
+
+    return jsonify({
+        "id": new_user.id,
+        "name": new_user.name,
+        "surname": new_user.surname,
+        "city": new_user.city,
+        "internal_number": new_user.internal_number,
+        "birth_year": new_user.birth_year,
+        "card_number": new_user.card_number,
+        "apartment_ID": new_user.apartment_ID
+    })
+
 
 #OPERATOR
-@login_blueprint.route('/operatorhome', methods=['GET', 'POST'])
-def operatorhome():
-    return render_template('operatorhome.html')
 
 @ login_blueprint.route('/registeroperator', methods=['GET', 'POST'])
 def registeroperator():
-    form = RegisterFormOperator()
-    if form.validate_on_submit():
-        new_user = Operator(
-                Person(
-                    username=form.username.data,
-                    name=form.name.data,
-                    surname=form.surname.data,
-                    password=bcrypt.generate_password_hash(form.password.data, 10).decode('utf-8'),  
-                    city=form.city.data,
-                    birth_year=form.birth_year.data,
-                    card_number=form.card_number.data
-                ),
-                form.id_operator.data,
-            )
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login.loginoperator'))
+    msgJson = request.get_json()
+    name = msgJson["name"]
+    surname = msgJson["surname"]
+    password = msgJson["password"]
+    city = msgJson["city"]
+    username = msgJson["username"]
+    birth_year = msgJson["birth_year"]
+    card_number = msgJson["card_number"]
+    id_operator = msgJson["id_operator"]
+    existing_operator_username = Operator.query.filter(
+            Operator.username==username).first() is not None
+    if existing_operator_username: 
+        return jsonify({"error": "Username already exists"}), 409
+    
+    new_user = Operator(
+            Person(
+                username=username,
+                name=name,
+                surname=surname,
+                password=generate_password(password), 
+                city=city,
+                birth_year=birth_year,
+                card_number=card_number
+            ),
+            id_operator,
+        )
+    db.session.add(new_user)
+    db.session.commit()
+    
+    session["user_id"] = new_user.id
 
-    return render_template('register_operator.html', form=form)
+    return jsonify({
+            "id": new_user.id,
+            "name": new_user.name,
+            "surname": new_user.surname,
+            "city": new_user.city,
+            "birth_year": new_user.birth_year,
+            "card_number": new_user.card_number,
+            "id_operator": new_user.id_operator
+    })
 
 @login_blueprint.route('/loginoperator', methods=['GET', 'POST'])
 def loginoperator():
-    form = LoginFormOperator()
-
-    if form.validate_on_submit():
-        operator = Operator.query.filter(Operator.username==form.username.data).first()
+    msgJson = request.get_json()
+    password = msgJson["password"]
+    username = msgJson["username"]
     
-        """
-        if admin:
-            if bcrypt.check_password_hash(admin.password, form.password.data):
-                login_user(admin)
-                return redirect(url_for('login.dashboard'))
-        """
-        if operator:
-            if bcrypt.check_password_hash(operator.password, form.password.data):
-                login_user(operator)
-                return redirect(url_for('login.dashboardoperator'))
-    return render_template('login_operator.html', form=form)
+    operator = Operator.query.filter(
+        Operator.username==username).first()
+    if operator is None: 
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not bcrypt.check_password_hash(operator.password, password):
+        return jsonify({"error": "Unauthorized"}), 401
 
-@login_blueprint.route('/dashboardoperator', methods=['GET', 'POST'])
-@login_required
-def dashboardoperator():
-    return render_template('dashboardoperator.html')
+    session["user_id"]=operator.id
 
-@login_blueprint.route('/logoutoperator', methods=['GET', 'POST'])
-@login_required
-def logoutoperator():
-    logout_user()
-    return redirect(url_for('login.loginoperator'))
+    return jsonify({
+            "id": operator.id,
+            "name": operator.name,
+            "surname": operator.surname,
+            "city": operator.city,
+            "birth_year": operator.birth_year,
+            "card_number": operator.card_number,
+            "id_operator": operator.id_operator
+    })       
+
+
+#ADMIN
+
+@login_blueprint.route('/loginadmin', methods=['GET', 'POST'])
+def loginadmin():
+    msgJson = request.get_json()
+    password = msgJson["password"]
+    username = msgJson["username"]
+    
+    user = Admin.query.filter(
+        Admin.username==username).first()
+    if user is None: 
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not bcrypt.check_password_hash(user.password, password):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    session["user_id"]=user.id
+
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "surname": user.surname,
+        "city": user.city,
+        "birth_year": user.birth_year,
+        "card_number": user.card_number,
+    })           
+       
+
+@ login_blueprint.route('/registeradmin', methods=['GET', 'POST'])
+def registeradmin():
+    msgJson = request.get_json()
+    name = msgJson["name"]
+    surname = msgJson["surname"]
+    password = msgJson["password"]
+    city = msgJson["city"]
+    username = msgJson["username"]
+    birth_year = msgJson["birth_year"]
+    card_number = msgJson["card_number"]
+    
+    existing_admin_username = Admin.query.filter(
+            Admin.username==username).first() is not None
+    if existing_admin_username: 
+            return jsonify({"error": "Username already exists"}), 409
+    
+    new_user = Admin(
+            Person(
+                username=username,
+                name=name,
+                surname=surname,
+                password=generate_password(password), 
+                city=city,
+                birth_year=birth_year,
+                card_number=card_number
+            )
+        )
+    db.session.add(new_user)
+    db.session.commit()
+
+    session["user_id"] = new_user.id
+
+
+    return jsonify({
+        "id": new_user.id,
+        "name": new_user.name,
+        "surname": new_user.surname,
+        "city": new_user.city,
+        "birth_year": new_user.birth_year,
+        "card_number": new_user.card_number,
+    })
 
 def generate_password(password):
     return bcrypt.generate_password_hash(password, 10).decode('utf-8')
+
+def checkpassword(hash_password, password):
+    bcrypt.check_password_hash(hash_password, password)
