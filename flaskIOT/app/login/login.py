@@ -1,40 +1,41 @@
-from flask import request, Blueprint, session, jsonify
+from flask import request, Blueprint, jsonify
 from os import getenv
 from app.database.tables import *
 from app.database.__init__ import db
 from ..utils.utils import Utils
 from app.login.__init__ import bcrypt
-
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, unset_jwt_cookies, jwt_required
+from datetime import timedelta
+import json
 
 login_blueprint = Blueprint(
     "login", __name__, template_folder="templates", url_prefix="/login"
 )
 
 @login_blueprint.route("/logout", methods=["POST"])
-def logout_user():
-    session.pop("user_id")
-    return "200"
+def logout():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
 
-
-@login_blueprint.route("/@me")
-def get_current_user():
-    user_id = session.get("user_id")
-
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    user = User.query.filter_by(id=user_id).first()
-    return jsonify({
-        "id": user.id,
-        "name": user.name,
-        "surname": user.surname,
-        "city": user.city,
-        "internal_number": user.internal_number,
-        "birth_year": user.birth_year,
-        "card_number": user.card_number,
-        "apartment_ID": user.apartment_ID
-    }) 
-
+"""
+@login_blueprint.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now()
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            data = response.get_json()
+            if type(data) is dict:
+                data["access_token"] = access_token 
+                response.data = json.dumps(data)
+        return response
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original respone
+        return response
+"""
 
 #USER
 
@@ -43,7 +44,9 @@ def loginuser():
     msgJson = request.get_json()
     password = msgJson["password"]
     username = msgJson["username"]
-    
+    if password is None or username is None:
+        return jsonify({"error": "Wrong email or password"}), 401
+
     user = User.query.filter(
         User.username==username).first()
     if user is None: 
@@ -52,9 +55,10 @@ def loginuser():
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
 
-    session["user_id"]=user.id
+    access_token = create_access_token(identity=username)
 
     return jsonify({
+        "access_token":access_token,
         "id": user.id,
         "name": user.name,
         "surname": user.surname,
@@ -63,8 +67,14 @@ def loginuser():
         "birth_year": user.birth_year,
         "card_number": user.card_number,
         "apartment_ID": user.apartment_ID
-    })           
+    }), 200         
        
+@login_blueprint.route('/profileuser')
+@jwt_required() 
+def profileuser():
+    return jsonify ({
+        "about" :"Hello! This is a user's profile"
+    }), 200
 
 @ login_blueprint.route('/registeruser', methods=['GET', 'POST'])
 def registeruser():
@@ -99,10 +109,11 @@ def registeruser():
     db.session.add(new_user)
     db.session.commit()
 
-    session["user_id"] = new_user.id
+    access_token = create_access_token(identity=username)
 
 
     return jsonify({
+        "access_token":access_token,
         "id": new_user.id,
         "name": new_user.name,
         "surname": new_user.surname,
@@ -111,7 +122,7 @@ def registeruser():
         "birth_year": new_user.birth_year,
         "card_number": new_user.card_number,
         "apartment_ID": new_user.apartment_ID
-    })
+    }), 200
 
 
 #OPERATOR
@@ -147,19 +158,21 @@ def registeroperator():
     db.session.add(new_user)
     db.session.commit()
     
-    session["user_id"] = new_user.id
+    access_token = create_access_token(identity=username)
 
     return jsonify({
-            "id": new_user.id,
-            "name": new_user.name,
-            "surname": new_user.surname,
-            "city": new_user.city,
-            "birth_year": new_user.birth_year,
-            "card_number": new_user.card_number,
-            "id_operator": new_user.id_operator
-    })
+        "access_token":access_token,
+        "id": new_user.id,
+        "name": new_user.name,
+        "surname": new_user.surname,
+        "city": new_user.city,
+        "birth_year": new_user.birth_year,
+        "card_number": new_user.card_number,
+        "id_operator": new_user.id_operator
+    }), 200
 
 @login_blueprint.route('/loginoperator', methods=['GET', 'POST'])
+@jwt_required()
 def loginoperator():
     msgJson = request.get_json()
     password = msgJson["password"]
@@ -173,22 +186,37 @@ def loginoperator():
     if not bcrypt.check_password_hash(operator.password, password):
         return jsonify({"error": "Unauthorized"}), 401
 
-    session["user_id"]=operator.id
+    access_token = create_access_token(identity=username)
 
     return jsonify({
-            "id": operator.id,
-            "name": operator.name,
-            "surname": operator.surname,
-            "city": operator.city,
-            "birth_year": operator.birth_year,
-            "card_number": operator.card_number,
-            "id_operator": operator.id_operator
-    })       
+        "access_token":access_token,
+        "id": operator.id,
+        "name": operator.name,
+        "surname": operator.surname,
+        "city": operator.city,
+        "birth_year": operator.birth_year,
+        "card_number": operator.card_number,
+        "id_operator": operator.id_operator
+    }), 200      
 
+@login_blueprint.route('/profileoperator/<string:username>', methods=["GET"])
+@jwt_required() 
+def profileoperator(username):
+    if username is None:
+        return jsonify ({"error" :"Username is not correct"}), 401
+
+    operator = Operator.query.filter(
+        Operator.username==username).first()
+
+    if operator is None: 
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    return jsonify ({"msg" :"Hello! Welcome %s in your profile"% (operator.name)}), 200
 
 #ADMIN
 
 @login_blueprint.route('/loginadmin', methods=['GET', 'POST'])
+@jwt_required()
 def loginadmin():
     msgJson = request.get_json()
     password = msgJson["password"]
@@ -202,16 +230,17 @@ def loginadmin():
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
 
-    session["user_id"]=user.id
+    access_token = create_access_token(identity=username)
 
     return jsonify({
+        "access_token":access_token,
         "id": user.id,
         "name": user.name,
         "surname": user.surname,
         "city": user.city,
         "birth_year": user.birth_year,
         "card_number": user.card_number,
-    })           
+    }), 200           
        
 
 @ login_blueprint.route('/registeradmin', methods=['GET', 'POST'])
@@ -244,17 +273,25 @@ def registeradmin():
     db.session.add(new_user)
     db.session.commit()
 
-    session["user_id"] = new_user.id
-
+    access_token = create_access_token(identity=username)
 
     return jsonify({
+        "access_token":access_token,
         "id": new_user.id,
         "name": new_user.name,
         "surname": new_user.surname,
         "city": new_user.city,
         "birth_year": new_user.birth_year,
         "card_number": new_user.card_number,
-    })
+    }), 200
+
+@login_blueprint.route('/profileadmin')
+@jwt_required() 
+def profileadmin():
+    return jsonify ({
+        "about" :"Hello! This is an admin's profile"
+    }), 200
+
 
 def generate_password(password):
     return bcrypt.generate_password_hash(password, 10).decode('utf-8')

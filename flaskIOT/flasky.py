@@ -12,7 +12,7 @@ from app.login.login import login_blueprint
 from app.utils.utils import Utils
 from os import getenv
 from flask_cors import CORS
-from app.login.__init__ import bcrypt
+from app.login.__init__ import bcrypt, jwt
 from flask_session import Session
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_swagger import swagger
@@ -22,6 +22,9 @@ from flask import jsonify
 appname = "IOT - SmartBin"
 app = Flask(appname)
 
+
+
+"""
 my_swagger = swagger(app)
 SWAGGER_URL = '/api/docs'
 #server_session = Session(app)
@@ -35,6 +38,8 @@ SWAGGER_BLUEPRINT = get_swaggerui_blueprint(
 )
 
 app.register_blueprint(SWAGGER_BLUEPRINT, url_prefix = SWAGGER_URL)
+"""
+
 
 CORS(app, resource={
     r"/db/*":{
@@ -90,9 +95,10 @@ else:
 #Inizializzazione DB
 db.init_app(app)
 
-#Inizializzazione Bcrypt e LoginManager e Marshmallow
+#Inizializzazione Bcrypt 
 bcrypt = bcrypt.init_app(app)
-ma.init_app(app)
+#ma.init_app(app)
+jwt.init_app(app)
 
 
 #Registrazione Blueprint

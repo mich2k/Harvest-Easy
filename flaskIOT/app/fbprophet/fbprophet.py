@@ -20,6 +20,10 @@ def main():
 
 @fbprophet_blueprint.route("/getprevision")
 def getprevision():
+    """
+    questo endpoint prende le previsioni temporali di riempimento dei bidoni 
+    precedentemente create e ritorna un json con le relative previsioni
+    """
     array_pred=[]
     for bin in Bin.query.all():  
     
@@ -43,10 +47,18 @@ def getprevision():
             values_and_dates.append(array)
         json_bin["previsioni"]=values_and_dates
         array_pred.append(json_bin)
-    return {"fbprophet": array_pred}
+
+    return jsonify({"fbprophet": array_pred}), 200
 
 @fbprophet_blueprint.route("/getprevision/<string:apartment_name>")
 def getprevision2(apartment_name):
+    """
+    questo endpoint prende le previsioni temporali di riempimento dei bidoni di uno specifico appartamento
+    precedentemente create e ritorna un json con le previsioni di tutti i bidoni dell'appartamento
+    """
+    if apartment_name is None:
+        return jsonify({"error": "Apartment name not correct"})
+
     array_pred=[]
     bins = Bin.query.filter(Bin.apartment_ID == apartment_name)
     for bin in bins:
@@ -58,7 +70,7 @@ def getprevision2(apartment_name):
         predictions = file["yhat"] 
         dates = pd.to_datetime(file["ds"]) 
     
-        json_bin={"bin": bin.id_bin, "previsioni": None}
+        json_bin={"bin": bin.id_bin, "tipologia": tipologia, "previsioni": None}
         
         values_and_dates=[]
         for i in range(len(predictions)):
@@ -66,12 +78,21 @@ def getprevision2(apartment_name):
             array["value"]= predictions[i]
             array["date"]= dates[i]
             values_and_dates.append(array)
+            
         json_bin["previsioni"]=values_and_dates
         array_pred.append(json_bin)
-    return {"apartment_name": apartment_name, "tipologia": tipologia, "previsioni_bidoni": array_pred}
+
+    return jsonify({"apartment_name": apartment_name, "previsioni_bidoni": array_pred}), 200
 
 @fbprophet_blueprint.route("/getprevision/<string:apartment_name>&<string:tipologia>")
 def getprevision3(apartment_name, tipologia):
+    """
+    questo endpoint prende le previsioni temporali di riempimento dei bidoni di uno specifico appartamento 
+    e di una specifica tipologia precedentemente create e ritorna un json con le relative previsioni 
+    """
+    if apartment_name is None or tipologia is None:
+        return jsonify({"error": "Input not correct"})
+
     array_pred=[]
     bins = Bin.query.filter(Bin.tipologia==tipologia).filter(Bin.apartment_ID == apartment_name)
     for bin in bins:  
@@ -92,11 +113,19 @@ def getprevision3(apartment_name, tipologia):
             values_and_dates.append(array)
         json_bin["previsioni"]=values_and_dates
         array_pred.append(json_bin)
-    return {"apartment_name": apartment_name, "tipologia": tipologia, "previsioni_bidoni": array_pred}
+
+    return jsonify({"apartment_name": apartment_name, "tipologia": tipologia, "previsioni_bidoni": array_pred}), 200
 
 
 @fbprophet_blueprint.route("/createprevision/<int:time>")
 def createprevision(time):
+    """
+    questo end point crea previsioni temporali di riempimento dei bidoni per un certo periodo di tempo, 
+    se l'input è uguale a 0, di defaul si assume 5 giorni
+    """
+    if time < 0:
+        return jsonify({"error": "time not correct"})
+
     if time == 0:   #se tempo non inserito(0), default 5 giorni
         time = 5
     for bin in Bin.query.all():  # per ogni bidone creo una previsione temporale
@@ -188,12 +217,20 @@ def createprevision(time):
             Utils.set_previsione_status(bin.id_bin, status_previsto)
             """
             
-    return 'done'
+    return jsonify({"msg": "Previsioni correttamente create"}), 200
 
 @fbprophet_blueprint.route("/createprevision/<string:apartment_name>&<string:tipologia>&<int:time>")
 def createprevision2(apartment_name, tipologia, time):
-    if time is None:
+    """
+    questo end point crea previsioni temporali di riempimento dei bidoni per un certo periodo di tempo, 
+    per un appartamento specifico e per una tipologia di bidoni specifica
+    se l'input è uguale a 0, di defaul si assume 5 giorni
+    """
+    if time == 0:
         time = 5
+    if apartment_name is None or tipologia is None or time < 0:
+        return jsonify({"error": "Input not correct"})
+
     bins = Bin.query.filter(Bin.tipologia==tipologia).filter(Bin.apartment_ID == apartment_name)
     for bin in bins:  
         bin_records = BinRecord.query.filter(
@@ -282,6 +319,6 @@ def createprevision2(apartment_name, tipologia, time):
             Utils.set_previsione_status(bin.id_bin, status_previsto)
             """
             
-    return 'done'
+    return jsonify({"msg": "Previsioni correttamente create"}), 200
 
 

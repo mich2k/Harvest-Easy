@@ -1,5 +1,5 @@
 import requests
-from sqlalchemy import update
+from sqlalchemy import update, delete
 from flask import request, Blueprint, session, redirect, jsonify
 from os import getenv
 from app.database.tables import *
@@ -7,6 +7,7 @@ from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
 from app.login.login import checkpassword
+from flask_jwt_extended import jwt_required
 
 URL = "https://osm.gmichele.it/search"
 
@@ -80,6 +81,7 @@ def addrecord():
 
 
 @database_blueprint.route("/addbin", methods=["POST"])
+@jwt_required() 
 def addbin():
     msgJson = request.get_json()
 
@@ -95,6 +97,7 @@ def addbin():
 
 
 @database_blueprint.route("/adduser", methods=["POST"])
+@jwt_required() 
 def adduser():
     msgJson = request.get_json()
 
@@ -123,8 +126,9 @@ def adduser():
 
 @database_blueprint.route(
     "/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>",
-    methods=["GET"],
+    methods=["GET"]
 )
+@jwt_required() 
 def addadmin(uid, name, surname, password, city, birth_year):
     admin = Admin(Person(uid, name, surname, password, city, birth_year))
 
@@ -138,6 +142,7 @@ def addadmin(uid, name, surname, password, city, birth_year):
 
 
 @database_blueprint.route("/addoperator", methods=["POST"])
+@jwt_required() 
 def addoperator():
     msgJson = request.get_json()
     operator = Operator(
@@ -164,6 +169,7 @@ def addoperator():
 
 
 @database_blueprint.route("/addapartment", methods=["POST"])
+@jwt_required() 
 def addapartment():
 
     msgJson = request.get_json()
@@ -268,6 +274,7 @@ def stampaitems():
 # Getters
 
 @database_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
+@jwt_required() 
 def dataAdmin(uid):
     res = Admin.query.where(Admin.uid == uid).all()
 
@@ -436,3 +443,128 @@ def getsession(usr):
         return Utils.get_response(200, str(True))
 
     return Utils.get_response(200, str(False))
+
+
+#delete
+
+@database_blueprint.route("/deleteuser/<string:username>", methods=["GET"])
+def deleteuser(username):
+    """
+    elimino l'utente
+    """
+    if username is None:
+        return jsonify({"Erroe": "Username is not correct"})
+    
+    db.session.execute(
+        delete(User)
+        .where(User.username == username)
+    )
+    db.session.commit()
+    
+    return jsonify({"msg": "User correctly deleted"}), 200
+
+
+@database_blueprint.route("/deleteadmin/<string:username>", methods=["GET"])
+def deleteadmin(username):
+    """
+    elimino l'admin
+    """
+    if username is None:
+        return jsonify({"Erroe": "Username is not correct"})
+    
+    db.session.execute(
+        delete(Admin)
+        .where(Admin.username == username)
+    )
+    db.session.commit()
+    
+    return jsonify({"msg": "Admin correctly deleted"}), 200
+
+
+@database_blueprint.route("/deleteoperator/<string:username>", methods=["GET"])
+def deleteoperator(username):
+    """
+    elimino l'operatore
+    """
+    if username is None:
+        return jsonify({"Erroe": "Username is not correct"})
+    
+    db.session.execute(
+        delete(Operator)
+        .where(Operator.username == username)
+    )
+    db.session.commit()
+    
+    return jsonify({"msg": "Operator correctly deleted"}), 200
+
+
+@database_blueprint.route("/deletebin/<string:id_bin>", methods=["GET"])
+def deletebin(id_bin):
+    """
+    elimino il bidone e i relativi record
+    """
+    if id_bin is None:
+        return jsonify({"Erroe": "id_bin is not correct"})
+
+    bin_records=BinRecord.query.filter(BinRecord.associated_bin==id_bin)
+    for bin_record in bin_records:
+        db.session.execute(
+            delete(BinRecord)
+            .where(BinRecord.id_record == bin_record.id_record)
+        )
+    db.session.commit()
+
+    db.session.execute(
+        delete(Bin)
+        .where(Bin.id_bin == id_bin)
+    )
+    db.session.commit()
+    
+    return jsonify({"msg": "Bin correctly deleted"}), 200
+
+@database_blueprint.route("/deleteapartment/<string:apartment_name>", methods=["GET"])
+def deleteapartment(apartment_name):
+    """
+    elimino l'appartamento, i relativi bidoni e i relativi record
+    """
+    if apartment_name is None:
+        return jsonify({"Erroe": "apartment_name is not correct"})
+    bins = Bin.query.filter(Bin.apartment_ID==apartment_name)
+    for bin in bins:
+        bin_records=BinRecord.query.filter(BinRecord.associated_bin==bin.id_bin)
+        for bin_record in bin_records:
+            db.session.execute(
+                delete(BinRecord)
+                .where(BinRecord.id_record == bin_record.id_record)
+            )
+            db.session.commit()
+
+        db.session.execute(
+        delete(Bin)
+        .where(Bin.id_bin == bin.id_bin)
+        )
+        db.session.commit()
+
+    db.session.execute(
+        delete(Apartment)
+        .where(Apartment.apartment_name == apartment_name)
+    )
+    db.session.commit()
+    
+    return jsonify({"msg": "Apartment correctly deleted"}), 200
+
+@database_blueprint.route("/deletebinrecord/<string:id_record>", methods=["GET"])
+def deletebinrecord(id_record):
+    """
+    elimino il bin record
+    """
+    if id_record is None:
+        return jsonify({"Erroe": "id_record is not correct"})
+    
+    db.session.execute(
+        delete(BinRecord)
+        .where(BinRecord.id_record == id_record)
+    )
+    db.session.commit()
+    
+    return jsonify({"msg": "BinRecord correctly deleted"}), 200

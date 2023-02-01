@@ -2,6 +2,7 @@ from flask import Blueprint
 from app.database.tables import Apartment, Bin, BinRecord
 import requests
 import sys
+from flask import jsonify
 
 neighbor_blueprint = Blueprint("neighbor", __name__, template_folder="templates")
 
@@ -13,6 +14,14 @@ def main():
 
 @neighbor_blueprint.route("/getneighbor/<int:id_bin>", methods=["GET"])
 def getneighbor(id_bin):
+    """
+    questo end point restituisce l'appartamento più vicino con un bidone in stato non pieno
+    e non manomesso della stessa tipologia del bidone di input. 
+    Ritorna un json con nome dell'appartamento, via, numero, latitudine, longitudine
+    """
+    if id_bin is None:
+        return jsonify({"error": "Id_bin not correct"})
+
     # dati del bidone pieno
     apartment_ID = Bin.query.filter(Bin.id_bin == id_bin)[0].apartment_ID
     lat_bin = Apartment.query.filter(Apartment.apartment_name == apartment_ID)[0].lat
@@ -78,5 +87,5 @@ def getneighbor(id_bin):
         .apartment_name
     )
     vicino = Apartment.query.filter(Apartment.apartment_name == apartment_name).first()
-    return {"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name,
-    "lat": vicino.lat, "lng": vicino.lng}
+    return jsonify({"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name,
+    "lat": vicino.lat, "lng": vicino.lng}), 200

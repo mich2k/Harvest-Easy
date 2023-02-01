@@ -1,10 +1,12 @@
-import redis
+from datetime import timedelta
+
 
 class Config:
 
     # General Flask Config
     SECRET_KEY = b'ergergergergegg/'
     USE_PROXYFIX = True
+    
 
     APPLICATION_ROOT = '/'
 
@@ -36,3 +38,5 @@ class Config:
     
     BCRYPT_LOG_ROUNDS = 13
 
+    JWT_SECRET_KEY = "thisisasecretkey"
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from .__init__ import db, ma
+from .__init__ import db
 
 
 class Person:
