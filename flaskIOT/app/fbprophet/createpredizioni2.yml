@@ -1,0 +1,22 @@
+---
+parameters:
+  - in: path
+    name: apartment_name
+    required: true
+    type: string
+  - in: path
+    name: tipologia
+    required: true
+    type: string
+  - default: 5
+    in: path
+    name: time
+    required: true
+    type: int
+responses:
+  '200':
+    description: Previsioni correttamente create
+  '401':
+    description: input not correct
+  '402':
+    description: Apartment or tipology not valid"

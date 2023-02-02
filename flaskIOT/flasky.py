@@ -1,6 +1,6 @@
 from flask import Flask, request, session
 from config import Config
-from app.database.__init__ import db, ma
+from app.database.__init__ import db
 from app.database.database import database_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
@@ -13,21 +13,36 @@ from app.utils.utils import Utils
 from os import getenv
 from flask_cors import CORS
 from app.login.__init__ import bcrypt, jwt
-from flask_session import Session
-from flask_swagger_ui import get_swaggerui_blueprint
-from flask_swagger import swagger
-from flask import jsonify
+#from flask_swagger_ui import get_swaggerui_blueprint
+#from flask_swagger import swagger
+from flasgger import Swagger
 
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
 
 
+template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Smart Bin API",
+        "description": "API about our Smart Bin", 
+        "contact":{
+            "responsibleOrganization": "",
+            "responsibleDeveloper": ""
+        },
+        "version":"1.0.0",
+        "basePath": "api",
+        "schemes": ["http", "https"],
+        "operationId": "getmybin"
+    }
+}
 
+
+swagger = Swagger(app, template=template)
 """
 my_swagger = swagger(app)
 SWAGGER_URL = '/api/docs'
-#server_session = Session(app)
 API_URL = '/spec'
 SWAGGER_BLUEPRINT = get_swaggerui_blueprint(
     SWAGGER_URL, 
@@ -97,7 +112,6 @@ db.init_app(app)
 
 #Inizializzazione Bcrypt 
 bcrypt = bcrypt.init_app(app)
-#ma.init_app(app)
 jwt.init_app(app)
 
 

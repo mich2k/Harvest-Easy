@@ -5,6 +5,7 @@ import requests
 from os import getenv
 import datetime
 import json
+from flask import jsonify
 
 OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
 path_blueprint = Blueprint("path", __name__, template_folder="templates")
@@ -44,7 +45,8 @@ def optimal_route(lat, lng):
     if (isinstance(lat, float) and isinstance(lng, float)):
         start = [lng, lat]
     else: 
-        return 'Errore: latitudine e longitudine scorretti'
+        return jsonify({"Errore: latitudine e longitudine scorretti"}), 401
+
     bins=Bin.query.all()
     to_empty = [] #appartamenti con i relativi bidoni pieni
 
@@ -135,7 +137,8 @@ def optimal_route2(lat_init, lng_init, lat_end, lng_end):
         end = [lng_end, lat_end]
         start = [lng_init, lat_init]
     else: 
-        return 'Errore: latitudine e longitudine scorretti'
+        return jsonify({"Errore: latitudine e longitudine scorretti"}), 401
+
     bins=Bin.query.all()
     to_empty = [] #appartamenti con i relativi bidoni pieni
 
@@ -225,7 +228,7 @@ def optimal_route3(lat, lng, tipologia):
     if (isinstance(lat, float) and isinstance(lng, float)):
         start = [lng, lat]
     else: 
-        return 'Errore: latitudine e longitudine scorretti'
+        return jsonify({"Errore: latitudine e longitudine scorretti"}), 401
     
     bins=Bin.query.filter(Bin.tipologia==tipologia)
     to_empty = [] #appartamenti con i relativi bidoni pieni
@@ -314,7 +317,8 @@ def optimal_route4(lat_init, lng_init, lat_end, lng_end, tipologia):
         end = [lng_end, lat_end]
         start = [lng_init, lat_init]
     else: 
-        return 'Errore: latitudine e longitudine scorretti'
+        jsonify({"Errore: latitudine e longitudine scorretti"}), 401
+
     bins = Bin.query.filter(Bin.tipologia==tipologia)
     to_empty = [] #appartamenti con i relativi bidoni pieni
 

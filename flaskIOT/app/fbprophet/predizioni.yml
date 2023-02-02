@@ -1,0 +1,27 @@
+---
+responses:
+  '200':
+    description: When a user successfully logs in
+    schema:
+      properties:
+        fbprophet:
+          - schema:
+              properties:
+                apartment:
+                  example: Fermi
+                  type: string
+                bin:
+                  example: 1
+                  type: int
+                previsioni:
+                  - schema:
+                      properties:
+                        date:
+                          example: Sat, 01 Jan 2022 03:59:49 GMT
+                          type: datetime
+                        value:
+                          example: 0.9683197204859813
+                          type: float
+                tipologia:
+                  example: carta
+                  type: string

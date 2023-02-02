@@ -1,0 +1,68 @@
+---
+responses:
+  '200':
+    description: When tipology is correct
+    schema:
+      properties:
+        ListaPunti:
+          - schema:
+              properties:
+                address:
+                  example: via Giuseppe Fava 49
+                  type: string
+                apartment_name:
+                  example: IDK
+                  type: string
+                id:
+                  example: 1
+                  type: int
+                lat:
+                  example: 44.6280877
+                  type: float
+                lng:
+                  example: 10.9166076
+                  type: float
+                previsione:
+                  example: integro e pieno
+                  type: string
+                riempimento:
+                  example: 0.9134641433174647
+                  type: float
+                status:
+                  example: integro e pieno
+                  type: string
+                tipologia:
+                  example: carta
+                  type: string
+          - schema:
+              properties:
+                address:
+                  example: via Viterbo 90
+                  type: string
+                apartment_name:
+                  example: Torri
+                  type: string
+                id:
+                  example: 2
+                  type: int
+                lat:
+                  example: 44.6430877
+                  type: float
+                lng:
+                  example: 10.8166076
+                  type: float
+                previsione:
+                  example: integro e pieno
+                  type: string
+                riempimento:
+                  example: 0.9809433174647
+                  type: float
+                status:
+                  example: integro e pieno
+                  type: string
+                tipologia:
+                  example: carta
+                  type: string
+        updated:
+          example: '2023-02-02 16:55:55'
+          type: datetime

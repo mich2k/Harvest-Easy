@@ -4,7 +4,8 @@ from app.utils.utils import Utils
 import json
 from flask import render_template
 import datetime
-
+from flask import jsonify
+from flasgger import swag_from
 
 map_blueprint = Blueprint("map", __name__, template_folder="templates")
 
@@ -17,6 +18,7 @@ def main():
 
 # MAPPA COMPLETA CON TUTTI I BIDONI
 @map_blueprint.route("/getmap")
+#@swag_from('getmap.yml')
 def getmap():
     apartments = Apartment.query.all()
     points = []
@@ -65,8 +67,14 @@ def getmap():
 
 
 @map_blueprint.route("/getmap/<string:tipologia>")
-# MAPPA CON I BIDONI DI UNA CERTA TIPOLOGIA
+#@swag_from('map.yml')
 def getmaptipology(tipologia):
+    if tipologia is None:
+        return jsonify({"error": "Tipologia errata"}), 401
+    
+    if Bin.query.filter(Bin.tipologia == tipologia).first() == None:
+        return jsonify({"error": "Tipologia non valida"}), 402
+
     apartments = Apartment.query.all()
     points = []
     for apartment in apartments:

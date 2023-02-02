@@ -1,0 +1,30 @@
+---
+parameters:
+  - in: path
+    name: id_bin
+    required: true
+    type: int
+responses:
+  '200':
+    description: When a user successfully logs in
+    schema:
+      properties:
+        apartment_name:
+          example: IDK
+          type: string
+        lat:
+          example: 44.6280877
+          type: float
+        lng:
+          example: 10.9166076
+          type: float
+        number:
+          example: 80
+          type: int
+        street:
+          example: via Cividale
+          type: string
+  '401':
+    description: Id_bin not correct
+  '402':
+    description: Bin doesn't exist

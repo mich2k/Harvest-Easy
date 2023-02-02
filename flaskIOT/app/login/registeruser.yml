@@ -1,0 +1,80 @@
+---
+parameters:
+  - description: The body should contain the user data
+    in: body
+    name: body
+    properties:
+      apartment_ID:
+        example: Fermi
+        type: string
+      birth_year:
+        example: 2000
+        type: int
+      card_number:
+        example: d3370a8
+        type: string
+      city:
+        example: Modena
+        type: string
+      internal_number:
+        example: 49
+        type: int
+      name:
+        example: Alessia
+        type: string
+      password:
+        example: '********'
+        format: password
+        type: string
+      surname:
+        example: Saporita
+        type: string
+      username:
+        example: username
+        type: string
+    required:
+      - username
+      - password
+      - name
+      - surname
+      - city
+      - apartment_ID
+      - birth_year
+      - card_number
+      - internal_number
+    schema: null
+    type: object
+responses:
+  '200':
+    description: When a user successfully logs in
+    schema:
+      access_token:
+        type: string
+      apartment_ID:
+        example: Fermi
+        type: string
+      birth_year:
+        example: 2000
+        type: int
+      card_number:
+        example: d3370a8
+        type: string
+      city:
+        example: Modena
+        type: string
+      id:
+        example: 1
+        type: int
+      internal_number:
+        example: 49
+        type: int
+      name:
+        example: Alessia
+        type: string
+      surname:
+        example: Saporita
+        type: string
+  '400':
+    description: Fails to login due to bad request data
+  '409':
+    description: Username already exists

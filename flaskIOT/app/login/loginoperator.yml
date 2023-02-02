@@ -1,0 +1,50 @@
+---
+parameters:
+  - description: The body should contain the user login credentials
+    in: body
+    name: body
+    properties:
+      password:
+        example: '********'
+        format: password
+        type: string
+      username:
+        example: username
+        type: string
+    required:
+      - username
+      - password
+    schema: null
+    type: object
+responses:
+  '200':
+    description: When a user successfully logs in
+    schema:
+      properties:
+        access_token:
+          type: string
+        birth_year:
+          example: 2000
+          type: int
+        card_number:
+          example: d3370a8
+          type: string
+        city:
+          example: Modena
+          type: string
+        id:
+          example: 1
+          type: int
+        id_operator:
+          example: 500
+          type: int
+        name:
+          example: Alessia
+          type: string
+        surname:
+          example: Saporita
+          type: string
+  '400':
+    description: Fails to login due to bad request data
+  '401':
+    description: A user supplies incorrect credentials

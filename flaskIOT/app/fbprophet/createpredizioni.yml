@@ -1,0 +1,13 @@
+---
+parameters:
+  - default: 5
+    in: path
+    name: time
+    required: true
+    type: int
+responses:
+  '200':
+    description: Previsioni correttamente create
+    schema: null
+  '401':
+    description: time not correct

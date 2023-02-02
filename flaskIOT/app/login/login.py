@@ -7,6 +7,7 @@ from app.login.__init__ import bcrypt
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, unset_jwt_cookies, jwt_required
 from datetime import timedelta
 import json
+from flasgger import swag_from
 
 login_blueprint = Blueprint(
     "login", __name__, template_folder="templates", url_prefix="/login"
@@ -18,7 +19,6 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
-"""
 @login_blueprint.after_request
 def refresh_expiring_jwts(response):
     try:
@@ -35,18 +35,19 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original respone
         return response
-"""
 
 #USER
 
-@login_blueprint.route('/loginuser', methods=['GET', 'POST'])
+@login_blueprint.route('/loginuser', methods=['POST'])
+@swag_from('loginuser.yml')
 def loginuser():
     msgJson = request.get_json()
     password = msgJson["password"]
     username = msgJson["username"]
-    if password is None or username is None:
-        return jsonify({"error": "Wrong email or password"}), 401
 
+    if password is None or username is None:
+        return jsonify({"error": "Wrong email or password"}), 400
+    
     user = User.query.filter(
         User.username==username).first()
     if user is None: 
@@ -76,7 +77,8 @@ def profileuser():
         "about" :"Hello! This is a user's profile"
     }), 200
 
-@ login_blueprint.route('/registeruser', methods=['GET', 'POST'])
+@ login_blueprint.route('/registeruser', methods=['POST'])
+#@swag_from('registeruser.yml')
 def registeruser():
     msgJson = request.get_json()
     name = msgJson["name"]
@@ -88,9 +90,12 @@ def registeruser():
     card_number = msgJson["card_number"]
     apartment_ID = msgJson["apartment_ID"]
     internal_number = msgJson["internal_number"]
-    existing_user_username = User.query.filter(
-            User.username==username).first() is not None
-    if existing_user_username: 
+
+    if not username.isalnum() or " " in username:
+        return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 400
+
+    if User.query.filter(
+            User.username==username).first() is not None: 
             return jsonify({"error": "Username already exists"}), 409
     
     new_user = User(
@@ -127,7 +132,8 @@ def registeruser():
 
 #OPERATOR
 
-@ login_blueprint.route('/registeroperator', methods=['GET', 'POST'])
+@ login_blueprint.route('/registeroperator', methods=['POST'])
+#@swag_from('registeroperator.yml')
 def registeroperator():
     msgJson = request.get_json()
     name = msgJson["name"]
@@ -138,9 +144,12 @@ def registeroperator():
     birth_year = msgJson["birth_year"]
     card_number = msgJson["card_number"]
     id_operator = msgJson["id_operator"]
-    existing_operator_username = Operator.query.filter(
-            Operator.username==username).first() is not None
-    if existing_operator_username: 
+
+    if not username.isalnum() or " " in username:
+        return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 401
+
+    if Operator.query.filter(
+            Operator.username==username).first() is not None: 
         return jsonify({"error": "Username already exists"}), 409
     
     new_user = Operator(
@@ -171,15 +180,19 @@ def registeroperator():
         "id_operator": new_user.id_operator
     }), 200
 
-@login_blueprint.route('/loginoperator', methods=['GET', 'POST'])
-@jwt_required()
+@login_blueprint.route('/loginoperator', methods=['POST'])
+@swag_from('loginoperator.yml')
 def loginoperator():
     msgJson = request.get_json()
     password = msgJson["password"]
     username = msgJson["username"]
     
+    if password is None or username is None:
+        return jsonify({"error": "Wrong email or password"}), 400
+    
     operator = Operator.query.filter(
         Operator.username==username).first()
+
     if operator is None: 
         return jsonify({"error": "Unauthorized"}), 401
     
@@ -215,15 +228,19 @@ def profileoperator(username):
 
 #ADMIN
 
-@login_blueprint.route('/loginadmin', methods=['GET', 'POST'])
-@jwt_required()
+@login_blueprint.route('/loginadmin', methods=['POST'])
+@swag_from('loginadmin.yml')
 def loginadmin():
     msgJson = request.get_json()
     password = msgJson["password"]
     username = msgJson["username"]
-    
+
+    if password is None or username is None:
+        return jsonify({"error": "Wrong email or password"}), 400
+
     user = Admin.query.filter(
         Admin.username==username).first()
+
     if user is None: 
         return jsonify({"error": "Unauthorized"}), 401
     
@@ -243,7 +260,8 @@ def loginadmin():
     }), 200           
        
 
-@ login_blueprint.route('/registeradmin', methods=['GET', 'POST'])
+@ login_blueprint.route('/registeradmin', methods=['POST'])
+#@swag_from('registeradmin.yml')
 def registeradmin():
     msgJson = request.get_json()
     name = msgJson["name"]
@@ -254,9 +272,11 @@ def registeradmin():
     birth_year = msgJson["birth_year"]
     card_number = msgJson["card_number"]
     
-    existing_admin_username = Admin.query.filter(
-            Admin.username==username).first() is not None
-    if existing_admin_username: 
+    if not username.isalnum() or " " in username:
+        return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 401
+
+    if Admin.query.filter(
+            Admin.username==username).first() is not None: 
             return jsonify({"error": "Username already exists"}), 409
     
     new_user = Admin(
