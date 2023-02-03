@@ -1,4 +1,4 @@
----
+summary: Crea previsioni di riempimento tramite fbprophet per uno specifico appartamento e una specifica tipologia di bidoni
 parameters:
   - in: path
     name: apartment_name
@@ -17,6 +17,6 @@ responses:
   '200':
     description: Previsioni correttamente create
   '401':
-    description: input not correct
+    description: Nome dell'appartamento o tipologia non inseriti
   '402':
-    description: Apartment or tipology not valid"
+    description: Appartamento o tipologia non validi

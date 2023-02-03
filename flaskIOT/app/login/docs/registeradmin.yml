@@ -1,4 +1,4 @@
----
+summary: Reister Admin
 parameters:
   - description: The body should contain the user data
     in: body

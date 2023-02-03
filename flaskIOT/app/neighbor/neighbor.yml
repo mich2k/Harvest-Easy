@@ -1,4 +1,4 @@
----
+summary: Cerca l'appartamento più vicino con un bidone della stessa tipologia in uno stato non pieno
 parameters:
   - in: path
     name: id_bin
@@ -6,7 +6,7 @@ parameters:
     type: int
 responses:
   '200':
-    description: When a user successfully logs in
+    description: Quando il bidone è correttamento identificato
     schema:
       properties:
         apartment_name:
@@ -25,6 +25,6 @@ responses:
           example: via Cividale
           type: string
   '401':
-    description: Id_bin not correct
+    description: Id del bidone non inserito
   '402':
-    description: Bin doesn't exist
+    description: Bidone non esiste

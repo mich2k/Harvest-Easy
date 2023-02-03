@@ -1,7 +1,7 @@
----
+summary: Ritorna una lista di punti, ognuno dei quali contiene informazioni sui bidoni di Modena
 responses:
   '200':
-    description: When tipology is correct
+    description: Quando i punti sono correttamente creati
     content:
         application.json
     schema:

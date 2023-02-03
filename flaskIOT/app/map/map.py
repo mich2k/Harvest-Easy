@@ -63,7 +63,7 @@ def getmap():
     with open("./app/map/templates/points.json", "w") as outfile:
         json.dump(viewmap, outfile)
 
-    return viewmap
+    return jsonify(viewmap), 200
 
 
 @map_blueprint.route("/getmap/<string:tipologia>")

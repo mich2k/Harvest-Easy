@@ -13,8 +13,6 @@ from app.utils.utils import Utils
 from os import getenv
 from flask_cors import CORS
 from app.login.__init__ import bcrypt, jwt
-#from flask_swagger_ui import get_swaggerui_blueprint
-#from flask_swagger import swagger
 from flasgger import Swagger
 
 #creo applicazione
@@ -38,23 +36,7 @@ template = {
     }
 }
 
-
 swagger = Swagger(app, template=template)
-"""
-my_swagger = swagger(app)
-SWAGGER_URL = '/api/docs'
-API_URL = '/spec'
-SWAGGER_BLUEPRINT = get_swaggerui_blueprint(
-    SWAGGER_URL, 
-    API_URL,
-    config={
-        'app-name': "Test application"
-    }
-)
-
-app.register_blueprint(SWAGGER_BLUEPRINT, url_prefix = SWAGGER_URL)
-"""
-
 
 CORS(app, resource={
     r"/db/*":{

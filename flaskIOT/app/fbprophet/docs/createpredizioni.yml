@@ -1,4 +1,4 @@
----
+summary: Crea previsioni di riempimento tramite fbprophet
 parameters:
   - default: 5
     in: path
@@ -8,6 +8,5 @@ parameters:
 responses:
   '200':
     description: Previsioni correttamente create
-    schema: null
   '401':
-    description: time not correct
+    description: Tempo inserito non corretto

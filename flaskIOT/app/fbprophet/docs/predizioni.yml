@@ -1,7 +1,7 @@
----
+summary: Previsioni di riempimento per tutti i bidoni di Modena
 responses:
   '200':
-    description: When a user successfully logs in
+    description: Quando le previsioni sono state correttamente create e lette
     content:
         application.json
     schema:

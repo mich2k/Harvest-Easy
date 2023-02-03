@@ -1,4 +1,4 @@
----
+summary: Previsioni di riempimento per i bidoni di uno specifico appartamento e di una specifica tipologia
 parameters:
   - in: path
     name: apartment_name
@@ -11,7 +11,7 @@ parameters:
 
 responses:
   '200':
-    description: When a user successfully logs in
+    description: Quando le previsioni sono state correttamente create e lette
     content:
         application.json
     schema:
@@ -42,6 +42,6 @@ responses:
                 example: carta
                 type: string
   '401':
-    description: Input not correct
+    description: Nome dell'appartamento o tipologia non inseriti
   '402':
-    description: tipology or apartment_name not valid
+    description: Tipologia o nome dell'appartamento non corretti

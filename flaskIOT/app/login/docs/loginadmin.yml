@@ -1,6 +1,6 @@
----
+summary: Login Admin
 parameters:
-  - description: The body should contain the user login credentials
+  - description: il corpo dovrebbe contenere le credenziali dell'amministratore
     in: body
     name: body
     properties:
@@ -18,7 +18,7 @@ parameters:
     type: object
 responses:
   '200':
-    description: When a user successfully logs in
+    description: Quando un amministratore è correttamente identificato
     schema:
       properties:
         access_token:
@@ -42,6 +42,6 @@ responses:
           example: Saporita
           type: string
   '400':
-    description: Fails to login due to bad request data
+    description: Credenziali mancanti
   '401':
-    description: A user supplies incorrect credentials
+    description: Credenziali inserite non sono corrette

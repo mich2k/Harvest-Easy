@@ -1,7 +1,7 @@
----
+summary: Cammino ottimo di svuotamento dei bidoni partendo dal punto indicato
 responses:
   '200':
-    description: When coordinates are correct
+    description: Quando le coordinate sono corrette
     content:
         application.json
     schema:
@@ -24,7 +24,6 @@ responses:
               tipo:
                 type: string
                 example: start #enum: [start, end, step]
-    
   '401':
-    description: latitudine o longitudine scorretti
+    description: Latitudine o longitudine scorretti
   
