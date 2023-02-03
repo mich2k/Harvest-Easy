@@ -6,6 +6,7 @@ from os import getenv
 import datetime
 import json
 from flask import jsonify
+from flasgger import swag_from
 
 OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
 path_blueprint = Blueprint("path", __name__, template_folder="templates")
@@ -41,11 +42,12 @@ def getdistances():
 
 #cammino con solo inizio
 @path_blueprint.route("/optimal_route/<float:lat>&<float:lng>")
+#@swag_from('/docs/optimal_route.yml')
 def optimal_route(lat, lng):
     if (isinstance(lat, float) and isinstance(lng, float)):
         start = [lng, lat]
     else: 
-        return jsonify({"Errore: latitudine e longitudine scorretti"}), 401
+        return jsonify({"Errore: latitudine o longitudine scorretti"}), 401
 
     bins=Bin.query.all()
     to_empty = [] #appartamenti con i relativi bidoni pieni

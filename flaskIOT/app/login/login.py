@@ -39,7 +39,7 @@ def refresh_expiring_jwts(response):
 #USER
 
 @login_blueprint.route('/loginuser', methods=['POST'])
-@swag_from('loginuser.yml')
+@swag_from('docs/loginuser.yml')
 def loginuser():
     msgJson = request.get_json()
     password = msgJson["password"]
@@ -78,7 +78,7 @@ def profileuser():
     }), 200
 
 @ login_blueprint.route('/registeruser', methods=['POST'])
-#@swag_from('registeruser.yml')
+#@swag_from('docs/registeruser.yml')
 def registeruser():
     msgJson = request.get_json()
     name = msgJson["name"]
@@ -133,7 +133,7 @@ def registeruser():
 #OPERATOR
 
 @ login_blueprint.route('/registeroperator', methods=['POST'])
-#@swag_from('registeroperator.yml')
+#@swag_from('docs/registeroperator.yml')
 def registeroperator():
     msgJson = request.get_json()
     name = msgJson["name"]
@@ -181,7 +181,7 @@ def registeroperator():
     }), 200
 
 @login_blueprint.route('/loginoperator', methods=['POST'])
-@swag_from('loginoperator.yml')
+@swag_from('docs/loginoperator.yml')
 def loginoperator():
     msgJson = request.get_json()
     password = msgJson["password"]
@@ -229,7 +229,7 @@ def profileoperator(username):
 #ADMIN
 
 @login_blueprint.route('/loginadmin', methods=['POST'])
-@swag_from('loginadmin.yml')
+@swag_from('docs/loginadmin.yml')
 def loginadmin():
     msgJson = request.get_json()
     password = msgJson["password"]
@@ -261,7 +261,7 @@ def loginadmin():
        
 
 @ login_blueprint.route('/registeradmin', methods=['POST'])
-#@swag_from('registeradmin.yml')
+#@swag_from('docs/registeradmin.yml')
 def registeradmin():
     msgJson = request.get_json()
     name = msgJson["name"]

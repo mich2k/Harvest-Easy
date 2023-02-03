@@ -34,8 +34,6 @@ parameters:
       - city
       - birth_year
       - card_number
-    schema: null
-    type: object
 responses:
   '200':
     description: When a user successfully logs in

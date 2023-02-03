@@ -1,0 +1,49 @@
+---
+parameters:
+  - in: path
+    name: tipologia
+    required: true
+    type: string
+responses:
+  '200':
+    description: When tipology is correct
+    content:
+        application.json
+    schema:
+      properties:
+        ListaPunti:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                example: via Giuseppe Fava 49
+                type: string
+              apartment_name:
+                example: IDK
+                type: string
+              id:
+                example: 1
+                type: int
+              lat:
+                example: 44.6280877
+                type: float
+              lng:
+                example: 10.9166076
+                type: float
+              previsione:
+                example: integro e pieno
+                type: string
+              riempimento:
+                example: 0.9134641433174647
+                type: float
+              status:
+                example: integro e pieno
+                type: string
+      updated:
+        example: '2023-02-02 16:55:55'
+        type: datetime
+  '401':
+    description: Tipologia errata
+  '402':
+    description: Tipologia non valida

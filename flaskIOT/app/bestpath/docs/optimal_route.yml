@@ -1,0 +1,30 @@
+---
+responses:
+  '200':
+    description: When coordinates are correct
+    content:
+        application.json
+    schema:
+      properties:
+        duration:
+          type: int
+          example: 2281
+        steps:
+          type: array
+          items:
+            type: object
+            properties: 
+              arrival:
+                example: 0
+                type: int
+              location:
+                type: array
+                items:
+                  type: float
+              tipo:
+                type: string
+                example: start #enum: [start, end, step]
+    
+  '401':
+    description: latitudine o longitudine scorretti
+  

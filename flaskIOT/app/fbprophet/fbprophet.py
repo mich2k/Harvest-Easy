@@ -18,7 +18,7 @@ def main():
 
 
 @fbprophet_blueprint.route("/getprevision")
-#@swag_from('predizioni.yml')
+@swag_from('docs/predizioni.yml')
 def getprevision():
     """
     questo endpoint prende le previsioni temporali di riempimento dei bidoni 
@@ -51,7 +51,7 @@ def getprevision():
     return jsonify({"fbprophet": array_pred}), 200
 
 @fbprophet_blueprint.route("/getprevision/<string:apartment_name>")
-#@swag_from('predizioni2.yml')
+@swag_from('docs/predizioni2.yml')
 def getprevision2(apartment_name):
     """
     questo endpoint prende le previsioni temporali di riempimento dei bidoni di uno specifico appartamento
@@ -90,7 +90,7 @@ def getprevision2(apartment_name):
     return jsonify({"apartment_name": apartment_name, "previsioni_bidoni": array_pred}), 200
 
 @fbprophet_blueprint.route("/getprevision/<string:apartment_name>&<string:tipologia>")
-#@swag_from('predizioni3.yml')
+@swag_from('docs/predizioni3.yml')
 def getprevision3(apartment_name, tipologia):
     """
     questo endpoint prende le previsioni temporali di riempimento dei bidoni di uno specifico appartamento 
@@ -127,7 +127,7 @@ def getprevision3(apartment_name, tipologia):
 
 
 @fbprophet_blueprint.route("/createprevision/<int:time>")
-@swag_from('createpredizioni.yml')
+@swag_from('docs/createpredizioni.yml')
 def createprevision(time):
     """
     questo end point crea previsioni temporali di riempimento dei bidoni per un certo periodo di tempo, 
@@ -231,7 +231,7 @@ def createprevision(time):
     return jsonify({"msg": "Previsioni correttamente create"}), 200
 
 @fbprophet_blueprint.route("/createprevision/<string:apartment_name>&<string:tipologia>&<int:time>")
-@swag_from('createpredizioni2.yml')
+@swag_from('docs/createpredizioni2.yml')
 def createprevision2(apartment_name, tipologia, time):
     """
     questo end point crea previsioni temporali di riempimento dei bidoni per un certo periodo di tempo, 

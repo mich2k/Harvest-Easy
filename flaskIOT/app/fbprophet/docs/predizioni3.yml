@@ -1,0 +1,47 @@
+---
+parameters:
+  - in: path
+    name: apartment_name
+    required: true
+    type: string
+  - in: path
+    name: tipologia
+    required: true
+    type: string
+
+responses:
+  '200':
+    description: When a user successfully logs in
+    content:
+        application.json
+    schema:
+      properties:
+        apartment_name:
+          type: string
+          example: Fermi
+        previsioni_bidoni:
+          type: array
+          items:
+            type: object
+            properties: 
+              bin:
+                example: 1
+                type: int
+              previsioni:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      example: Sat, 01 Jan 2022 03:59:49 GMT
+                      type: datetime
+                    value:
+                      example: 0.9683197204859813
+                      type: float
+              tipologia:
+                example: carta
+                type: string
+  '401':
+    description: Input not correct
+  '402':
+    description: tipology or apartment_name not valid

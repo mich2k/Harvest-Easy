@@ -18,7 +18,7 @@ def main():
 
 # MAPPA COMPLETA CON TUTTI I BIDONI
 @map_blueprint.route("/getmap")
-#@swag_from('getmap.yml')
+@swag_from('docs/getmap.yml')
 def getmap():
     apartments = Apartment.query.all()
     points = []
@@ -67,7 +67,7 @@ def getmap():
 
 
 @map_blueprint.route("/getmap/<string:tipologia>")
-#@swag_from('map.yml')
+@swag_from('docs/map.yml')
 def getmaptipology(tipologia):
     if tipologia is None:
         return jsonify({"error": "Tipologia errata"}), 401
