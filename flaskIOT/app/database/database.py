@@ -45,6 +45,7 @@ def createDB():
         quindi si farà un redirect ad essa
         """
         if "last_url" in session:
+            print(session['last_url'])
             return redirect(session["last_url"])
 
         return Utils.get_response(200, "Done")

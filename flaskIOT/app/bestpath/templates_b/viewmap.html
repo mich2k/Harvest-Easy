@@ -26,7 +26,7 @@
                             }
                     };
                     console.dir(xobj);
-                    xobj.open('GET', 'path.json', true);
+                    xobj.open('GET', '/getmap', true);
                     xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
                     xobj.send(null);
                 }
@@ -57,7 +57,7 @@
                         var punto = listapunti[i];
                         L.marker([punto.lat, punto.lng])
                             .addTo(map)
-                            .bindPopup(punto.id + "\n" + punto.duration  + "\n" + punto.type + "\n" + punto.lng + "\n" + punto.lat)
+                            .bindPopup(punto.id + punto.duration + punto.type + punto.lng + punto.lat)
                             .openPopup();
                             
                     }

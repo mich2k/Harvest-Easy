@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-        <html>
+<html>
            <head>
               <title>OSM Points</title>
               <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
            </head>
+
 <body>
-              <div id = "map" style = "width: 900px; height: 580px"></div>
+<div id = "map" style = "width: 1000px; height: 700px"></div>
+
 <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-              <script>
               
-              		
+<script>
 				// carico il json
                 function loadJSON(callback) {
                     var xobj = new XMLHttpRequest();
-                    
-                    
                     xobj.overrideMimeType("application/json");
                     
                     // Replace 'my_data' with the path to your file
@@ -26,10 +25,10 @@
                             }
                     };
                     console.dir(xobj);
-                    xobj.open('GET', 'points.json', true);
+                    xobj.open('GET', 'getmap', true);
                     xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
                     xobj.send(null);
-                }
+                  }
       
       
                  // Creating map options
@@ -51,21 +50,23 @@
                     var objJSON = JSON.parse(response);
                     console.log(objJSON);
 				
-                    var listapunti = objJSON.listaPunti; // recupero la lista dei punti
-                      console.log(listapunti);
+                    var listapunti = objJSON.listaPunti; // recupero la lista dei punti    
+                    console.log(listapunti);
+
                     for (var i = 0, len = listapunti.length; i < len; i++) {
                         var punto = listapunti[i];
                         L.marker([punto.lat, punto.lng])
                             .addTo(map)
-                            .bindPopup(punto.tipologia + "\n" + punto.apartment_name  + "\n" + punto.status + "\n" + punto.address + "\n" + punto.previsione + "\n" + punto.riempimento)
+                            .bindPopup(punto.tipologia + "<br>" + punto.apartment_name  + "<br>" + punto.status + "<br>" + punto.address + "<br>" + punto.previsione + "<br>" + punto.riempimento)
                             .openPopup();
                             
                     }
                 });
                  
                  // Adding layer to the map
-                 map.addLayer(layer);
-              </script>
+               map.addLayer(layer);
+              
+            </script>
            </body>
-           
+
         </html>
