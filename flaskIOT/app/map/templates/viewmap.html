@@ -2,13 +2,14 @@
 <html>
            <head>
               <title>OSM Points</title>
-              <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+              <link rel = "stylesheet" href ="{{url_for('.static', filename='leaflet.css')}}"/>
            </head>
-
-<body>
+           
+<script src="{{url_for('.static', filename='leaflet.js')}}"></script>
 <div id = "map" style = "width: 1000px; height: 700px"></div>
 
-<script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<body>
+
               
 <script>
 				// carico il json
@@ -47,17 +48,29 @@
                 loadJSON(function(response) {
                     // Parse JSON string into object
                     //var objJSON = eval("(function(){return " + response + ";})()");
+
                     var objJSON = JSON.parse(response);
                     console.log(objJSON);
 				
                     var listapunti = objJSON.listaPunti; // recupero la lista dei punti    
                     console.log(listapunti);
 
-                    for (var i = 0, len = listapunti.length; i < len; i++) {
+                    for (var i = 0, len = listapunti.length; i < len;) {
                         var punto = listapunti[i];
+                        var content = "Apartment name: " + punto.apartment_name + "<br>Address: " + punto.address + "<br>";
+                        let fixed_apartment = punto.apartment_name;
+                        
+                        while(fixed_apartment.indexOf(punto.apartment_name) >= 0) {
+                            content += "<br>Type: " + punto.tipologia + "<br>Status: " + punto.status + "<br>Prevision: " + punto.previsione + "<br>Filling: " + punto.riempimento + "<br>"
+                            
+                            //Next point
+                            i++;
+                            punto = listapunti[i];
+                        }
+
                         L.marker([punto.lat, punto.lng])
                             .addTo(map)
-                            .bindPopup(punto.tipologia + "<br>" + punto.apartment_name  + "<br>" + punto.status + "<br>" + punto.address + "<br>" + punto.previsione + "<br>" + punto.riempimento)
+                            .bindPopup(content)
                             .openPopup();
                             
                     }
