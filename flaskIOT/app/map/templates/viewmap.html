@@ -6,14 +6,12 @@
            </head>
            
 <script src="{{url_for('.static', filename='leaflet.js')}}"></script>
-<div id = "map" style = "width: 1000px; height: 700px"></div>
 
-<body>
-
-              
-<script>
+    <body>
+        <div id = "map" style = "width: 1000px; height: 700px"></div>
+        <script>
 				// carico il json
-                function loadJSON(callback) {
+                function loadJSON(callback, route) {
                     var xobj = new XMLHttpRequest();
                     xobj.overrideMimeType("application/json");
                     
@@ -26,7 +24,7 @@
                             }
                     };
                     console.dir(xobj);
-                    xobj.open('GET', 'getmap', true);
+                    xobj.open('GET', "{{ path }}", true);
                     xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
                     xobj.send(null);
                   }
@@ -74,12 +72,12 @@
                             .openPopup();
                             
                     }
-                });
+                }, );
                  
                  // Adding layer to the map
                map.addLayer(layer);
               
-            </script>
-           </body>
+        </script>
+    </body>
 
-        </html>
+</html>

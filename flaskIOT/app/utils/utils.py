@@ -3,161 +3,175 @@ from flask import Response
 from os import getenv
 from ..database.tables import *
 from ..trap.trap import *
-import random, requests 
+import random
+import requests
+
 
 class Utils:
 
     HERE_API_KEY = getenv("HERE_KEY")
     WEATHER_KEY = getenv("WEATHER_KEY")
+    WEATHERE_API_URL = f"https://api.openweathermap.org/data/2.5/weather"
+    dd_umido = {"medie": 5, "alte": 3, "altissime": 2}
+    soglie = {
+        "plastica": 0.9,
+        "carta": 0.9,
+        "vetro": 0.8,
+        "umido": 0.7,
+    }  # soglie fisse
 
     def __init__(self):
         # self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
-    def calcolastatus(self, id_bin, riempimento, roll, pitch, co2):
-
-        soglie = {
-            "plastica": 0.9,
-            "carta": 0.9,
-            "vetro": 0.8,
-            "umido": 0.7,
-        }  # soglie fisse
-
-        # soglia dinamica per l'organico in base alla temperatura
-        dd_umido = {"medie": 5, "alte": 3, "altissime": 2}
-
-        limite_co2 = 2000  # 2000ppm
-        status_attuale = 1  # default del primo record del bidone
-
-        bin_attuale = BinRecord.query.filter(BinRecord.associated_bin == id_bin)
-
-        if bin_attuale.count():
-            status_attuale = (
-                BinRecord.query.filter(BinRecord.associated_bin == id_bin)
-                .order_by(BinRecord.timestamp.desc())
-                .first()
-            ).status
-
-        tipologia = (Bin.query.filter(Bin.id_bin == id_bin)).first().tipologia
-        apartment_ID = (Bin.query.filter(Bin.id_bin == id_bin)).first().apartment_ID
-        soglia_attuale = 0
-
-        if tipologia == "umido":
-            now = datetime.now()
-            mese = now.month
-            if mese >= 4 and mese <= 10:  # mesi caldi
-                lat = (
-                    (Apartment.query.filter(Apartment.apartment_name == apartment_ID))
-                    .first()
-                    .lat
-                )
-                lon = (
-                    (Apartment.query.filter(Apartment.apartment_name == apartment_ID))
-                    .first()
-                    .lng
-                )
-
-                WEATHERE_API_URL = f"https://api.openweathermap.org/data/2.5/weather"
-                params = {"lat": lat, "lon": lon, "appid": self.WEATHER_KEY}
-
-                req = requests.get(WEATHERE_API_URL, params=params)
-                res = req.json()
-                # conversione kelvin-celsius
-                temp = int(res["main"]["temp"] - 272.15)
-                dd_time = 0
-
-                if temp >= 20 and temp <= 25:  # medie
-                    dd_time = dd_umido["media"]
-
-                if temp > 25 and temp <= 30:  # alte
-                    dd_time = dd_umido["alte"]
-
-                if temp > 30:  # altissime
-                    dd_time = dd_umido["altissime"]
-
-                timestamp = (
-                    Bin.query.filter(Bin.id_bin == id_bin).first().ultimo_svuotamento
-                )
-                last_date = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-                now = datetime.now()
-
-                # temperature alte + sono passo più di deltagiorni
-                if (now - last_date).days > dd_time and dd_time > 0:
-                    soglia_attuale = 0
-                else:
-                    soglia_attuale = soglie["umido"]
-            else:
-                soglia_attuale = soglie["umido"]
-        elif tipologia == "plastica":
-            soglia_attuale = soglie["plastica"]
-        elif tipologia == "carta":
-            soglia_attuale = soglie["carta"]
-        elif tipologia == "vetro":
-            soglia_attuale = soglie["vetro"]
-
-        """ 1: integro e non-pieno, 
+    def calcolastatus(self, id_bin, riempimento, roll = 30, pitch = 90, co2 = 1000):
+        """ 
+        Legenda status:
+            1: integro e non-pieno, 
             2: integro e pieno, 
             3: manomesso e non-pieno, 
             4: manomesso e pieno
         """
 
-        # TODO rendere più fine
-        if riempimento != None:
-            # passaggio da pieno a non pieno e viceversa
-            if status_attuale == 1 and float(riempimento) >= soglia_attuale:
-                full_state(id_bin, apartment_ID, riempimento)
-                status_attuale = 2
+        # soglia dinamica per l'organico in base alla temperatura
 
-            if status_attuale == 3 and float(riempimento) >= soglia_attuale:
-                full_state(id_bin, apartment_ID, riempimento)
-                status_attuale = 4
+        limite_co2 = 2000  # 2000ppm
 
-            if status_attuale == 2 and float(riempimento) < soglia_attuale:
-                status_attuale = 1
+        # Seleziono il bidone passato
+        current_bin = BinRecord.query.filter(
+            BinRecord.associated_bin == id_bin)
+
+        # Estraggo lo status corrente o, se non presente, lo imposto di default ad 1 (suppongo un bidone nuovo: integro e vuoto)
+        current_status = (
+            BinRecord.query.filter(BinRecord.associated_bin == id_bin)
+            .order_by(BinRecord.timestamp.desc())
+            .first()
+        ).status if current_bin.count() else 1
+
+        type = (Bin.query.filter(Bin.id_bin == id_bin)).first().tipologia
+
+        apartment_ID = (Bin.query.filter(
+            Bin.id_bin == id_bin)).first().apartment_ID
+
+        if type == "umido":
+            # Mesi caldi
+            current_threashold = self.get_organic_threashold(apartment_ID, id_bin) if datetime.now(
+            ).month >= 4 and datetime.now().month <= 10 else self.soglie["umido"]
+
+        elif type == "plastica":
+            current_threashold = self.soglie["plastica"]
+
+        elif type == "carta":
+            current_threashold = self.soglie["carta"]
+
+        elif type == "vetro":
+            current_threashold = self.soglie["vetro"]
+
+        if current_status == 1:
+            if float(riempimento) >= current_threashold and riempimento is not None:
+                full_state(id_bin, apartment_ID, riempimento)
+                current_status = 2
+
+            if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
+                overturn(id_bin, apartment_ID, 90)
+                current_status = 3
+
+            if co2 >= limite_co2 and co2 is not None:
+                fire(id_bin, apartment_ID, co2)
+                current_status = 3
+
+            return current_status
+
+        if current_status == 2:
+
+            if float(riempimento) < current_threashold and riempimento is not None:
+                current_status = 1
                 db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
                     {"ultimo_svuotamento": datetime.now()}
                 )
                 db.session.commit()
 
-            if status_attuale == 4 and float(riempimento) < soglia_attuale:
-                status_attuale = 3
+            if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
+                overturn(id_bin, apartment_ID, 90)
+                current_status = 4
+
+            if co2 >= limite_co2 and co2 is not None:
+                fire(id_bin, apartment_ID, co2)
+                current_status = 4
+
+            return current_status
+
+        if current_status == 3:
+            if float(riempimento) >= current_threashold and riempimento is not None:
+                full_state(id_bin, apartment_ID, riempimento)
+                current_status = 4
+
+            if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:
+                current_status = 1
+
+            if co2 < limite_co2 and co2 is not None:
+                current_status = 1
+
+            return current_status
+
+        if current_status == 4:
+            
+            if float(riempimento) < current_threashold and riempimento is not None:
+                current_status = 3
                 db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
                     {"ultimo_svuotamento": datetime.now()}
                 )
                 db.session.commit()
+                
+            if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:
+                current_status = 2
 
-        # passaggio da accappottato a dritto e viceversa
-        if roll != None and pitch != None:
-            if status_attuale == 3 and (abs(roll) < 30 and (abs(pitch - 90) < 30)):
-                status_attuale = 1
+            if co2 < limite_co2 and co2 is not None:
+                current_status = 2
 
-            if status_attuale == 1 and (abs(roll) >= 30 or (abs(pitch - 90) >= 30)):
-                overturn(id_bin, apartment_ID, 90)
-                status_attuale = 3
+            return current_status
 
-            if status_attuale == 4 and (abs(roll) < 30 and (abs(pitch - 90) < 30)):
-                status_attuale = 2
+    def get_organic_threashold(self, apartment_ID, id_bin):
 
-            if status_attuale == 2 and (abs(roll) >= 30 or (abs(pitch - 90) >= 30)):
-                overturn(id_bin, apartment_ID, 90)
-                status_attuale = 4
-        if co2 != None:
-            # Caso in cui nel bidone ci dovesse essere un incendio
-            if status_attuale == 3 and co2 < limite_co2:
-                status_attuale = 1
+        lat = (
+            (Apartment.query.filter(Apartment.apartment_name == apartment_ID))
+            .first()
+            .lat
+        )
 
-            if status_attuale == 1 and co2 >= limite_co2:
-                fire(id_bin, apartment_ID, co2)
-                status_attuale = 3
+        lon = (
+            (Apartment.query.filter(Apartment.apartment_name == apartment_ID))
+            .first()
+            .lng
+        )
 
-            if status_attuale == 4 and co2 < limite_co2:
-                status_attuale = 2
+        params = {"lat": lat, "lon": lon, "appid": self.WEATHER_KEY}
 
-            if status_attuale == 2 and co2 >= limite_co2:
-                fire(id_bin, apartment_ID, co2)
-                status_attuale = 4
+        req = requests.get(self.WEATHERE_API_URL, params=params)
+        res = req.json()
 
-        return status_attuale
+        # conversione kelvin-celsius
+        temp = int(res["main"]["temp"] - 272.15)
+
+        if temp >= 20 and temp <= 25:  # medie
+            dd_time = self.dd_umido["media"]
+
+        if temp > 25 and temp <= 30:  # alte
+            dd_time = self.dd_umido["alte"]
+
+        if temp > 30:  # altissime
+            dd_time = self.dd_umido["altissime"]
+
+        timestamp = (
+            Bin.query.filter(
+                Bin.id_bin == id_bin).first().ultimo_svuotamento
+        )
+
+        # temperature alte + sono passo più di deltagiorni
+        current_threashold = 0 if (datetime.now() - datetime.strptime(
+            timestamp, "%Y-%m-%d %H:%M:%S")).days > dd_time and dd_time > 0 else self.soglie["umido"]
+
+        return current_threashold
 
     def set_previsione_status(id_bin, status_previsto):
         db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
@@ -184,9 +198,11 @@ class Utils:
             rtime = int(random.random() * 86400)
             dtime = int(random.random() * 360)
 
-            year = 2022 #random.randrange(2022, 2023)
-            month = int(dtime / 30) if int(dtime / 30) != 0 else int(dtime / 30) + 1
-            day = int(dtime / 12) if int(dtime / 12) != 0 else int(dtime / 12) + 1
+            year = 2022  # random.randrange(2022, 2023)
+            month = int(dtime / 30) if int(dtime /
+                                           30) != 0 else int(dtime / 30) + 1
+            day = int(dtime / 12) if int(dtime /
+                                         12) != 0 else int(dtime / 12) + 1
             hours = int(rtime / 3600)
             minutes = int((rtime - hours * 3600) / 60)
             seconds = rtime - hours * 3600 - minutes * 60

@@ -6,15 +6,18 @@ import datetime
 from flask import jsonify
 from flasgger import swag_from
 
-map_blueprint = Blueprint("map", __name__, template_folder="templates", static_folder='static')
+map_blueprint = Blueprint(
+    "map", __name__, template_folder="templates", static_folder='static')
 
+utility = Utils()
 
 def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
 
     if Bin.query.filter(Bin.tipologia == bin_type).first() == None and bin_type is not None:
         return jsonify({"error": "Tipologia non valida"}, 402)
 
-    apartments = Apartment.query.all() if sel_city is None else Apartment.query.filter(Apartment.city == sel_city)
+    apartments = Apartment.query.all(
+    ) if sel_city is None else Apartment.query.filter(Apartment.city == sel_city)
     points = []
 
     for apartment in apartments:
@@ -25,18 +28,16 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
 
         for bin in bins:
             point = {}
-                        
-            sq = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(BinRecord.timestamp.desc())
 
-            last_bin_record = sq.first() if not to_be_emptied else sq.filter(BinRecord.riempimento > 0.65).first()
-            
-            if to_be_emptied and last_bin_record.riempimento < 0.65:
+            last_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(
+                BinRecord.timestamp.desc()).first()
+
+            if to_be_emptied and utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 1 or utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 3:
                 continue
-            
+
             status = None if last_bin_record is None else last_bin_record.status
             filling = None if last_bin_record is None else last_bin_record.riempimento
 
-            
             point["tipologia"] = bin.tipologia
             point["apartment_name"] = apartment.apartment_name
             point["status"] = Utils.getstringstatus(status)
@@ -70,26 +71,42 @@ def get_map():
     return get_points()
 
 # Mappa di tutti i bidoni di una città
+
+
 @map_blueprint.route("/getmap/<string:city>")
 def getmapfromcity(city):
     return get_points(sel_city=city)
 
 # Mappa di tutti i bidoni di un certo tipo di una città
+
+
 @map_blueprint.route("/getmap/<string:type>&<string:city>")
 @swag_from('docs/map.yml')
 def get_filteredmap(type, city):
     return get_points(bin_type=type, sel_city=city)
 
 # Servizi per lo svuotamento dei bidoni pieni, stessi filtri di prima ma verranno considerati solo i bidoni pieni
-@map_blueprint.route("/getservicemap/<string:city>")
-def get_servicemap(city):
-    return get_points(sel_city=city, to_be_emptied=True)
+
+
+@map_blueprint.route("/getservicemap")
+def get_servicemap():
+    return get_points(to_be_emptied=True)
+
 
 @map_blueprint.route("/getservicemap/<string:type>&<string:city>")
 def get_servicefilteredmap(type, city):
     return get_points(bin_type=type, sel_city=city, to_be_emptied=True)
 
+# Mappa completa per Utenti
+
 
 @map_blueprint.route("/viewmap")
 def viewmap():
-    return render_template("viewmap.html")
+    return render_template("viewmap.html", path='getmap')
+
+# Mappa per HERA che filtra in base alla città
+
+
+@map_blueprint.route("/viewmapservice")
+def viewmapservice():
+    return render_template("viewmap.html", path='getservicemap')

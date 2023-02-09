@@ -111,16 +111,10 @@ class BinRecord(db.Model):
     temperature = db.Column("temperature", db.Integer, nullable=False)
     humidity = db.Column("humidity", db.Integer, nullable=False)
     riempimento = db.Column("livello_di_riempimento", db.Float, nullable=False)
-    timestamp = db.Column(
-        "Timestamp",
-        db.String,
-        nullable=False,
-        default=str(datetime.utcnow().replace(microsecond=0)),
-    )
+    timestamp = db.Column("Timestamp", db.String, nullable=False, default=str(datetime.utcnow().replace(microsecond=0)))
+    
     # FK
-    associated_bin = db.Column(
-        "associated_bin", db.Integer, db.ForeignKey("bin.id_bin")
-    )
+    associated_bin = db.Column("associated_bin", db.Integer, db.ForeignKey("bin.id_bin"))
 
     def __init__(self, jsonObj):
         self.associated_bin = jsonObj["id_bin"]
@@ -140,9 +134,7 @@ class Apartment(db.Model):
     street = db.Column("street", db.String, nullable=False)
     lat = db.Column("lat", db.Float)
     lng = db.Column("lng", db.Float)
-    apartment_street_number = db.Column(
-        "apartment_street_number", db.Integer, nullable=False
-    )
+    apartment_street_number = db.Column("apartment_street_number", db.Integer, nullable=False)
     n_internals = db.Column("n_internals", db.Integer, nullable=False)
   
     # FK
@@ -204,10 +196,7 @@ class AlterationRecord(db.Model):
 
     alteration_id = db.Column("record", db.Integer, primary_key=True)
     type_of_event = db.Column("event", db.String)
-    is_notified = db.Column(
-        "is_notified",
-        db.Boolean,
-    )
+    is_notified = db.Column("is_notified", db.Boolean)
     is_solved = db.Column("is_solved", db.Boolean, default=False)
     associated_bin = db.Column("associated_bin", db.String, db.ForeignKey("bin.id_bin"))
     timestamp = db.Column("event_timestamp", db.String, default=datetime.now())
