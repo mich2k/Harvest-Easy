@@ -261,7 +261,7 @@ def stampaitems():
         Bin.query.order_by(Bin.id_bin.desc()).all(),
         Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
         User.query.order_by(User.username.desc()).all(),
-        Admin.query.order_by(Admin.uid.desc()).all(),
+        Admin.query.order_by(Admin.username.desc()).all(),
         BinRecord.query.order_by(BinRecord.id_record.desc()).all(),
         TelegramIDChatUser.query.all(),
     ]

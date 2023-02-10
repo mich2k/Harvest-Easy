@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-           <head>
-              <title>OSM Points</title>
-              <link rel = "stylesheet" href ="{{url_for('.static', filename='leaflet.css')}}"/>
-           </head>
+    <head>
+       <title>OSM Points</title>
+       <link rel = "stylesheet" href ="{{url_for('.static', filename='leaflet.css')}}"/>
+    </head>
            
 <script src="{{url_for('.static', filename='leaflet.js')}}"></script>
 
@@ -11,7 +11,7 @@
         <div id = "map" style = "width: 1000px; height: 700px"></div>
         <script>
 				// carico il json
-                function loadJSON(callback, route) {
+                function loadJSON(callback) {
                     var xobj = new XMLHttpRequest();
                     xobj.overrideMimeType("application/json");
                     
@@ -53,26 +53,35 @@
                     var listapunti = objJSON.listaPunti; // recupero la lista dei punti    
                     console.log(listapunti);
 
-                    for (var i = 0, len = listapunti.length; i < len;) {
-                        var punto = listapunti[i];
-                        var content = "Apartment name: " + punto.apartment_name + "<br>Address: " + punto.address + "<br>";
-                        let fixed_apartment = punto.apartment_name;
+                    for (var i = 0; i < listapunti.length;) {
+
+                        if(listapunti[i] === undefined){
+                            break;
+                        }
+
+                        var fixed_apartment = listapunti[i].apartment_name;
+                        var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Address: " + listapunti[i].address + "<br>";
                         
-                        while(fixed_apartment.indexOf(punto.apartment_name) >= 0) {
-                            content += "<br>Type: " + punto.tipologia + "<br>Status: " + punto.status + "<br>Prevision: " + punto.previsione + "<br>Filling: " + punto.riempimento + "<br>"
+                        while(fixed_apartment === listapunti[i].apartment_name) {
+                            console.log(listapunti[i]);
+                            console.log(i)
+
+                            content += "<br>Type: " + listapunti[i].tipologia + "<br>Status: " + listapunti[i].status + "<br>Prevision: " + listapunti[i].previsione + "<br>Filling: " + listapunti[i].riempimento + "<br>"
                             
                             //Next point
                             i++;
-                            punto = listapunti[i];
+                            if ((i == listapunti.lenght) || (listapunti[i] === undefined)){
+                                break;
+                            }
                         }
 
-                        L.marker([punto.lat, punto.lng])
+                        L.marker([listapunti[i - 1].lat, listapunti[i - 1].lng])
                             .addTo(map)
                             .bindPopup(content)
                             .openPopup();
                             
                     }
-                }, );
+                } );
                  
                  // Adding layer to the map
                map.addLayer(layer);

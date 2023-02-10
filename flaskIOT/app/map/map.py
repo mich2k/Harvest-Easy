@@ -17,11 +17,11 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
         return jsonify({"error": "Tipologia non valida"}, 402)
 
     apartments = Apartment.query.all(
-    ) if sel_city is None else Apartment.query.filter(Apartment.city == sel_city)
+    ) if sel_city is None else Apartment.query.filter(Apartment.city == sel_city).all()
     points = []
 
     for apartment in apartments:
-        bins = Bin.query.filter(Bin.apartment_ID == apartment.apartment_name)
+        bins = Bin.query.filter(Bin.apartment_ID == apartment.apartment_name).all()
 
         if bin_type is not None:
             bins = bins.filter(Bin.tipologia == bin_type)
@@ -32,7 +32,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             last_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(
                 BinRecord.timestamp.desc()).first()
 
-            if to_be_emptied and utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 1 or utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 3:
+            if to_be_emptied and (utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 1 or utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 3):
                 continue
 
             status = None if last_bin_record is None else last_bin_record.status
@@ -55,7 +55,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
         "updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "listaPunti": points,
     }
-
+    print(viewmap)
     return jsonify(viewmap)
 
 
