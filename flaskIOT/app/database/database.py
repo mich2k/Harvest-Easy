@@ -261,7 +261,7 @@ def stampaitems():
         Bin.query.order_by(Bin.id_bin.desc()).all(),
         Apartment.query.order_by(Apartment.apartment_name.desc()).all(),
         User.query.order_by(User.username.desc()).all(),
-        Admin.query.order_by(Admin.uid.desc()).all(),
+        Admin.query.order_by(Admin.username.desc()).all(),
         BinRecord.query.order_by(BinRecord.id_record.desc()).all(),
         TelegramIDChatUser.query.all(),
     ]
@@ -286,13 +286,12 @@ def dataAdmin(uid):
 def login(uid, password):
 
     access_allowed = False
-    for asw in db.session.query(
-        Admin.uid == uid and checkpassword(Admin.password, password)
-    ).all():
+    for asw in db.session.query(Admin.uid == uid).all():
         if asw[0]:
-            access_allowed = True
+            if checkpassword(Admin.password, password):
+                access_allowed = True
 
-    return Utils.get_json(200, {"allowed": access_allowed})
+    return Utils.get_response(200 if access_allowed else 400, str(access_allowed))
 
 
 @database_blueprint.route("/checkUsername/<string:usr>", methods=["GET"])
@@ -302,7 +301,7 @@ def checkusername(usr):
         if asw[0]:
             found = True
 
-    return Utils.get_json(200, {"found": found})
+    return Utils.get_response(200 if found else 400, str(found))
 
 
 @database_blueprint.route("/checkSession/<string:userid>", methods=["GET"])
@@ -312,7 +311,7 @@ def checksession(userid):
         if asw[0]:
             found = True
 
-    return Utils.get_json(200, found)
+    return Utils.get_response(200 if found else 400, str(found))
 
 
 @database_blueprint.route("/setelegramSession/<string:usr>", methods=["GET"])
