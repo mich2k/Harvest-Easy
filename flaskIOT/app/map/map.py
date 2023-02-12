@@ -61,7 +61,7 @@ def get_points(bin_type = None, sel_city = None, to_be_emptied = False):
         "listaPunti": points,
     }
 
-    return jsonify(viewmap)
+    return jsonify(viewmap), 200
 
 
 @map_blueprint.route("/")
