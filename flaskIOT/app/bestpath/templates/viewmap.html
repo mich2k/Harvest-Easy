@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OSM Points</title>
+    <link rel="stylesheet" href="{{url_for('.static', filename='leaflet.css')}}" />
+</head>
+
+<script src="{{url_for('.static', filename='leaflet.js')}}"></script>
+
+<body>
+    <div id="map" style="width: 1000px; height: 700px"></div>
+    <script>
+        // carico il json
+        function loadJSON(callback) {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType("application/json");
+
+            // Replace 'my_data' with the path to your file
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState === 4 && xobj.status === 200) {
+                    // Required use of an anonymous callback 
+                    // as .open() will NOT return a value but simply returns undefined in asynchronous mode
+                    callback(xobj.responseText);
+                }
+            };
+            console.dir(xobj);
+            xobj.open('GET', "{{ path }}", true);
+            xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
+            xobj.send(null);
+        }
+
+
+        // Creating map options
+        var mapOptions = {
+            center: [44.647129, 10.925227], //https://www.tutorialspoint.com/leafletjs/leafletjs_getting_started.htm
+            zoom: 12
+        }
+
+        // Creating a map object
+        var map = new L.map('map', mapOptions);
+
+        // Creating a Layer object
+        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+        // load list of points from server 
+        loadJSON(function (response) {
+            // Parse JSON string into object
+            //var objJSON = eval("(function(){return " + response + ";})()");
+
+            var objJSON = JSON.parse(response);
+            console.log(objJSON);
+
+            var listapunti = objJSON.listaPunti; // recupero la lista dei punti    
+            console.log(listapunti);
+
+            for (var i = 0, len = listapunti.length; i < len; i++) {
+                var punto = listapunti[i];
+                var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Bins: " + listapunti[i].bins + "<br>Duration: " + listapunti[i].duration + "<br>" + "<br>Id_step: " + listapunti[i].id + "<br>" + "<br>Type: " + listapunti[i].type + "<br>";
+                L.marker([punto.lat, punto.lng])
+                    .addTo(map)
+                    .bindPopup(content)
+                    .openPopup();
+            }
+        });
+
+        // Adding layer to the map
+        map.addLayer(layer);
+
+    </script>
+</body>
+
+</html>

@@ -110,7 +110,6 @@ def optimal_route(lat, lng, tipologia=None):
         "https://api.openrouteservice.org/optimization", json=body, headers=headers
     )
     call = call.json()
-    viewmap(call["routes"][0]["steps"])
     # API json
     best_path = {}
     best_path["duration"] = call["routes"][0]["duration"]
@@ -138,7 +137,7 @@ def optimal_route(lat, lng, tipologia=None):
             step["type"] = "step"
 
         best_path["steps"].append(step)
-
+    viewmap(best_path)
     return best_path
 
 def optimal_route2(lat_init, lng_init, lat_end, lng_end, tipologia=None):
@@ -212,7 +211,6 @@ def optimal_route2(lat_init, lng_init, lat_end, lng_end, tipologia=None):
         "https://api.openrouteservice.org/optimization", json=body, headers=headers
     )
     call = call.json()
-    viewmap(call["routes"][0]["steps"])
     # API json
     best_path = {}
     best_path["duration"] = call["routes"][0]["duration"]
@@ -239,7 +237,7 @@ def optimal_route2(lat_init, lng_init, lat_end, lng_end, tipologia=None):
             step["type"] = "step"
 
         best_path["steps"].append(step)
-
+    viewmap(best_path)
     return best_path
 
 # cammino con solo inizio
@@ -266,16 +264,17 @@ def bpath4(lat_init, lng_init, lat_end, lng_end, tipologia):
 
 
 # aggiorno il file path.json con il cammino corrente
-def viewmap(steps):
+def viewmap(bpath):
+    steps=bpath["steps"]
     points = []
     for i in range(len(steps)):
         point = {}
         point["id"] = i
-        if (steps[i]["type"] == "start" or steps[i]["type"] == "end"):
-            point["type"] = steps[i]["type"]
-        else:
-            point["type"] = "step"
-        point["duration"] = steps[i]["duration"]
+        point["type"] = steps[i]["type"]        
+        if steps[i]["type"] == "step":
+            point["bins"] = steps[i]["bins"]
+            point["apartment_ID"]= steps[i]["apartment_ID"]
+        point["duration"] = steps[i]["arrival"]
         point["lat"] = steps[i]["location"][1]
         point["lng"] = steps[i]["location"][0]
         points.append(point)
@@ -290,7 +289,13 @@ def viewmap(steps):
 
     # return viewmap
 
-
-@path_blueprint.route("/viewmap")
+@path_blueprint.route("/getmap")
 def getmap():
-    return render_template("viewmap.html")
+    with open("./app/bestpath/path.json") as file:
+        return json.load(file)
+    
+@path_blueprint.route("/map")
+def map():
+    return render_template("viewmap.html", path='getmap')
+    
+    
