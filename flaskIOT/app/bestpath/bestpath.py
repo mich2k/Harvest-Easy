@@ -4,28 +4,30 @@ from flask import render_template
 import requests
 from os import getenv
 import datetime
+import json
 from flask import jsonify
 from flasgger import swag_from
 
 OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
-path_blueprint = Blueprint("path", __name__, template_folder="templates")
+path_blueprint = Blueprint("path", __name__, template_folder="templates", static_folder='static')
+
 
 @path_blueprint.route("/")
 def main():
     return "<h1>Best Path</h1>"
 
 # ottenere la matrice delle distanze tra gli appartamenti
-# Perchè la usiamo?
-
 
 @path_blueprint.route("/getdistances")
 def getdistances():
-
     apartments = Apartment.query.all()
     coordinates = []
 
     for apartment in apartments:
-        coordinates.append([apartment.lng, apartment.lat])
+        apartment_coordinate = []
+        apartment_coordinate.append(apartment.lng)
+        apartment_coordinate.append(apartment.lat)
+        coordinates.append(apartment_coordinate)
 
     body = {"locations": coordinates}
 
@@ -33,119 +35,96 @@ def getdistances():
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
         "Content-Type": "application/json; charset=utf-8",
     }
-
+    
     call = requests.post(
         "https://ors.gmichele.it/ors/v2/matrix/driving-car", json=body, headers=headers
     )
-
+    
     return call.json()
 
-
-@path_blueprint.route("/optimal_route/<float:lat>&<float:lng>")
-@path_blueprint.route("/optimal_route/<float:lat>&<float:lng>&<string:type>")
-@path_blueprint.route("/optimal_route/<float:lat>&<float:lng>&<float:lat_stop>&<float:lng_stop>")
-@path_blueprint.route("/optimal_route/<float:lat>&<float:lng>&<float:lat_stop>&<float:lng_stop>&<string:type>")
-# @swag_from('/docs/optimal_route.yml')
-def optimal_route(lat, lng, lat_stop=None, lng_stop=None, type=None):
-
+def optimal_route(lat, lng, tipologia=None):
     if (isinstance(lat, float) and isinstance(lng, float)):
         start = [lng, lat]
-        end = []
-
-        if lat_stop is not None and lng_stop is not None:
-
-            if isinstance(lat_stop, float) and isinstance(lng_stop, float):
-                end.append(lng_stop, lat_stop)
-
     else:
-        # Ritornare response
-        return jsonify({"Errore: latitudine o longitudine scorretti"}), 401
+        return jsonify({"Errore": "latitudine o longitudine scorretti"}), 401
+    
+    if tipologia is not None:
+        if Bin.query.filter(Bin.tipologia == tipologia).first() == None:
+            return jsonify({"Errore": "tipologia scorretta"}), 402
+        
+    if tipologia is None:
+        bins = Bin.query.all()
+    else:
+        bins = Bin.query.filter(Bin.tipologia == tipologia)
 
-    headers = {
-        "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-        "Authorization": OPENROUTESERVICE_KEY,
-        "Content-Type": "application/json; charset=utf-8",
-    }
-
-    bins = Bin.query.all() if type is None else Bin.query.filter(Bin.tipologia == type)
     to_empty = []  # appartamenti con i relativi bidoni pieni
 
     for bin in bins:
-
         ultimo_bin_record = (
             BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
             .order_by(BinRecord.timestamp.desc())
             .first()
         )
-
         if ultimo_bin_record is None:
             status = None
-
         else:
             status = ultimo_bin_record.status
-
         if status == 2:
-            to_empty.append(
-                {"apartment_ID": bin.apartment_ID, "bin": bin.tipologia})
+            empty = {}
+            empty["apartment_ID"] = bin.apartment_ID
+            empty["bin"] = bin.tipologia
+            to_empty.append(empty)
 
     jobs = []
-    id_count = 0
-
-    for i in range(len(to_empty) - 1):
-
+    i = 0
+    j = 0
+    while i < len(to_empty):
         apartment_ID = to_empty[i]["apartment_ID"]
-
         apartment = Apartment.query.filter(
             Apartment.apartment_name == apartment_ID).first()
-
-        id_count += 1
-
-        jobs.append({"id": id_count, "location": [
-                    apartment.lng, apartment.lat]})
-
-        if to_empty[i + 1]["apartment_ID"] == apartment_ID:
-            continue
+        apartment_coordinate = []
+        apartment_coordinate.append(apartment.lng)
+        apartment_coordinate.append(apartment.lat)
+        job = {"id": j + 1, "location": apartment_coordinate}
+        jobs.append(job)
+        i = i + 1
+        j = j + 1
+        if i < len(to_empty):
+            while (to_empty[i]["apartment_ID"] == apartment_ID):
+                i = i + 1
 
     body = {
         "jobs": jobs,
         "vehicles": [{
             "id": 1,
             "profile": "driving-car",
-            "start": start
+            "start": start                
         }]
     }
-        
-    # da testare
-    if end:
-        body["vehicles"][0]['end'] = end
-
+    headers = {
+        "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+        "Authorization": OPENROUTESERVICE_KEY,
+        "Content-Type": "application/json; charset=utf-8",
+    }
     call = requests.post(
-        "https://api.openrouteservice.org/optimization", json=body, headers=headers).json()
+        "https://api.openrouteservice.org/optimization", json=body, headers=headers
+    )
+    call = call.json()
     
     if 'error' in call:
-        return 'Error: ' + str(call) 
-
-    
-    print(viewmap(call["routes"][0]["steps"]))
-
+        return 'error: ' + str(call)
     # API json
     best_path = {}
     best_path["duration"] = call["routes"][0]["duration"]
     best_path["steps"] = []
 
-    if type is not None:
-        best_path["tipologia"] = type
-
     for i in range(len(call["routes"][0]["steps"])):
-
-        step = {'arrival': call["routes"][0]["steps"][i]["arrival"],
-                'location': call["routes"][0]["steps"][i]["location"]}
-
-        if (call["routes"][0]["steps"][i]["type"] == "start" or call["routes"][0]["steps"][i]["type"] == "end"):
-            step["type"] = call["routes"][0]["steps"][i]["type"]
-
+        step = {}
+        step["arrival"] = call["routes"][0]["steps"][i]["arrival"]
+        step["location"] = call["routes"][0]["steps"][i]["location"]
+        if (call["routes"][0]["steps"][i]["type"] == "start"):
+            step["type"] = "start"
         else:
-
             step["apartment_ID"] = (
                 Apartment.query.filter(
                     Apartment.lat == call["routes"][0]["steps"][i]["location"][1])
@@ -153,55 +132,173 @@ def optimal_route(lat, lng, lat_stop=None, lng_stop=None, type=None):
                 .first()
                 .apartment_name
             )
-
-            if type is None:
-
-                step["bins"] = ""
-
-                for j in range(len(to_empty)):
-
-                    if (to_empty[j]["apartment_ID"] == step["apartment_ID"]):
-                        step["bins"] += to_empty[j]["bin"] + " "
+            step["bins"] = ""
+            for j in range(len(to_empty)):
+                if (to_empty[j]["apartment_ID"] == step["apartment_ID"]):
+                    step["bins"] += to_empty[j]["bin"] + " "
 
             step["type"] = "step"
 
         best_path["steps"].append(step)
+    viewmap(best_path)
+    return best_path
 
-    return jsonify(best_path)
+def optimal_route2(lat_init, lng_init, lat_end, lng_end, tipologia=None):
+
+    if (isinstance(lat_end, float) and isinstance(lng_end, float) and isinstance(lat_init, float) and isinstance(lng_init, float)):
+        end = [lng_end, lat_end]
+        start = [lng_init, lat_init]
+    else:
+        return jsonify({"Errore: latitudine e longitudine scorretti"}), 401
+
+    if tipologia is not None:
+        if Bin.query.filter(Bin.tipologia == tipologia).first() == None:
+            return jsonify({"Errore": "tipologia scorretta"}), 402
+        
+    if tipologia is None:
+        bins = Bin.query.all()
+    else:
+        bins = Bin.query.filter(Bin.tipologia == tipologia)
+
+    to_empty = []  # appartamenti con i relativi bidoni pieni
+
+    for bin in bins:
+        ultimo_bin_record = (
+            BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
+            .order_by(BinRecord.timestamp.desc())
+            .first()
+        )
+        if ultimo_bin_record is None:
+            status = None
+        else:
+            status = ultimo_bin_record.status
+        if status == 2:
+            empty = {}
+            empty["apartment_ID"] = bin.apartment_ID
+            empty["bin"] = bin.tipologia
+            to_empty.append(empty)
+
+    jobs = []
+    i = 0
+    j = 0
+    while i < len(to_empty):
+        apartment_ID = to_empty[i]["apartment_ID"]
+        apartment = Apartment.query.filter(
+            Apartment.apartment_name == apartment_ID).first()
+        apartment_coordinate = []
+        apartment_coordinate.append(apartment.lng)
+        apartment_coordinate.append(apartment.lat)
+        job = {"id": j + 1, "location": apartment_coordinate}
+        jobs.append(job)
+        i = i + 1
+        j = j + 1
+        if i < len(to_empty):
+            while (to_empty[i]["apartment_ID"] == apartment_ID):
+                i = i + 1
+
+    body = {
+        "jobs": jobs,
+        "vehicles": [{
+            "id": 1,
+            "profile": "driving-car",
+            "start": start,
+            "end": end
+        }]
+    }
+    headers = {
+        "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+        "Authorization": OPENROUTESERVICE_KEY,
+        "Content-Type": "application/json; charset=utf-8",
+    }
+    call = requests.post(
+        "https://api.openrouteservice.org/optimization", json=body, headers=headers
+    )
+    call = call.json()
+    # API json
+    best_path = {}
+    best_path["duration"] = call["routes"][0]["duration"]
+    best_path["steps"] = []
+
+    for i in range(len(call["routes"][0]["steps"])):
+        step = {}
+        step["arrival"] = call["routes"][0]["steps"][i]["arrival"]
+        step["location"] = call["routes"][0]["steps"][i]["location"]
+        if (call["routes"][0]["steps"][i]["type"] == "start" or call["routes"][0]["steps"][i]["type"] == "end"):
+            step["type"] = call["routes"][0]["steps"][i]["type"]
+        else:
+            step["apartment_ID"] = (
+                Apartment.query.filter(
+                    Apartment.lat == call["routes"][0]["steps"][i]["location"][1])
+                .filter(Apartment.lng == call["routes"][0]["steps"][i]["location"][0])
+                .first()
+                .apartment_name
+            )
+            step["bins"] = ""
+            for j in range(len(to_empty)):
+                if (to_empty[j]["apartment_ID"] == step["apartment_ID"]):
+                    step["bins"] += to_empty[j]["bin"] + " "
+            step["type"] = "step"
+
+        best_path["steps"].append(step)
+    #viewmap(best_path)
+    return best_path
+
+# cammino con solo inizio
+@path_blueprint.route("/optimal_route/<float:lat>&<float:lng>")
+# @swag_from('/docs/optimal_route.yml')
+def bpath(lat, lng):
+    return optimal_route(lat, lng, tipologia=None)
+
+# cammino con inizio e fine
+@path_blueprint.route("/optimal_route/<float:lat_init>&<float:lng_init>&<float:lat_end>&<float:lng_end>")
+def bpath2(lat_init, lng_init, lat_end, lng_end):
+    return optimal_route2(lat_init, lng_init, lat_end, lng_end)
+
+# cammino con solo inizio per una certa tipologia di bidoni
+@path_blueprint.route("/optimal_route/<float:lat>&<float:lng>&<string:tipologia>")
+def bpath3(lat, lng, tipologia):
+    return optimal_route(lat, lng, tipologia)
 
 
-# Perchè la usiamo?
-def viewmap(steps):
+# cammino con inizio e fine per una certa tipologia di bidoni
+@path_blueprint.route("/optimal_route/<float:lat_init>&<float:lng_init>&<float:lat_end>&<float:lng_end>&<string:tipologia>")
+def bpath4(lat_init, lng_init, lat_end, lng_end, tipologia):
+   return optimal_route2(lat_init, lng_init, lat_end, lng_end, tipologia)
+
+
+# aggiorno il file path.json con il cammino corrente
+def viewmap(bpath):
+    steps=bpath["steps"]
     points = []
-
     for i in range(len(steps)):
         point = {}
-
         point["id"] = i
-
-        if (steps[i]["type"] == "start" or steps[i]["type"] == "end"):
-            point["type"] = steps[i]["type"]
-        else:
-            point["type"] = "step"
-
-        point["duration"] = steps[i]["duration"]
+        point["type"] = steps[i]["type"]        
+        if steps[i]["type"] == "step":
+            point["bins"] = steps[i]["bins"]
+            point["apartment_ID"]= steps[i]["apartment_ID"]
+        point["duration"] = steps[i]["arrival"]
         point["lat"] = steps[i]["location"][1]
         point["lng"] = steps[i]["location"][0]
-
         points.append(point)
 
     viewmap = {
         "updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "listaPunti": points,
     }
-    
-    # Aggiornare la lista di punti che la mappa stamperà
-    
-    
 
-# Cosa chiama?
+    with open("./out/path.json", "w") as outfile:
+        json.dump(viewmap, outfile)
+    
+    return viewmap
 
-
-@path_blueprint.route("/viewmap")
+@path_blueprint.route("/getpoints")
 def getmap():
-    return render_template("viewmap.html", path='/optimal_route')
+    with open("./out/path.json") as file:
+        return json.load(file)
+    
+@path_blueprint.route("/map")
+def map():
+    return render_template("bpathmap.html", path='getpoints')
+    
+    

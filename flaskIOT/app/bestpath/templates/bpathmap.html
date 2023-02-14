@@ -8,6 +8,7 @@
 
 <script src="{{url_for('.static', filename='leaflet.js')}}"></script>
 
+
 <body>
     <div id="map" style="width: 1000px; height: 700px"></div>
     <script>
@@ -28,6 +29,7 @@
             xobj.open('GET', "{{ path }}", true);
             xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
             xobj.send(null);
+
         }
 
 
@@ -43,6 +45,8 @@
         // Creating a Layer object
         var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
+        var coords = [];
+
         // load list of points from server 
         loadJSON(function (response) {
             // Parse JSON string into object
@@ -53,15 +57,19 @@
 
             var listapunti = objJSON.listaPunti; // recupero la lista dei punti    
             console.log(listapunti);
-
+            
             for (var i = 0, len = listapunti.length; i < len; i++) {
                 var punto = listapunti[i];
-                var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Bins: " + listapunti[i].bins + "<br>Duration: " + listapunti[i].duration + "<br>" + "<br>Id_step: " + listapunti[i].id + "<br>" + "<br>Type: " + listapunti[i].type + "<br>";
+                var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Bins: " + listapunti[i].bins + "<br>Duration: " + listapunti[i].duration + "<br>Id_step: " + listapunti[i].id + "<br>Type: " + listapunti[i].type + "<br>";
+                coords.push([punto.lat, punto.lng]);
                 L.marker([punto.lat, punto.lng])
                     .addTo(map)
                     .bindPopup(content)
                     .openPopup();
             }
+            console.log(coords);
+            //L.polyline(coords).addTo(map);
+
         });
 
         // Adding layer to the map

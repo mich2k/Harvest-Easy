@@ -39,7 +39,7 @@ def getprevision(apartment_name=None, tipologia=None):
     
     for bin in bins:  
         file = pd.read_csv(
-            "./app/fbprophet/predictions/%s/prediction_%s.csv"
+            "./predictions_file/%s/prediction_%s.csv"
             % (bin.apartment_ID, bin.tipologia)
         )
         predictions = file["yhat"] 
@@ -96,7 +96,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
                 filling.append(bin_record.riempimento)
 
             with open(
-                "./app/fbprophet/predictions/%s/riempimento_%s.csv"
+                "./predictions_file/%s/riempimento_%s.csv"
                 % (apartment_name, tipologia),
                 "w",
             ) as csvfile:
@@ -108,7 +108,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
                     filewriter.writerow([tp, fl])
 
             df = pd.read_csv(
-                "./app/fbprophet/predictions/%s/riempimento_%s.csv"
+                "./predictions_file/%s/riempimento_%s.csv"
                 % (apartment_name, tipologia)
             )
 
@@ -124,7 +124,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             plt.ylabel("Livello di riempimento")
 
             plt.savefig(
-                "./Predizioni/%s/%s/dati_attuali.png"
+                "./predictions/%s/%s/dati_attuali.png"
                 % (apartment_name, tipologia),
                 format="png",
             )
@@ -136,7 +136,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             forecast = m.predict(future)
             forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail()
             forecast.to_csv(
-                "./app/fbprophet/predictions/%s/prediction_%s.csv"
+                "./predictions/%s/prediction_%s.csv"
                 % (apartment_name, tipologia)
             )
             
@@ -150,7 +150,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             plt.ylabel("Livello di riempimento")
 
             plt.savefig(
-                "./Predizioni/%s/%s/forecast.png" % (apartment_name, tipologia),
+                "./predictions/%s/%s/forecast.png" % (apartment_name, tipologia),
                 format="png",
             )
             
@@ -158,7 +158,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             # Plotting the forecast components.
             m.plot_components(forecast)
             plt.savefig(
-                "./Predizioni/%s/%s/components.png" % (apartment_name, tipologia),
+                "./predictions/%s/%s/components.png" % (apartment_name, tipologia),
                 format="png",
             )
 
