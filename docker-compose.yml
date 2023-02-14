@@ -11,6 +11,8 @@ services:
     container_name: iotproj
     environment:
       - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
+      - OPENROUTESERVICE_KEY=5b3ce3597851110001cf62481c69b9fec9a84097a32947ecbc631599
+      - WEATHER_KEY=8db7edbf3f049e2543fb1115755351c0
       - FAKER=True
   bot_telegram:
     profiles:

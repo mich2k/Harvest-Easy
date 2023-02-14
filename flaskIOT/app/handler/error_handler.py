@@ -12,7 +12,7 @@ def db_handler(error):
 
     print(f"WARNING! An error occured in: {request.url}\n" + str(error))
     
-    if getenv('FLASK_CONFIG') == 'docker':
+    if getenv('FLASK_CONFIG') == 'docker_local':
         return redirect("http://127.0.0.1:5000/db")
 
     

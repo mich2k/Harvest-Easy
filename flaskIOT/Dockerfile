@@ -50,7 +50,7 @@ FROM python:3.11.0-bullseye
 # define env vars
 
 ENV FLASK_APP flasky.py
-ENV FLASK_CONFIG docker
+ENV FLASK_CONFIG docker_local
 RUN useradd -ms /bin/sh flasky
 USER flasky
 
