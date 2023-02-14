@@ -6,7 +6,6 @@
   </head>
 
   <script src="{{url_for('.static/leaflet/', filename='leaflet.js')}}"></script>
-  <script src="{{url_for('.static/leaflet-routing-machine/dist/', filename='leaflet-routing-machine.min.js')}}"></script>
 
   <body>
     <div id="map" style="width: 1000px; height: 700px"></div>
@@ -29,15 +28,6 @@
         xobj.setRequestHeader("Access-Control-Allow-Origin", "*");
         xobj.send(null);
       }
-
-
-
-      L.Routing.control({
-        waypoints: [...],
-        serviceUrl: 'http://ors.gmichele.it/v2/directions'
-        // your other options go here
-    });
-
 
 
 
