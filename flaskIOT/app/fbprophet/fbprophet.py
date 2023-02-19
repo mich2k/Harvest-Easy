@@ -5,7 +5,10 @@ import pandas as pd
 from prophet import Prophet
 import matplotlib.pyplot as plt
 import csv
+from os import makedirs
 from flasgger import swag_from
+import logging
+
 
 fbprophet_blueprint = Blueprint(
     "fbprophet", __name__, template_folder="templates", url_prefix="/pred"
@@ -16,90 +19,94 @@ fbprophet_blueprint = Blueprint(
 def main():
     return "<h1>FbProphet</h1>"
 
+
 def getprevision(apartment_name=None, tipologia=None):
 
     if tipologia is not None and apartment_name is not None:
-        if Bin.query.filter(Bin.tipologia==tipologia).filter(Bin.apartment_ID == apartment_name).first() == None:
+        if Bin.query.filter(Bin.tipologia == tipologia).filter(Bin.apartment_ID == apartment_name).first() == None:
             return jsonify({"error": "tipology or apartment name not valid"}), 401
-        
+
     if apartment_name is not None:
         if Bin.query.filter(Bin.apartment_ID == apartment_name).first() == None:
             return jsonify({"error": "Apartment name not valid or it doesn't have any bin"}), 401
-        
-    array_pred=[]
+
+    array_pred = []
 
     if tipologia is None and apartment_name is None:
         bins = Bin.query.all()
     if tipologia is not None:
-        bins = Bin.query.filter(Bin.tipologia==tipologia)
+        bins = Bin.query.filter(Bin.tipologia == tipologia)
     if apartment_name is not None:
         bins = Bin.query.filter(Bin.apartment_ID == apartment_name)
     if apartment_name is not None and tipologia is not None:
-        bins=Bin.query.filter(Bin.apartment_ID == apartment_name).filter(Bin.tipologia==tipologia)
-    
-    for bin in bins:  
+        bins = Bin.query.filter(Bin.apartment_ID == apartment_name).filter(
+            Bin.tipologia == tipologia)
+
+    for bin in bins:
         file = pd.read_csv(
-            "./predictions_file/%s/prediction_%s.csv"
-            % (bin.apartment_ID, bin.tipologia)
-        )
-        predictions = file["yhat"] 
-        dates = pd.to_datetime(file["ds"]) 
+            f"./predictions_file/{bin.apartment_ID}/prediction_{bin.tipologia}.csv")
+        predictions = file["yhat"]
+        dates = pd.to_datetime(file["ds"])
 
-        json_bin={"bin": bin.id_bin, "tipologia": bin.tipologia, "apartment": bin.apartment_ID, "previsioni": None}
+        json_bin = {"bin": bin.id_bin, "tipologia": bin.tipologia,
+                    "apartment": bin.apartment_ID, "previsioni": None}
 
-        values_and_dates=[]
+        values_and_dates = []
         for i in range(len(predictions)):
-            array={}
-            array["value"]= predictions[i]
-            array["date"]= dates[i]
+            array = {}
+            array["value"] = predictions[i]
+            array["date"] = dates[i]
             values_and_dates.append(array)
-        json_bin["previsioni"]=values_and_dates
+        json_bin["previsioni"] = values_and_dates
         array_pred.append(json_bin)
 
     return jsonify({"fbprophet": array_pred}), 200
 
+
 def createprevision(time, apartment_name=None, tipologia=None):
-    
+
     if time < 0:
         return jsonify({"error": "time not correct"}), 401
-    
+
     if apartment_name is not None:
-        if tipologia is not None:
-            if Bin.query.filter(Bin.tipologia==tipologia).filter(Bin.apartment_ID == apartment_name).first() == None:
-                return jsonify({"error": "Apartment or tipology not valid"}), 402
+        if tipologia is not None and Bin.query.filter(Bin.tipologia == tipologia).filter(Bin.apartment_ID == apartment_name).first() == None:
+            return jsonify({"error": "Apartment or tipology not valid"}), 402
+
         if Bin.query.filter(Bin.apartment_ID == apartment_name).first() == None:
-                return jsonify({"error": "Apartment not valid"}), 403
-    
-    if time == 0:   #se tempo non inserito(0), default 5 giorni
+            return jsonify({"error": "Apartment not valid"}), 403
+
+    if time == 0:  # se tempo non inserito(0), default 5 giorni
         time = 5
-    bins = None
-    if apartment_name is None and tipologia is None: 
+
+    if apartment_name is None and tipologia is None:
         bins = Bin.query.all()
+
     if apartment_name is not None:
         if tipologia is not None:
-            bins = Bin.query.filter(Bin.tipologia==tipologia).filter(Bin.apartment_ID == apartment_name)
-        else: 
+            bins = Bin.query.filter(Bin.tipologia == tipologia).filter(
+                Bin.apartment_ID == apartment_name)
+        else:
             bins = Bin.query.filter(Bin.apartment_ID == apartment_name)
 
     for bin in bins:  # per ogni bidone creo una previsione temporale
         bin_records = BinRecord.query.filter(
             BinRecord.associated_bin == bin.id_bin
         ).order_by(BinRecord.timestamp.desc())[:50]
+
         apartment_name = bin.apartment_ID
         tipologia = bin.tipologia
 
         if len(bin_records) >= 2:
             timestamps = []
             filling = []
+
             for bin_record in bin_records:
                 timestamps.append(bin_record.timestamp)
                 filling.append(bin_record.riempimento)
 
-            with open(
-                "./predictions_file/%s/riempimento_%s.csv"
-                % (apartment_name, tipologia),
-                "w",
-            ) as csvfile:
+            makedirs(f"./predictions_file/{apartment_name}")
+
+            with open(f"./predictions_file/{apartment_name}/riempimento_{tipologia}.csv", "w") as csvfile:
                 filewriter = csv.writer(
                     csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
                 )
@@ -108,59 +115,58 @@ def createprevision(time, apartment_name=None, tipologia=None):
                     filewriter.writerow([tp, fl])
 
             df = pd.read_csv(
-                "./predictions_file/%s/riempimento_%s.csv"
-                % (apartment_name, tipologia)
-            )
+                f"./predictions_file/{apartment_name}/riempimento_{tipologia}.csv")
 
             df.columns = ["ds", "y"]
             df["ds"] = pd.to_datetime(df["ds"])
+
             # plotting the actual values
             plt.plot(df.ds, df.y)
+
             plt.title(
-                "Dati attuali di riempimento %s dell'appartamento %s"
-                % (tipologia, apartment_name)
-            )
+                f"Dati attuali di riempimento {tipologia} dell'appartamento {apartment_name}")
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
 
+            makedirs(f"./predictions/{apartment_name}/{tipologia}")
+
             plt.savefig(
-                "./predictions/%s/%s/dati_attuali.png"
-                % (apartment_name, tipologia),
-                format="png",
-            )
+                f"./predictions/{apartment_name}/{tipologia}/dati_attuali.png", format="png")
             
-            m = Prophet()
-            m.fit(df)
+            print(df)
+            
+            try:
+                m = Prophet()
+                m.fit(df)
+
+            except Exception as e:
+                print('Prophet error: ' + str(e))
+
             future = m.make_future_dataframe(periods=time, freq="d")
             future.tail()
+
             forecast = m.predict(future)
             forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail()
             forecast.to_csv(
-                "./predictions/%s/prediction_%s.csv"
-                % (apartment_name, tipologia)
-            )
-            
+                f"./predictions/{apartment_name}/prediction_{tipologia}.csv")
+
             # Plotting the generated forecast
             m.plot(forecast, uncertainty=True)
+
             plt.title(
-                "Previsioni di riempimento %s dell'appartamento %s"
-                % (tipologia, apartment_name)
-            )
+                f"Previsioni di riempimento {tipologia} dell'appartamento {apartment_name}")
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
 
+            makedirs(f"./predictions/{apartment_name}/{tipologia}")
+
             plt.savefig(
-                "./predictions/%s/%s/forecast.png" % (apartment_name, tipologia),
-                format="png",
-            )
-            
+                f"./predictions/{apartment_name}/{tipologia}/forecast.png", format="png")
 
             # Plotting the forecast components.
             m.plot_components(forecast)
             plt.savefig(
-                "./predictions/%s/%s/components.png" % (apartment_name, tipologia),
-                format="png",
-            )
+                f"./predictions/{apartment_name}/{tipologia}/components.png", format="png")
 
             """
             prediction = forecast[["yhat"]].values
@@ -170,7 +176,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             
             Utils.set_previsione_status(bin.id_bin, status_previsto)
             """
-            
+
     return jsonify({"msg": "Previsioni correttamente create"}), 200
 
 
@@ -183,6 +189,7 @@ def prevision():
     """
     return getprevision(None, None)
 
+
 @fbprophet_blueprint.route("/getprevision/<string:apartment_name>")
 @swag_from('docs/predizioni2.yml')
 def prevision2(apartment_name):
@@ -191,6 +198,7 @@ def prevision2(apartment_name):
     precedentemente create e ritorna un json con le previsioni di tutti i bidoni dell'appartamento
     """
     return getprevision(apartment_name, None)
+
 
 @fbprophet_blueprint.route("/getprevision/<string:apartment_name>&<string:tipologia>")
 @swag_from('docs/predizioni3.yml')
@@ -201,6 +209,7 @@ def prevision3(apartment_name, tipologia):
     """
     return getprevision(apartment_name=apartment_name, tipologia=tipologia)
 
+
 @fbprophet_blueprint.route("/createprevision/<int:time>")
 @swag_from('docs/createpredizioni.yml')
 def createprevision1(time):
@@ -209,6 +218,7 @@ def createprevision1(time):
     se l'input è uguale a 0, di defaul si assume 5 giorni
     """
     return createprevision(time, None, None)
+
 
 @fbprophet_blueprint.route("/createprevision/<string:apartment_name>&<int:time>")
 def createprevision2(apartment_name, time):
@@ -219,6 +229,7 @@ def createprevision2(apartment_name, time):
     """
     return createprevision(time, apartment_name=apartment_name, tipologia=None)
 
+
 @fbprophet_blueprint.route("/createprevision/<string:apartment_name>&<string:tipologia>&<int:time>")
 @swag_from('docs/createpredizioni2.yml')
 def createprevision3(apartment_name, tipologia, time):
@@ -228,4 +239,3 @@ def createprevision3(apartment_name, tipologia, time):
     se l'input è uguale a 0, di defaul si assume 5 giorni
     """
     return createprevision(time, apartment_name=apartment_name, tipologia=tipologia)
-

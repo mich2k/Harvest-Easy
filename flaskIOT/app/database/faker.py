@@ -99,7 +99,7 @@ def create_faker(db):
             ),
         ]
     )
-    
+
     # Apartments
     db.session.add_all(
         [
@@ -154,7 +154,7 @@ def create_faker(db):
                     username="vinz",
                     name="Vincenzo",
                     surname="Lapadula",
-                    password=generate_password("vincenzolapadula"), 
+                    password=generate_password("vincenzolapadula"),
                     city="Modena",
                     birth_year=2001,
                     card_number="d3370a5"
@@ -167,7 +167,7 @@ def create_faker(db):
                     username="chad",
                     name="Michele",
                     surname="Giarletta",
-                    password=generate_password("michelegiarletta"), 
+                    password=generate_password("michelegiarletta"),
                     city="Avellino",
                     birth_year=2002,
                     card_number="d3370a6"
@@ -180,7 +180,7 @@ def create_faker(db):
                     username="ale",
                     name="Alessia",
                     surname="Saporita",
-                    password=generate_password("alessiasaporita"), 
+                    password=generate_password("alessiasaporita"),
                     city="Modena",
                     birth_year=2000,
                     card_number="d3370a8"
@@ -193,7 +193,7 @@ def create_faker(db):
                     username="nenna",
                     name="Elena",
                     surname="Berselli",
-                    password=generate_password("elenaberselli"), 
+                    password=generate_password("elenaberselli"),
                     city="Modena",
                     birth_year=2000,
                     card_number="d3370b8"
@@ -219,7 +219,7 @@ def create_faker(db):
                     username="abby",
                     name="Abeer",
                     surname="Jelali",
-                    password=generate_password("abeerjelali"), 
+                    password=generate_password("abeerjelali"),
                     city="Modena",
                     birth_year=2005,
                     card_number="d337028"
@@ -251,7 +251,7 @@ def create_faker(db):
                     username="mattia",
                     name="Mattia",
                     surname="Gualtieri",
-                    password= generate_password("mattiagualtieri"), 
+                    password=generate_password("mattiagualtieri"),
                     city="Avellino",
                     birth_year=2004,
                     card_number="d337048"
@@ -275,7 +275,7 @@ def create_faker(db):
                     username="rasta",
                     name="Gabriele",
                     surname="Rastelli",
-                    password=generate_password("gabrielerastelli"), 
+                    password=generate_password("gabrielerastelli"),
                     city="Avellino",
                     birth_year=2004,
                     card_number="d337068"
@@ -288,8 +288,9 @@ def create_faker(db):
     # Mich & Vinz Telegram profiles
     db.session.add_all(
         [
-            TelegramIDChatUser(UserTG("@vinz20110", logged=False), "vinz"),
-            TelegramIDChatUser(UserTG("@mich2k", logged=False), "chad"),
+            UserTG("@vinz20110", "218369264",
+                   logged=False, associated_user="vinz"),
+            UserTG("@mich2k", "41608202", logged=False, associated_user="chad"),
         ]
     )
 

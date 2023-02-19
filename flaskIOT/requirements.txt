@@ -47,6 +47,7 @@ PyMeeus==0.5.12
 pyrsistent==0.19.3
 pyparsing==3.0.9
 python-dateutil==2.8.2
+python-telegram-bot==20.0
 pytz==2022.6
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0

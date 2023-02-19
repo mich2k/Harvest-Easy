@@ -1,4 +1,4 @@
-import requests
+import requests, app.trap.trap as tp
 from sqlalchemy import update, delete
 from flask import request, Blueprint, session, redirect, jsonify
 from os import getenv
@@ -125,10 +125,7 @@ def adduser():
 # AGGIUNTA DI UN ADMIN
 
 
-@database_blueprint.route(
-    "/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>",
-    methods=["GET"]
-)
+@database_blueprint.route("/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
 @jwt_required() 
 def addadmin(uid, name, surname, password, city, birth_year):
     admin = Admin(Person(uid, name, surname, password, city, birth_year))
@@ -211,7 +208,7 @@ def addapartment():
 
 
 @database_blueprint.route("/checkuid/<string:uid>&<int:id_bin>", methods=["GET"])
-def check(uid, id_bin):
+def checkuid(uid, id_bin):
 
     users = User.query.all()
     operators = Operator.query.all()
@@ -263,7 +260,8 @@ def stampaitems():
         User.query.order_by(User.username.desc()).all(),
         Admin.query.order_by(Admin.username.desc()).all(),
         BinRecord.query.order_by(BinRecord.id_record.desc()).all(),
-        TelegramIDChatUser.query.all(),
+        UserTG.query.all(),
+        AlterationRecord.query.all()
     ]
 
     for queries in elenco:
@@ -297,7 +295,7 @@ def login(uid, password):
 @database_blueprint.route("/checkUsername/<string:usr>", methods=["GET"])
 def checkusername(usr):
     found = False
-    for asw in db.session.query(TelegramIDChatUser.id_user == usr).all():
+    for asw in db.session.query(UserTG.id_user == usr).all():
         if asw[0]:
             found = True
 
@@ -307,7 +305,7 @@ def checkusername(usr):
 @database_blueprint.route("/checkSession/<string:userid>", methods=["GET"])
 def checksession(userid):
     found = False
-    for asw in db.session.query(TelegramIDChatUser.id_user == userid).all():
+    for asw in db.session.query(UserTG.id_user == userid).all():
         if asw[0]:
             found = True
 
@@ -317,8 +315,8 @@ def checksession(userid):
 @database_blueprint.route("/setelegramSession/<string:usr>", methods=["GET"])
 def setsession(usr):
     db.session.execute(
-        update(TelegramIDChatUser)
-        .where(TelegramIDChatUser.id_user == usr)
+        update(UserTG)
+        .where(UserTG.id_user == usr)
         .values({"logged": True})
     )
     db.session.commit()
@@ -436,8 +434,8 @@ def getscore(usr):
 def getsession(usr):
 
     if (
-        db.session.query(TelegramIDChatUser)
-        .where(TelegramIDChatUser.id_user == usr)
+        db.session.query(UserTG)
+        .where(UserTG.id_user == usr)
         .all()
     ):
         return Utils.get_response(200, str(True))
@@ -568,3 +566,21 @@ def deletebinrecord(id_record):
     db.session.commit()
     
     return jsonify({"msg": "BinRecord correctly deleted"}), 200
+
+@database_blueprint.route('/solved/')
+def solved():
+    pass
+
+@database_blueprint.route('/report/')
+def report():
+    pass
+
+# ONLY FOR TESTING PURPOSES
+@database_blueprint.route("/testrap")
+def test_trap():
+    tp.report(1, db ,filling=56)
+    tp.report(2, db ,coord=56)
+    tp.report(3, db ,co2=56)
+    tp.report(3, db , filling=56, coord=56, co2=56)
+
+    return 'Done'

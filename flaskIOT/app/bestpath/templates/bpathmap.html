@@ -2,11 +2,11 @@
 <html>
   <head>
     <title>OSM Points</title>
-    <link rel="stylesheet" href="{{url_for('.static/leaflet', filename='leaflet.css')}}" />
+    <link rel="stylesheet" href="{{url_for('.static', filename='leaflet/leaflet.css')}}" />
   </head>
 
-  <script src="{{url_for('.static/leaflet', filename='leaflet.js')}}"></script>
-  <script src="{{url_for('.static/leaflet-routing-machine/dist/', filename='leaflet-routing-machine.min.js')}}"></script>
+  <script src="{{url_for('.static', filename='leaflet/leaflet.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('.static', filename='leaflet-routing-machine/dist/leaflet-routing-machine.min.js')}}"></script>
 
   <body>
     <div id="map" style="width: 1000px; height: 700px"></div>
@@ -30,16 +30,6 @@
               xobj.send(null);
 
           }
-
-
-
-        L.Routing.control({
-          waypoints: [...],
-          serviceUrl: 'http://ors.gmichele.it/v2/directions'
-          // your other options go here
-      });
-
-
 
 
           // Creating map options
@@ -80,6 +70,13 @@
               //L.polyline(coords).addTo(map);
 
           });
+
+          L.Routing.control({
+            waypoints: coords,
+            serviceUrl: 'http://ors.gmichele.it/v2/directions'
+            // your other options go here
+        });
+
 
           // Adding layer to the map
           map.addLayer(layer);

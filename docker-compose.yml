@@ -15,8 +15,6 @@ services:
       - WEATHER_KEY=8db7edbf3f049e2543fb1115755351c0
       - FAKER=True
   bot_telegram:
-    profiles:
-      - donotstart
     build:
         dockerfile: Dockerfile
         context: ./telegram_bot
