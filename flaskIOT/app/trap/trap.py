@@ -17,7 +17,7 @@ def report(idbin, db, filling=None, coord=None, co2=None):
 
     apartment = Bin.query.where(Bin.id_bin == idbin).first().apartment_ID
     
-    text = f"Attenzione! Anomalia nel bidone {Bin.query.where(Bin.id_bin == idbin).first().tipologia}:"
+    text = f"Attenzione! Anomalia nel bidone [{Bin.query.where(Bin.id_bin == idbin).first().id_bin}]:"
     event = 'Bidone:'
     
     # Costruisco il testo da notificare a User ed Admin
@@ -28,7 +28,7 @@ def report(idbin, db, filling=None, coord=None, co2=None):
         text += "\n- Bidone rovesciato"
         event += ' rovesciato'
     if co2 is not None:
-        text += f"\n- Rilevata elevata quantità di CO2 nel bidone({co2}).\nPossibile incendio in corso"
+        text += f"\n- Rilevata elevata quantità di CO2 nel bidone: {co2}.\nPossibile incendio in corso"
         event += ' in fiamme'
     
     keyboard = [[InlineKeyboardButton("Risolto", callback_data='solved')],
@@ -41,13 +41,17 @@ def report(idbin, db, filling=None, coord=None, co2=None):
             'reply_markup': json.dumps(reply_markup.to_dict())}
     
     # Contattare getneighbor : via, nome dell'appartamento, città e tipologia rifiuto
-    sq = db.session.query(User.username).where(User.apartment_ID == apartment)
+    get_user_from_apartment = db.session.query(User.username).where(User.apartment_ID == apartment)
+    get_admin_from_apartment = db.session.query(Apartment.associated_admin).where(Apartment.apartment_name == apartment)
     
-    chat_ids = db.session.query(UserTG.id_chat).filter(UserTG.associated_user.in_(sq)).all()
-    
-    #TODO: aggiungere amministratori condominiali UserTG.associated_user.in_(Apartment.query.filter(Apartment.apartment_name == apartment))).all()
+    chat_ids = db.session.query(UserTG.id_chat).filter(UserTG.associated_user.in_(get_user_from_apartment)).all()
+    chat_ids.append(db.session.query(UserTG.id_chat).filter(UserTG.associated_user.in_(get_admin_from_apartment)).all())
             
     for chat_id in chat_ids:
+
+        # Apartment non popolato
+        if not chat_id or chat_id == '':
+            continue
 
         data['chat_id'] = chat_id
         

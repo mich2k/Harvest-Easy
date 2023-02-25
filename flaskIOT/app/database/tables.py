@@ -72,7 +72,7 @@ class UserTG(db.Model):
     __tablename__ = "idchatUser"
 
     id_user = db.Column("iduser", db.String, primary_key=True)
-    id_chat = db.Column("idchat", db.String)
+    id_chat = db.Column("idchat", db.String, default='')
     logged = db.Column("logged", db.Boolean)
     associated_user = db.Column(
         "associated_user", db.String, db.ForeignKey("user.username"))
@@ -201,7 +201,7 @@ class LeaderBoard(db.Model):
     __tablename__ = "leaderboard"
 
     record_id = db.Column("idrecord", db.Integer, primary_key=True)
-    score = db.Column("score", db.Integer, default=0)
+    score = db.Column("score", db.Integer, default=0, nullable=False)
     associated_bin = db.Column(
         "associatedbin", db.String, db.ForeignKey("bin.id_bin"))
     associated_user = db.Column(
@@ -210,7 +210,7 @@ class LeaderBoard(db.Model):
         "alteration_solved", db.String, db.ForeignKey("alterationRecord.record"))
 
     def __init__(self, score: int, associated_bin: str, associated_user: str, alteration_solved: str) -> None:
-        self.score += score
+        self.score = score
         self.associated_bin = associated_bin
         self.associated_user = associated_user
         self.alteration_solved = alteration_solved

@@ -135,6 +135,8 @@ def createprevision(time, apartment_name=None, tipologia=None):
             
             print(df)
             
+            #CRITICAL: l'addestramento del profeta non puo' avvenire in una docker image.
+            
             try:
                 m = Prophet()
                 m.fit(df)

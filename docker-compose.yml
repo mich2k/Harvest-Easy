@@ -18,6 +18,8 @@ services:
     build:
         dockerfile: Dockerfile
         context: ./telegram_bot
+    profiles:
+      - donotstart
 
     image: 267759/botflask:1.0    
     container_name: botflask

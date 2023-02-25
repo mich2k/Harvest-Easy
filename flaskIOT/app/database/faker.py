@@ -288,9 +288,9 @@ def create_faker(db):
     # Mich & Vinz Telegram profiles
     db.session.add_all(
         [
-            UserTG("@vinz20110", "218369264",
+            UserTG("@vinz20110", "",
                    logged=False, associated_user="vinz"),
-            UserTG("@mich2k", "41608202", logged=False, associated_user="chad"),
+            UserTG("@mich2k", "", logged=False, associated_user="chad"),
         ]
     )
 
