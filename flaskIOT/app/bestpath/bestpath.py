@@ -9,7 +9,7 @@ from flask import jsonify
 from flasgger import swag_from
 
 OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
-path_blueprint = Blueprint("path", __name__, template_folder="templates")
+path_blueprint = Blueprint("path", __name__, template_folder="templates", static_folder='static')
 
 
 @path_blueprint.route("/")
@@ -122,6 +122,8 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
     )
     call = call.json()
     
+    if 'error' in call:
+        return 'error: ' + str(call)
     # API json
     best_path = {}
     best_path["duration"] = call["routes"][0]["duration"]
@@ -151,7 +153,7 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
             step["type"] = "step"
 
         best_path["steps"].append(step)
-    viewmap(best_path)
+    #viewmap(best_path)
     return best_path
 
 
@@ -199,18 +201,18 @@ def viewmap(bpath):
         "listaPunti": points,
     }
 
-    with open("./app/bestpath/path.json", "w") as outfile:
+    with open("./out/path.json", "w") as outfile:
         json.dump(viewmap, outfile)
+    
+    return viewmap
 
-    # return viewmap
-
-@path_blueprint.route("/getmap")
+@path_blueprint.route("/getpoints")
 def getmap():
-    with open("./app/bestpath/path.json") as file:
+    with open("./out/path.json") as file:
         return json.load(file)
     
 @path_blueprint.route("/map")
 def map():
-    return render_template("viewmap.html", path='getmap')
+    return render_template("bpathmap.html", path='getpoints')
     
     

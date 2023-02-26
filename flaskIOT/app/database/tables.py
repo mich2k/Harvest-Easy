@@ -4,7 +4,8 @@ from .__init__ import db
 
 class Person:
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column("username", db.String(20), nullable=False, unique=True)
+    username = db.Column("username", db.String(20),
+                         nullable=False, unique=True)
     name = db.Column("name", db.String)
     surname = db.Column("surname", db.String)
     password = db.Column("password", db.Text, nullable=False)
@@ -25,26 +26,18 @@ class Person:
         self.username = username
         self.name = name
         self.surname = surname
-        self.password = password 
+        self.password = password
         self.city = city
         self.birth_year = birth_year
-        self.card_number= card_number
-
-
-class UserTG:
-    id_user = db.Column("iduser", db.String, primary_key=True)
-    logged = db.Column("logged", db.Boolean)
-
-    def __init__(self, id_user: str, logged) -> None:
-        self.id_user = id_user
-        self.logged = logged
+        self.card_number = card_number
 
 
 class Admin(Person, db.Model):
     __tablename__ = "admin"
 
     def __init__(self, x: Person) -> None:
-        super().__init__(x.username, x.name, x.surname, x.password, x.city, x.birth_year, x.card_number)
+        super().__init__(x.username, x.name, x.surname,
+                         x.password, x.city, x.birth_year, x.card_number)
 
 
 class Operator(Person, db.Model):
@@ -52,7 +45,8 @@ class Operator(Person, db.Model):
     id_operator = db.Column("idOperator", db.Integer)
 
     def __init__(self, x: Person, id: int) -> None:
-        super().__init__(x.username, x.name, x.surname, x.password, x.city, x.birth_year, x.card_number)
+        super().__init__(x.username, x.name, x.surname,
+                         x.password, x.city, x.birth_year, x.card_number)
         self.id_operator = id
 
 
@@ -65,16 +59,37 @@ class User(Person, db.Model):
     )
 
     def __init__(self, p: Person, apartment_ID: str, internal_number: int):
-        super().__init__(p.username, p.name, p.surname, p.password, p.city, p.birth_year, p.card_number)
+        super().__init__(p.username, p.name, p.surname,
+                         p.password, p.city, p.birth_year, p.card_number)
         self.apartment_ID = apartment_ID
         self.internal_number = internal_number
+
+
+# Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram
+
+
+class UserTG(db.Model):
+    __tablename__ = "idchatUser"
+
+    id_user = db.Column("iduser", db.String, primary_key=True)
+    id_chat = db.Column("idchat", db.String, default='')
+    logged = db.Column("logged", db.Boolean)
+    associated_user = db.Column(
+        "associated_user", db.String, db.ForeignKey("user.username"))
+
+    def __init__(self, id_user: str, id_chat: str, logged, associated_user) -> None:
+        self.id_user = id_user
+        self.id_chat = id_chat
+        self.logged = logged
+        self.associated_user = associated_user
 
 
 class Superuser(Person, db.Model):
     __tablename__ = "superuser"
 
     def __init__(self, x: Person) -> None:
-        super().__init__(x.username, x.name, x.surname, x.password, x.city, x.birth_year, x.card_number)
+        super().__init__(x.username, x.name, x.surname,
+                         x.password, x.city, x.birth_year, x.card_number)
 
 
 class Bin(db.Model):
@@ -87,7 +102,7 @@ class Bin(db.Model):
     ultimo_svuotamento = db.Column(
         "ultimo_svuotamento", db.String(), nullable=False, default=""
     )
-    
+
     # FK
     apartment_ID = db.Column(
         "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name")
@@ -111,10 +126,12 @@ class BinRecord(db.Model):
     temperature = db.Column("temperature", db.Integer, nullable=False)
     humidity = db.Column("humidity", db.Integer, nullable=False)
     riempimento = db.Column("livello_di_riempimento", db.Float, nullable=False)
-    timestamp = db.Column("Timestamp", db.String, nullable=False, default=str(datetime.utcnow().replace(microsecond=0)))
-    
+    timestamp = db.Column("Timestamp", db.String, nullable=False, default=str(
+        datetime.utcnow().replace(microsecond=0)))
+
     # FK
-    associated_bin = db.Column("associated_bin", db.Integer, db.ForeignKey("bin.id_bin"))
+    associated_bin = db.Column(
+        "associated_bin", db.Integer, db.ForeignKey("bin.id_bin"))
 
     def __init__(self, jsonObj):
         self.associated_bin = jsonObj["id_bin"]
@@ -134,13 +151,13 @@ class Apartment(db.Model):
     street = db.Column("street", db.String, nullable=False)
     lat = db.Column("lat", db.Float)
     lng = db.Column("lng", db.Float)
-    apartment_street_number = db.Column("apartment_street_number", db.Integer, nullable=False)
+    apartment_street_number = db.Column(
+        "apartment_street_number", db.Integer, nullable=False)
     n_internals = db.Column("n_internals", db.Integer, nullable=False)
-  
+
     # FK
     associated_admin = db.Column(
-        "associated_admin", db.String, db.ForeignKey("admin.username")
-    )
+        "associated_admin", db.String, db.ForeignKey("admin.username"))
 
     def __init__(
         self,
@@ -163,34 +180,6 @@ class Apartment(db.Model):
         self.associated_admin = associated_admin
 
 
-# Tabelle utilizzate per mantenere le associazioni tra la chat_id del bot telegram
-
-
-class TelegramIDChatUser(UserTG, db.Model):
-    __tablename__ = "idchatUser"
-
-    associated_user = db.Column("associated_user", db.String, db.ForeignKey("user.username"))
-
-    def __init__(self, user: UserTG, associated_user: str) -> None:
-        super().__init__(user.id_user, user.logged)
-        self.associated_user = associated_user
-
-
-class LeaderBoard(db.Model):
-    __tablename__ = "leaderboard"
-
-    record_id = db.Column("idrecord", db.Integer, primary_key=True)
-    score = db.Column("score", db.Integer, default=0)
-    associated_bin = db.Column("associatedbin", db.String, db.ForeignKey("bin.id_bin"))
-    associated_user = db.Column("user", db.String, db.ForeignKey("user.username"))
-    alteration_solved = db.Column("alteration_solved", db.String, default="")
-
-    def __init__(self, score, associated_bin, associated_user) -> None:
-        self.score = score
-        self.associated_bin = associated_bin
-        self.associated_user = associated_user
-
-
 class AlterationRecord(db.Model):
     __tablename__ = "alterationRecord"
 
@@ -198,10 +187,30 @@ class AlterationRecord(db.Model):
     type_of_event = db.Column("event", db.String)
     is_notified = db.Column("is_notified", db.Boolean)
     is_solved = db.Column("is_solved", db.Boolean, default=False)
-    associated_bin = db.Column("associated_bin", db.String, db.ForeignKey("bin.id_bin"))
+    associated_bin = db.Column(
+        "associated_bin", db.Integer, db.ForeignKey("bin.id_bin"))
     timestamp = db.Column("event_timestamp", db.String, default=datetime.now())
 
-    def __init__(self, type_of_event, is_notified, associated_bin) -> None:
+    def __init__(self, type_of_event: str, is_notified: bool, associated_bin: int) -> None:
         self.type_of_event = type_of_event
         self.is_notified = is_notified
         self.associated_bin = associated_bin
+
+
+class LeaderBoard(db.Model):
+    __tablename__ = "leaderboard"
+
+    record_id = db.Column("idrecord", db.Integer, primary_key=True)
+    score = db.Column("score", db.Integer, default=0, nullable=False)
+    associated_bin = db.Column(
+        "associatedbin", db.String, db.ForeignKey("bin.id_bin"))
+    associated_user = db.Column(
+        "user", db.String, db.ForeignKey("user.username"))
+    alteration_solved = db.Column(
+        "alteration_solved", db.String, db.ForeignKey("alterationRecord.record"))
+
+    def __init__(self, score: int, associated_bin: str, associated_user: str, alteration_solved: str) -> None:
+        self.score = score
+        self.associated_bin = associated_bin
+        self.associated_user = associated_user
+        self.alteration_solved = alteration_solved

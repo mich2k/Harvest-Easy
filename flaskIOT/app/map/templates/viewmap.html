@@ -1,92 +1,89 @@
 <!DOCTYPE html>
 <html>
-    <head>
-       <title>OSM Points</title>
-       <link rel = "stylesheet" href ="{{url_for('.static', filename='leaflet.css')}}"/>
-    </head>
-           
-<script src="{{url_for('.static', filename='leaflet.js')}}"></script>
+  <head>
+    <title>OSM Points</title>
+    <link rel="stylesheet" href="{{url_for('.static/leaftlet', filename='leaflet.css')}}" />
+  </head>
 
-    <body>
-        <div id = "map" style = "width: 1000px; height: 700px"></div>
-        <script>
-				// carico il json
-                function loadJSON(callback) {
-                    var xobj = new XMLHttpRequest();
-                    xobj.overrideMimeType("application/json");
-                    
-                    // Replace 'my_data' with the path to your file
-                    xobj.onreadystatechange = function() {
-                            if (xobj.readyState === 4 && xobj.status === 200) {
-                                    // Required use of an anonymous callback 
-                                    // as .open() will NOT return a value but simply returns undefined in asynchronous mode
-                                    callback(xobj.responseText);
-                            }
-                    };
-                    console.dir(xobj);
-                    xobj.open('GET', "{{ path }}", true);
-                    xobj.setRequestHeader('Access-Control-Allow-Origin', '*');
-                    xobj.send(null);
-                  }
-      
-      
-                 // Creating map options
-                 var mapOptions = {
-                    center: [44.647129, 10.925227], //https://www.tutorialspoint.com/leafletjs/leafletjs_getting_started.htm
-                    zoom: 12
-                 }
-                 
-                 // Creating a map object
-                 var map = new L.map('map', mapOptions);
-                 
-                 // Creating a Layer object
-                 var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-                 
-                 // load list of points from server 
-                loadJSON(function(response) {
-                    // Parse JSON string into object
-                    //var objJSON = eval("(function(){return " + response + ";})()");
+  <script src="{{url_for('.static/leaflet/', filename='leaflet.js')}}"></script>
 
-                    var objJSON = JSON.parse(response);
-                    console.log(objJSON);
-				
-                    var listapunti = objJSON.listaPunti; // recupero la lista dei punti    
-                    console.log(listapunti);
+  <body>
+    <div id="map" style="width: 1000px; height: 700px"></div>
+    <script>
+      // carico il json
+      function loadJSON(callback) {
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
 
-                    for (var i = 0; i < listapunti.length;) {
+        // Replace 'my_data' with the path to your file
+        xobj.onreadystatechange = function () {
+          if (xobj.readyState === 4 && xobj.status === 200) {
+            // Required use of an anonymous callback
+            // as .open() will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
+          }
+        };
+        console.dir(xobj);
+        xobj.open("GET", "{{ path }}", true);
+        xobj.setRequestHeader("Access-Control-Allow-Origin", "*");
+        xobj.send(null);
+      }
 
-                        if(listapunti[i] === undefined){
-                            break;
-                        }
 
-                        var fixed_apartment = listapunti[i].apartment_name;
-                        var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Address: " + listapunti[i].address + "<br>";
-                        
-                        while(fixed_apartment === listapunti[i].apartment_name) {
-                            console.log(listapunti[i]);
-                            console.log(i)
 
-                            content += "<br>Type: " + listapunti[i].tipologia + "<br>Status: " + listapunti[i].status + "<br>Prevision: " + listapunti[i].previsione + "<br>Filling: " + listapunti[i].riempimento + "<br>"
-                            
-                            //Next point
-                            i++;
-                            if ((i == listapunti.lenght) || (listapunti[i] === undefined)){
-                                break;
-                            }
-                        }
+      // Creating map options
+      var mapOptions = {
+        center: [44.647129, 10.925227], //https://www.tutorialspoint.com/leafletjs/leafletjs_getting_started.htm
+        zoom: 12,
+      };
 
-                        L.marker([listapunti[i - 1].lat, listapunti[i - 1].lng])
-                            .addTo(map)
-                            .bindPopup(content)
-                            .openPopup();
-                            
-                    }
-                } );
-                 
-                 // Adding layer to the map
-               map.addLayer(layer);
-              
-        </script>
-    </body>
+      // Creating a map object
+      var map = new L.map("map", mapOptions);
 
+      // Creating a Layer object
+      var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+
+      // load list of points from server
+      loadJSON(function (response) {
+        // Parse JSON string into object
+        //var objJSON = eval("(function(){return " + response + ";})()");
+
+        var objJSON = JSON.parse(response);
+        console.log(objJSON);
+
+        var listapunti = objJSON.listaPunti; // recupero la lista dei punti
+        console.log(listapunti);
+
+        for (var i = 0; i < listapunti.length; ) {
+          if (listapunti[i] === undefined) {
+            break;
+          }
+
+          var fixed_apartment = listapunti[i].apartment_name;
+          var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Address: " + listapunti[i].address + "<br>";
+
+          while (fixed_apartment === listapunti[i].apartment_name) {
+            console.log(listapunti[i]);
+            console.log(i);
+
+            content += "<br>Type: " + listapunti[i].tipologia + "<br>Status: " + listapunti[i].status + "<br>Prevision: " + listapunti[i].previsione + "<br>Filling: " + listapunti[i].riempimento + "<br>";
+
+            //Next point
+            i++;
+            if (i == listapunti.lenght || listapunti[i] === undefined) {
+              break;
+            }
+          }
+
+          L.marker([listapunti[i - 1].lat, listapunti[i - 1].lng])
+            .addTo(map)
+            .bindPopup(content)
+            .openPopup();
+        }
+      });
+
+      // Adding layer to the map
+      map.addLayer(layer);
+    </script>
+  </body>
 </html>

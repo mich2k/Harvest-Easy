@@ -69,15 +69,15 @@ class Utils:
 
         if current_status == 1:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                full_state(id_bin, apartment_ID, riempimento)
+                report(id_bin, apartment_ID, riempimento)
                 current_status = 2
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                overturn(id_bin, apartment_ID, 90)
+                report(id_bin, apartment_ID, 90)
                 current_status = 3
 
             if co2 >= limite_co2 and co2 is not None:
-                fire(id_bin, apartment_ID, co2)
+                report(id_bin, apartment_ID, co2)
                 current_status = 3
 
             return current_status
@@ -92,18 +92,18 @@ class Utils:
                 db.session.commit()
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                overturn(id_bin, apartment_ID, 90)
+                report(id_bin, apartment_ID, 90)
                 current_status = 4
 
             if co2 >= limite_co2 and co2 is not None:
-                fire(id_bin, apartment_ID, co2)
+                report(id_bin, apartment_ID, co2)
                 current_status = 4
 
             return current_status
 
         if current_status == 3:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                full_state(id_bin, apartment_ID, riempimento)
+                report(id_bin, apartment_ID, riempimento)
                 current_status = 4
 
             if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:

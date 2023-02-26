@@ -37,6 +37,7 @@ def getneighbor(id_bin):
 
     apartments = Apartment.query.all()
     bins = Bin.query.filter(Bin.tipologia == tipologia)  # bidoni di quella tipologia
+    
     apartments_ID = []  # nomi appartamenti con bidoni di quella tipologia non pieni
     apartments_ID.append(apartment_ID)  # aggiungo l'appartamento del bidone pieno
 
@@ -46,16 +47,16 @@ def getneighbor(id_bin):
             .order_by(BinRecord.timestamp.desc())
             .first()
         )
-        if ultimo_bin_record is None:
-            status = None
-        else:
-            status = ultimo_bin_record.status
+        
+        status = None if ultimo_bin_record is None else ultimo_bin_record.status       
+        
         if status == 1:
             apartments_ID.append(bin.apartment_ID)
 
     coordinates = (
         []
     )  # coordinate degli appartamenti con bidoni non pieni della stessa tipologia da cui calcolare la distanza, compreso quello di origine
+    
     index = 0  # indice del mio appartamento nella lista
 
     for i in range(len(apartments)):
@@ -63,20 +64,23 @@ def getneighbor(id_bin):
         if apartments[i].apartment_name in apartments_ID:
             if apartments[i].lng == long_bin and apartments[i].lat == lat_bin:
                 index = i
-            apartment_coordinate.append(apartments[i].lng)
-            apartment_coordinate.append(apartments[i].lat)
+            apartment_coordinate.append(apartments[i].lng, apartments[i].lat)
             coordinates.append(apartment_coordinate)
+    
     if(len(coordinates)<2):
         return 'Nessun vicino disponibile'
+    
     body = {"locations": coordinates}
+    
     headers = {
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
         "Content-Type": "application/json; charset=utf-8",
     }
+    
     call = requests.post(
         "https://ors.gmichele.it/ors/v2/matrix/driving-car", json=body, headers=headers
-    )
-    call = call.json()
+    ).json()
+    
     distances = call["durations"][index]
 
     # calcolo del vicino
@@ -93,6 +97,8 @@ def getneighbor(id_bin):
         .first()
         .apartment_name
     )
+    
     vicino = Apartment.query.filter(Apartment.apartment_name == apartment_name).first()
+    
     return jsonify({"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name,
     "lat": vicino.lat, "lng": vicino.lng}), 200
