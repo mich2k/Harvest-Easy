@@ -1,7 +1,13 @@
-from .__init__ import db
-# Getters
+from app.database.tables import Admin, Apartment, Bin, User, UserTG, LeaderBoard, BinRecord
+from flask import Blueprint
+from app.utils.utils import Utils
+from flask_jwt_extended import jwt_required
+from app.database.__init__ import db
 
-@database_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
+get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
+
+
+@get_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
 @jwt_required()
 def dataAdmin(uid):
     res = Admin.query.where(Admin.username == uid).all()
@@ -13,7 +19,7 @@ def dataAdmin(uid):
 # Get: TUTTI I BIN DI UNA CITTÁ
 
 
-@database_blueprint.route("/getBins/<string:city>", methods=["GET"])
+@get_blueprint.route("/getBins/<string:city>", methods=["GET"])
 def getbins(city):
 
     # Subquery: Tutti gli appartamenti della cittá indicata
@@ -30,7 +36,7 @@ def getbins(city):
 # Get: TUTTI GLI UTENTI DI UNA CITTÁ
 
 
-@database_blueprint.route("/getUsers/<string:city>", methods=["GET"])
+@get_blueprint.route("/getUsers/<string:city>", methods=["GET"])
 def getusers(city):
 
     # Subquery: Tutti gli appartamenti della cittá indicata
@@ -46,7 +52,7 @@ def getusers(city):
 # Get: tutti i tipi di bidone nell'appartamento indicato
 
 
-@database_blueprint.route("/getypes/<string:apartment>", methods=["GET"])
+@get_blueprint.route("/getypes/<string:apartment>", methods=["GET"])
 def getypes(apartment):
 
     res = db.session.query(Bin.tipologia).filter(
@@ -58,7 +64,7 @@ def getypes(apartment):
 # Get: user dell'appartamento indicato
 
 
-@database_blueprint.route("/getApartmentUsers/<string:apartment>", methods=["GET"])
+@get_blueprint.route("/getApartmentUsers/<string:apartment>", methods=["GET"])
 def getapartmentusers(apartment):
 
     res = db.session.query(User).filter(User.apartment_ID == apartment).all()
@@ -69,7 +75,7 @@ def getapartmentusers(apartment):
 # Get: tutte le info associate al bidone indicato
 
 
-@database_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
+@get_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
 def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
@@ -77,7 +83,7 @@ def getbininfo(idbin):
     return Utils.sa_dic2json(res)
 
 
-@database_blueprint.route("/getrecord/<string:idbin>", methods=["GET"])
+@get_blueprint.route("/getrecord/<string:idbin>", methods=["GET"])
 def getbinrecord(idbin):
 
     ultimo_bin_record = (
@@ -96,7 +102,7 @@ def getbinrecord(idbin):
 # Get: ottengo tutte le informazioni dell'appartamento indicato
 
 
-@database_blueprint.route("/getApartment/<string:name>", methods=["GET"])
+@get_blueprint.route("/getApartment/<string:name>", methods=["GET"])
 def getapartment(name):
     res = db.session.query(Apartment).where(
         Apartment.apartment_name == name).all()
@@ -106,7 +112,7 @@ def getapartment(name):
 
 # Get: ottengo lo score di un utente
 
-@database_blueprint.route("/getScore/<string:usr>", methods=["GET"])
+@get_blueprint.route("/getScore/<string:usr>", methods=["GET"])
 def getscore(usr):
     user = db.session.query(UserTG.associated_user).where(UserTG.id_user == usr).first()[0]
     
@@ -124,7 +130,7 @@ def getscore(usr):
 # Get: ottengo la sessione dell'utente
 
 
-@database_blueprint.route("/getSession/<string:usr>", methods=["GET"])
+@get_blueprint.route("/getSession/<string:usr>", methods=["GET"])
 def getsession(usr):
 
     if (

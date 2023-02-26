@@ -104,7 +104,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
                 timestamps.append(bin_record.timestamp)
                 filling.append(bin_record.riempimento)
 
-            #makedirs(f"./predictions_file/{apartment_name}")
+            makedirs(f"./predictions_file/{apartment_name}")
 
             with open(f"./predictions_file/{apartment_name}/riempimento_{tipologia}.csv", "a+") as csvfile:
                 filewriter = csv.writer(
@@ -128,7 +128,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
 
-            #makedirs(f"./predictions/{apartment_name}/{tipologia}")
+            makedirs(f"./predictions/{apartment_name}/{tipologia}")
 
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/dati_attuali.png", format="png")
@@ -156,7 +156,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
 
-            #makedirs(f"./predictions/{apartment_name}/{tipologia}")
+            makedirs(f"./predictions/{apartment_name}/{tipologia}")
 
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/forecast.png", format="png")

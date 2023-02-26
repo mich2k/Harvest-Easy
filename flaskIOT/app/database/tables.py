@@ -6,9 +6,10 @@ class Person:
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column("username", db.String(20),
                          nullable=False, unique=True)
+    
     name = db.Column("name", db.String)
     surname = db.Column("surname", db.String)
-    password = db.Column("password", db.Text, nullable=False)
+    password = db.Column("password", db.String, nullable=False)
     city = db.Column("city", db.String)
     birth_year = db.Column("birth_year", db.Integer)
     card_number = db.Column("card_number", db.String)
