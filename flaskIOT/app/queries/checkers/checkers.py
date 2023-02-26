@@ -4,6 +4,7 @@ from app.login.login import checkpassword
 from app.database.__init__ import db
 from flask import Blueprint
 import json
+from flask import jsonify
 
 check_blueprint = Blueprint("checkers", __name__, template_folder="templates", url_prefix="/check")
 
@@ -26,26 +27,24 @@ def checkuid(uid, id_bin):
         for user in users:
             if uid == user.card_number:
                 if status_attuale == 1:
-                    return json.dump({"code": 200})
+                    return jsonify({"code": 200})
                 else:
-                    # cerco il bidone più vicino
-                    return json.dump({"code": 201})
+                    return jsonify({"code": 201})
 
     if len(admins) > 0:
         for admin in admins:
-            if uid == admin.uid:
+            if uid == admin.card_number:
                 if status_attuale == 1:
-                    return json.dump({"code": 200})
+                    return jsonify({"code": 200})
                 else:
-                    # cerco il bidone più vicino
-                    return json.dump({"code": 201})
+                    return jsonify({"code": 201})
 
     if len(operators) > 0:
         for operator in operators:
             if uid == operator.card_number:
-                return json.dump({"code": 203})
+                return jsonify({"code": 203})
 
-    return json.dump({"code": 202})
+    return jsonify({"code": 202})
 
 
 @check_blueprint.route("/checkAdmin/<string:uid>&<string:password>", methods=["GET"])

@@ -182,13 +182,13 @@ class Utils:
 
     def getstringstatus(status):
         if status == 1:
-            return "integro e non-pieno"
+            return "integro, non-pieno"
         elif status == 2:
-            return "integro e pieno"
+            return "integro, pieno"
         elif status == 3:
-            return "manomesso e non-pieno"
+            return "manomesso, non-pieno"
         elif status == 4:
-            return "manomesso e pieno"
+            return "manomesso, pieno"
         else:
             return "Error"
 

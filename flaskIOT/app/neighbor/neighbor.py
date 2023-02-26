@@ -40,7 +40,6 @@ def getneighbor(id_bin):
     
     apartments_ID = []  # nomi appartamenti con bidoni di quella tipologia non pieni
     apartments_ID.append(apartment_ID)  # aggiungo l'appartamento del bidone pieno
-
     for bin in bins:
         ultimo_bin_record = (
             BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
@@ -64,14 +63,15 @@ def getneighbor(id_bin):
         if apartments[i].apartment_name in apartments_ID:
             if apartments[i].lng == long_bin and apartments[i].lat == lat_bin:
                 index = i
-            apartment_coordinate.append(apartments[i].lng, apartments[i].lat)
+            apartment_coordinate.append(apartments[i].lng)
+            apartment_coordinate.append(apartments[i].lat)
             coordinates.append(apartment_coordinate)
     
     if(len(coordinates)<2):
         return 'Nessun vicino disponibile'
     
     body = {"locations": coordinates}
-    
+
     headers = {
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
         "Content-Type": "application/json; charset=utf-8",
@@ -80,6 +80,9 @@ def getneighbor(id_bin):
     call = requests.post(
         "https://ors.gmichele.it/ors/v2/matrix/driving-car", json=body, headers=headers
     ).json()
+    
+    if 'error' in call:
+        return 'error: ' + str(call)
     
     distances = call["durations"][index]
 
