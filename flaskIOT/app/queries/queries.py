@@ -4,7 +4,7 @@ from .__init__ import db
 @database_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
 @jwt_required()
 def dataAdmin(uid):
-    res = Admin.query.where(Admin.uid == uid).all()
+    res = Admin.query.where(Admin.username == uid).all()
 
     return Utils.sa_dic2json(res)
 
