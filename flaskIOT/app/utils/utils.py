@@ -4,6 +4,7 @@ from os import getenv
 from ..database.tables import *
 from ..trap.trap import *
 import random
+import json
 import requests
 
 
@@ -237,9 +238,9 @@ class Utils:
     def get_response(code, message):
         response = Response()
         response.status = code
-        response.data = message
-        response.content_type = "text/plain"
-        response.mimetype = "text/plain"
+        response.data = json.dumps(message)
+        response.content_type = "application/json"
+        response.mimetype = "application/json"
         return response
 
     @property

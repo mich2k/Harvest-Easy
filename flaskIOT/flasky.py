@@ -2,6 +2,9 @@ from flask import Flask, request, session
 from config import Config
 from app.database.__init__ import db
 from app.database.database import database_blueprint
+from app.queries.getters.getters import get_blueprint
+from app.queries.setters.setters import set_blueprint
+from app.queries.checkers.checkers import check_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
 from app.map.map import map_blueprint
@@ -100,6 +103,9 @@ jwt.init_app(app)
 #Registrazione Blueprint
 app.register_blueprint(geofirstrecord_blueprint, url_prefix='/geofr')
 app.register_blueprint(database_blueprint, url_prefix='/db')
+app.register_blueprint(get_blueprint, url_prefix='/get')
+app.register_blueprint(set_blueprint, url_prefix='/set')
+app.register_blueprint(check_blueprint, url_prefix='/check')
 app.register_blueprint(neighbor_blueprint, url_prefix='/neighbor')
 app.register_blueprint(path_blueprint, url_prefix='/bpath')
 app.register_blueprint(map_blueprint, url_prefix='/map')

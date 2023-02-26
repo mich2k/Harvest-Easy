@@ -1,6 +1,8 @@
 from flask import Blueprint, request, redirect, session
 from sqlalchemy.exc import OperationalError
+from app.utils.utils import Utils
 from os import getenv
+
 handler_blueprint = Blueprint("error", __name__)
 
 
@@ -21,4 +23,5 @@ def db_handler(error):
 
 @handler_blueprint.app_errorhandler(Exception)
 def handler(error):
-    return f"WARNING! An error occured in: {request.url}\n" + str(error)
+    
+    return Utils.get_response(400, f"WARNING! An error occured in: {request.url} " + str(error))
