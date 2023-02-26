@@ -3,6 +3,7 @@ from flask import Blueprint
 from app.utils.utils import Utils
 from flask_jwt_extended import jwt_required
 from app.database.__init__ import db
+from app.utils.utils import * 
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 
@@ -93,7 +94,7 @@ def getbinrecord(idbin):
     )
 
     return {
-        "status": ultimo_bin_record.status,
+        "status": Utils.getstringstatus(ultimo_bin_record.status),
         "temperatura": ultimo_bin_record.temperature,
         "riempimento": ultimo_bin_record.riempimento
     }
