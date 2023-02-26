@@ -77,7 +77,7 @@ def addrecord():
 
 
 # AGGIUNTA DI UN BIDONE
-
+ 
 
 @database_blueprint.route("/addbin", methods=["POST"])
 @jwt_required()
@@ -125,10 +125,10 @@ def adduser():
 # AGGIUNTA DI UN ADMIN
 
 
-@database_blueprint.route("/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
+@database_blueprint.route("/addAdmin/<string:username>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
 @jwt_required()
-def addadmin(uid, name, surname, password, city, birth_year):
-    admin = Admin(Person(uid, name, surname, password, city, birth_year))
+def addadmin(username, name, surname, password, city, birth_year):
+    admin = Admin(Person(username, name, surname, password, city, birth_year))
 
     db.session.add(admin)
     db.session.commit()

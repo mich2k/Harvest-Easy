@@ -159,7 +159,7 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
 
 # cammino con solo inizio
 @path_blueprint.route("/optimal_route/<float:lat>&<float:lng>")
-# @swag_from('/docs/optimal_route.yml')
+#@swag_from('/docs/optimal_route.yml')
 def bpath(lat, lng):
     return optimal_route(lat, lng, tipologia=None)
 
