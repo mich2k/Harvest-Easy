@@ -81,7 +81,7 @@ def addrecord():
 
 
 # AGGIUNTA DI UN BIDONE
-
+ 
 
 @database_blueprint.route("/addbin", methods=["POST"])
 @jwt_required()
@@ -127,10 +127,10 @@ def adduser():
 # AGGIUNTA DI UN ADMIN
 
 
-@database_blueprint.route("/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
+@database_blueprint.route("/addAdmin/<string:username>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
 @jwt_required()
-def addadmin(uid, name, surname, password, city, birth_year):
-    admin = Admin(Person(uid, name, surname, password, city, birth_year))
+def addadmin(username, name, surname, password, city, birth_year):
+    admin = Admin(Person(username, name, surname, password, city, birth_year))
 
     db.session.add(admin)
     db.session.commit()
@@ -238,7 +238,7 @@ def checkuid(uid, id_bin):
 
     if len(admins) > 0:
         for admin in admins:
-            if uid == admin.uid:
+            if uid == admin.card_number:
                 if status_attuale == 1:
                     return jsonify({"code": 200})
                 else:
@@ -284,17 +284,17 @@ def printmore():
     return res
 
 
-@database_blueprint.route("/checkAdmin/<string:uid>&<string:password>", methods=["GET"])
-def login(uid, password):
+@database_blueprint.route("/checkAdmin/<string:username>&<string:password>", methods=["GET"])
+def login(username, password):
 
     access_allowed = False
-    for asw in db.session.query(Admin.uid == uid).all():
+    for asw in db.session.query(Admin.username == username).all():
         if asw[0]:
             if checkpassword(Admin.password, password):
                 access_allowed = True
 
     return Utils.get_response(200 if access_allowed else 400, str(access_allowed))
-
+ 
 # delete
 
 @database_blueprint.route("/deleteuser/<string:username>", methods=["GET"])
