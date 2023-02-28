@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import withAuth from '../../components/WithAuth'
 
 
 
@@ -24,9 +25,6 @@ const Home: NextPage = () => {
     }, []);
 
 
-    const onLogInButtonClick = () => {
-        console.log('ok');
-    }
 
     useEffect(() => {
         setApartmentName("ciao");
@@ -82,7 +80,7 @@ const Home: NextPage = () => {
                                                 type="button"
                                                 data-mdb-ripple="true"
                                                 data-mdb-ripple-color="light"
-                                                onClick={onLogInButtonClick}
+                                                
                                             >
                                                 Log in
                                             </button>
@@ -122,4 +120,4 @@ const Home: NextPage = () => {
     )
 }
 
-export default Home
+export default withAuth(Home);

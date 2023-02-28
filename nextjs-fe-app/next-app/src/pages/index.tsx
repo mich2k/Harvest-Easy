@@ -1,29 +1,76 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
+import axios from 'axios'
 
 
+import User from '../components/User'
 
 const Home: NextPage = () => {
 
 
-  const [checked_state, setCheck] = useState(true);
+  const [checked_state, setCheck] = useState(false);
+
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState('');
 
 
+  const [state_user, setUser] = useState<User>();
+
+
+  const url = "https://flask.gmichele.it";
+
+
+  const onLogInButtonClick = () => {
+    console.log(username);
+
+    if (!checked_state) {
+      console.log('check');
+      return;
+    }
+
+
+    const data = {
+      username: username,
+      password: password
+    }
+
+
+    axios
+      .post(url + '/login/loginuser', data, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+      })
+      .then(({ data }) => {
+
+        console.log(data);
+
+        let my_user = new User(username, password, data["access_token"], data["name"], data["surname"],
+        data["apartment_ID"], data["internal_number"], data["city"], data["birth_year"]);
+
+        setUser(my_user);
+
+        localStorage.setItem('user', JSON.stringify(state_user));
+
+
+        // console.dir(state_user);
+
+        // console.dir(localStorage.getItem('user'));
+        
+      });
+
+
+  }
 
   useEffect(() => {
     import("flowbite/dist/flowbite");
 
 
   }, []);
-
-
-  const onLogInButtonClick = () => {
-    console.log('ok');
-  }
 
 
 
@@ -54,16 +101,18 @@ const Home: NextPage = () => {
                         <input
                           type="text"
                           className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                          id="exampleFormControlInput1"
-                          placeholder="Admin username"
+                          id="txt-username-field"
+                          placeholder="username"
+                          onChange={(e) => { setUsername(e.target.value) }}
                         />
                       </div>
                       <div className="mb-4">
                         <input
                           type="password"
                           className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                          id="exampleFormControlInput1"
-                          placeholder="Master password"
+                          id="txt-psw-field"
+                          placeholder="password"
+                          onChange={(e) => { setPassword(e.target.value) }}
                         />
                       </div>
                       <div className="text-center pt-1 mb-12 pb-1">
@@ -77,7 +126,7 @@ const Home: NextPage = () => {
                           Log in
                         </button>
                         <div className="flex items-center mb-4">
-                          <input onChange={() => { setCheck(!checked_state);}} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                          <input onChange={() => { setCheck(!checked_state); }} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                           <label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Confirm apartment id</label>
                         </div>
                         <a className="text-gray-500" href="#!">Tutto apposto?</a>
@@ -124,5 +173,6 @@ const Home: NextPage = () => {
     </section>
   )
 }
+
 
 export default Home
