@@ -4,6 +4,7 @@ from os import getenv
 from ..database.tables import *
 from ..trap.trap import *
 import random
+import json
 import requests
 
 
@@ -181,13 +182,13 @@ class Utils:
 
     def getstringstatus(status):
         if status == 1:
-            return "integro e non-pieno"
+            return "integro, non-pieno"
         elif status == 2:
-            return "integro e pieno"
+            return "integro, pieno"
         elif status == 3:
-            return "manomesso e non-pieno"
+            return "manomesso, non-pieno"
         elif status == 4:
-            return "manomesso e pieno"
+            return "manomesso, pieno"
         else:
             return "Error"
 
@@ -237,9 +238,9 @@ class Utils:
     def get_response(code, message):
         response = Response()
         response.status = code
-        response.data = message
-        response.content_type = "text/plain"
-        response.mimetype = "text/plain"
+        response.data = json.dumps(message)
+        response.content_type = "application/json"
+        response.mimetype = "application/json"
         return response
 
     @property

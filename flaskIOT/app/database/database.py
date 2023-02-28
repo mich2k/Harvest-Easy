@@ -3,12 +3,10 @@ import app.trap.trap as tp
 from sqlalchemy import update, delete
 from flask import request, Blueprint, session, redirect, jsonify
 from os import getenv
-import json
 from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
-from app.login.login import checkpassword
 from flask_jwt_extended import jwt_required
 
 URL = "https://osm.gmichele.it/search"
@@ -16,9 +14,7 @@ URL = "https://osm.gmichele.it/search"
 # Lo userò per verificare se il DB è stato già creato
 db_manager = DB_status()
 
-database_blueprint = Blueprint(
-    "database", __name__, template_folder="templates", url_prefix="/db"
-)
+database_blueprint = Blueprint("database", __name__, template_folder="templates", url_prefix="/db")
 
 # CREA IL DB A RUNTIME, SE GIà PRESENTE DROPPA TUTTE LE TABLES
 # È LA PRIMA ROUTE DA RAGGIUNGERE QUANDO SI AVVIA IL SISTEMA
@@ -81,7 +77,7 @@ def addrecord():
 
 
 # AGGIUNTA DI UN BIDONE
-
+ 
 
 @database_blueprint.route("/addbin", methods=["POST"])
 @jwt_required()
@@ -124,13 +120,15 @@ def adduser():
     return Utils.get_response(200, "Done")
 
 
+# Adders
+
 # AGGIUNTA DI UN ADMIN
 
 
-@database_blueprint.route("/addAdmin/<string:uid>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
+@database_blueprint.route("/addAdmin/<string:username>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
 @jwt_required()
-def addadmin(uid, name, surname, password, city, birth_year):
-    admin = Admin(Person(uid, name, surname, password, city, birth_year))
+def addadmin(username, name, surname, password, city, birth_year):
+    admin = Admin(Person(username, name, surname, password, city, birth_year))
 
     db.session.add(admin)
     db.session.commit()
@@ -206,54 +204,8 @@ def addapartment():
 
     return Utils.get_response(200, "Done")
 
-
-# ACCESSO DI UN UTENTE AL BIDONE
-
-
-@database_blueprint.route("/checkuid/<string:uid>&<int:id_bin>", methods=["GET"])
-def checkuid(uid, id_bin):
-
-    users = User.query.all()
-    operators = Operator.query.all()
-    admins = Admin.query.all()
-    ultimo_bin_record = (
-        BinRecord.query.filter(BinRecord.associated_bin == id_bin)
-        .order_by(BinRecord.timestamp.desc())
-        .first()
-    )
-
-    if ultimo_bin_record is None:
-        status_attuale = None
-    else:
-        status_attuale = ultimo_bin_record.status
-
-    if len(users) > 0:
-        for user in users:
-            if uid == user.card_number:
-                if status_attuale == 1:
-                    return jsonify({"code": 200})
-                else:
-                    # cerco il bidone più vicino
-                    return jsonify({"code": 201})
-
-    if len(admins) > 0:
-        for admin in admins:
-            if uid == admin.uid:
-                if status_attuale == 1:
-                    return jsonify({"code": 200})
-                else:
-                    # cerco il bidone più vicino
-                    return jsonify({"code": 201})
-
-    if len(operators) > 0:
-        for operator in operators:
-            if uid == operator.card_number:
-                return jsonify({"code": 203})
-
-    return jsonify({"code": 202})
-
-
 # Print tables
+
 @database_blueprint.route("/items", methods=["GET"])
 def stampaitems():
     res = []
@@ -282,18 +234,6 @@ def printmore():
         res.append({queries[0].__tablename__: Utils.sa_dic2json(queries)})
 
     return res
-
-
-@database_blueprint.route("/checkAdmin/<string:uid>&<string:password>", methods=["GET"])
-def login(uid, password):
-
-    access_allowed = False
-    for asw in db.session.query(Admin.uid == uid).all():
-        if asw[0]:
-            if checkpassword(Admin.password, password):
-                access_allowed = True
-
-    return Utils.get_response(200 if access_allowed else 400, str(access_allowed))
 
 # delete
 
@@ -458,38 +398,6 @@ def solved(uid, idbin):
 @database_blueprint.route('/report/<string:uid>&<string:idbin>')
 def report(uid, idbin):
     return Utils.get_response(200, f'Contacting HERA from {uid} for {idbin}')
-
-
-@database_blueprint.route("/checkUsername/<string:usr>", methods=["GET"])
-def checkusername(usr):
-    found = False
-    for asw in db.session.query(UserTG.id_user == usr).all():
-        if asw[0]:
-            found = True
-
-    return Utils.get_response(200 if found else 400, str(found))
-
-
-@database_blueprint.route("/checkSession/<string:userid>", methods=["GET"])
-def checksession(userid):
-    found = False
-    for asw in db.session.query(UserTG.id_user == userid).all():
-        if asw[0]:
-            found = True
-
-    return Utils.get_response(200 if found else 400, str(found))
-
-
-@database_blueprint.route("/set_TelegramSession/<string:usr>&<int:idchat>", methods=["GET"])
-def setsession(usr, idchat):
-    db.session.execute(
-        update(UserTG)
-        .where(UserTG.id_user == usr)
-        .values({"logged": True, "id_chat": str(idchat)})
-    )
-    db.session.commit()
-
-    return Utils.get_response(200, "Done")
 
 
 # ONLY FOR TESTING PURPOSES
