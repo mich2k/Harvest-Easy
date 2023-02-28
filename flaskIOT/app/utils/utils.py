@@ -25,7 +25,7 @@ class Utils:
         # self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
-    def calcolastatus(self, id_bin, riempimento, roll = 30, pitch = 90, co2 = 1000):
+    def calcolastatus(self, id_bin, riempimento, roll = 0, pitch = 90, co2 = 1000):
         """ 
         Legenda status:
             1: integro e non-pieno, 
