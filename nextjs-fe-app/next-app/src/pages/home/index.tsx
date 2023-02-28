@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import withAuth from '../../components/WithAuth'
 
+import User from '../../components/User'
+import PropTypes from 'prop-types';
 
 
-
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
 
 
     const [user_firstname, setUserFistName] = useState<string>();
@@ -19,6 +20,7 @@ const Home: NextPage = () => {
 
     const [user_role, setUserRole] = useState<string>("default_user");
 
+    const [state_user, setUser] = useState<User>();
 
     useEffect(() => {
         import("flowbite/dist/flowbite");
@@ -27,6 +29,24 @@ const Home: NextPage = () => {
 
 
     useEffect(() => {
+        const localst_key = "home_user";
+        let u;
+        if (props["user"] != null) {
+            u = new User(props["user"].birth_year, props["user"].name, props["user"].surname, props["user"].access_token, props["user"].apartment_id, props["user"].internal_number, props["user"].city, props["user"].username, props["user"].password);
+            setUser(u);
+            localStorage.setItem(localst_key, JSON.stringify(u));
+
+        } else {
+            u = localStorage.getItem(localst_key);
+        }
+
+
+
+
+        console.dir(u);
+        console.dir(state_user);
+
+
         setApartmentName("ciao");
         setUserFistName("Mario");
         setUserLastName("Rossi");
@@ -80,7 +100,7 @@ const Home: NextPage = () => {
                                                 type="button"
                                                 data-mdb-ripple="true"
                                                 data-mdb-ripple-color="light"
-                                                
+
                                             >
                                                 Log in
                                             </button>
