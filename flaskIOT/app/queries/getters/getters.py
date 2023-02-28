@@ -7,6 +7,12 @@ from flask import jsonify
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 
+@get_blueprint.route('/prevision/<int:id_bin>')
+@jwt_required()
+def getprevision(id_bin):
+    bin = Bin.query.filter(Bin.id_bin == id_bin).first()
+    return jsonify(bin.previsione_status)
+
 
 @get_blueprint.route("/getprofileuser/<string:uid>", methods=["GET"])
 @jwt_required()

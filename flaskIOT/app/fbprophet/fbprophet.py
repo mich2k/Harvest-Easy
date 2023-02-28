@@ -77,6 +77,8 @@ def createprevision(time, apartment_name=None, tipologia=None):
         if Bin.query.filter(Bin.apartment_ID == apartment_name).first() == None:
             return jsonify({"error": "Apartment not valid"}), 403
 
+    util = Utils()
+    
     if time == 0:  # se tempo non inserito(0), default 5 giorni
         time = 5
 
@@ -173,19 +175,19 @@ def createprevision(time, apartment_name=None, tipologia=None):
             m.plot_components(forecast)
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/components.png", format="png")
-            """
+            
             prediction = forecast[["yhat"]].values
             dates = forecast[["ds"]].values
             date_riempimento = ""
-
-            for i in range(len(dates)):
-                if (Utils.calcolastatus(Utils, bin.id_bin, prediction[i]) == 2):
-                        date_riempimento = dates[i]
             
-            if date_riempimento != "":
-                Utils.set_previsione_status(bin.id_bin, date_riempimento)
-            """
-
+            
+            for i in range(len(dates)):
+                if (util.calcolastatus(bin.id_bin, prediction[i]) == 2):
+                    date_riempimento = dates[i][0] if dates[i] is not None else ''
+            
+            if str(date_riempimento) != "":
+                Utils.set_previsione_status(bin.id_bin, str(date_riempimento))
+                
     return jsonify({"msg": "Previsioni correttamente create"}), 200
 
 

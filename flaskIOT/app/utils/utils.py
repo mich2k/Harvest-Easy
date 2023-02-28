@@ -1,7 +1,9 @@
 from datetime import datetime
 from flask import Response
+from sqlalchemy import update
 from os import getenv
-from ..database.tables import *
+from ..database.tables import BinRecord, Bin, Apartment
+from ..database.database import db
 from ..trap.trap import *
 import random
 import json
@@ -175,8 +177,10 @@ class Utils:
         return current_threashold
 
     def set_previsione_status(id_bin, status_previsto):
-        db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-            {"previsione_status": status_previsto}
+        db.session.execute(
+            update(Bin)
+            .where(Bin.id_bin == id_bin)
+            .values({"previsione_status": status_previsto})
         )
         db.session.commit()
 
