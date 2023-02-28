@@ -3,9 +3,50 @@ from flask import Blueprint
 from app.utils.utils import Utils
 from flask_jwt_extended import jwt_required
 from app.database.__init__ import db
+from flask import jsonify
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 
+
+@get_blueprint.route("/getprofileuser/<string:uid>", methods=["GET"])
+#@jwt_required()
+def getprofileuser(uid):
+    user = User.query.filter(User.username==uid).first()
+    apartment_user= Apartment.query.filter(Apartment.apartment_name==user.apartment_ID).first()
+    bins=Bin.query.filter(Bin.apartment_ID==user.apartment_ID).all()
+  
+    bidoni_user=[]
+    for bin in bins:
+        ultimo_bin_record = (
+            BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
+            .order_by(BinRecord.timestamp.desc())
+            .first()
+        )
+        dict={
+            "id_bin": bin.id_bin,
+            "tipologia": bin.tipologia,
+            "previsione_status": bin.previsione_status,
+            "ultimo_svuotamento": bin.ultimo_svuotamento,
+            "status": ultimo_bin_record.status
+        }
+        bidoni_user.append(dict)
+
+    return jsonify({
+        "username": uid,
+        "name": user.name,
+        "surname": user.username,
+        "user_city": user.city,
+        "birth_year": user.birth_year,
+        "card_number": user.card_number,
+        "internal_number": user.internal_number,
+        "apartment_name": user.apartment_ID,
+        "apartment_city": apartment_user.city,
+        "street": apartment_user.street,
+        "apartment_street_number": apartment_user.apartment_street_number,
+        "n_internals":apartment_user.n_internals,
+        "associated_admin": apartment_user.associated_admin,
+        "bins":bidoni_user
+   })
 
 @get_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
 @jwt_required()

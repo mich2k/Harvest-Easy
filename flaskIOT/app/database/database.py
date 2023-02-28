@@ -167,7 +167,7 @@ def addoperator():
 
 
 @database_blueprint.route("/addapartment", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def addapartment():
 
     msgJson = request.get_json()

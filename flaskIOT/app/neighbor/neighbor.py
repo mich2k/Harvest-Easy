@@ -4,9 +4,11 @@ import requests
 import sys
 from flask import jsonify
 from flasgger import swag_from
+from os import getenv
 
 neighbor_blueprint = Blueprint("neighbor", __name__, template_folder="templates")
 
+OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
 
 @neighbor_blueprint.route("/")
 def main():
@@ -74,12 +76,13 @@ def getneighbor(id_bin):
 
     headers = {
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+        "Authorization": OPENROUTESERVICE_KEY,
         "Content-Type": "application/json; charset=utf-8",
     }
     
     call = requests.post(
-        "https://ors.gmichele.it/ors/v2/matrix/driving-car", json=body, headers=headers
-    ).json()
+        "https://193.197.73.183:8084/ors/v2/matrix/driving-car", json=body, headers=headers
+    ).json() #https://ors.gmichele.it/ors/v2/matrix/driving-car
     
     if 'error' in call:
         return 'error: ' + str(call)
