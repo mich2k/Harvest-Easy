@@ -45,8 +45,9 @@ def getprevision(apartment_name=None, tipologia=None):
 
     for bin in bins:
         file = pd.read_csv(
-            f"./predictions_file/{bin.apartment_ID}/prediction_{bin.tipologia}.csv")
-        predictions = file["yhat"]
+            f"./predictions_file/{bin.apartment_ID}/riempimento_{bin.tipologia}.csv")
+
+        predictions = file["y"]
         dates = pd.to_datetime(file["ds"])
 
         json_bin = {"bin": bin.id_bin, "tipologia": bin.tipologia,
@@ -88,7 +89,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
                 Bin.apartment_ID == apartment_name)
         else:
             bins = Bin.query.filter(Bin.apartment_ID == apartment_name)
-    
+
     for bin in bins:  # per ogni bidone creo una previsione temporale
         bin_records = BinRecord.query.filter(
             BinRecord.associated_bin == bin.id_bin
@@ -108,7 +109,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             path = "./predictions_file/" + apartment_name
             if not os.path.exists(path):
                 os.makedirs(path)
-            
+
             with open(f"./predictions_file/{apartment_name}/riempimento_{tipologia}.csv", "w") as csvfile:
                 filewriter = csv.writer(
                     csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
@@ -130,14 +131,14 @@ def createprevision(time, apartment_name=None, tipologia=None):
                 f"Dati attuali di riempimento {tipologia} dell'appartamento {apartment_name}")
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
-            
-            path = "./predictions/" + apartment_name +"/" + tipologia
+
+            path = "./predictions/" + apartment_name + "/" + tipologia
             if not os.path.exists(path):
                 os.makedirs(path)
 
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/dati_attuali.png", format="png")
-                                    
+
             try:
                 m = Prophet()
                 m.fit(df)
@@ -247,6 +248,3 @@ def createprevision3(apartment_name, tipologia, time):
     se l'input è uguale a 0, di defaul si assume 5 giorni
     """
     return createprevision(time, apartment_name=apartment_name, tipologia=tipologia)
-
-    
-    
