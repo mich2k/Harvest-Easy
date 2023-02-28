@@ -63,6 +63,7 @@ def getneighbor(id_bin):
         if apartments[i].apartment_name in apartments_ID:
             if apartments[i].lng == long_bin and apartments[i].lat == lat_bin:
                 index = i
+                
             apartment_coordinate.append(apartments[i].lng)
             apartment_coordinate.append(apartments[i].lat)
             coordinates.append(apartment_coordinate)
