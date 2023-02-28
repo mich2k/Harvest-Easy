@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { Router, useRouter } from 'next/router'
 
 import axios from 'axios'
 
@@ -9,6 +9,7 @@ import axios from 'axios'
 import User from '../components/User'
 
 const Home: NextPage = () => {
+  const router = useRouter();
 
 
   const [checked_state, setCheck] = useState(false);
@@ -18,6 +19,7 @@ const Home: NextPage = () => {
 
 
   const [state_user, setUser] = useState<User>();
+
 
 
   const url = "https://flask.gmichele.it";
@@ -54,9 +56,14 @@ const Home: NextPage = () => {
 
         setUser(my_user);
 
-        localStorage.setItem('user', JSON.stringify(state_user));
 
-
+        router.push(
+          {
+            pathname: "/home",
+            query: JSON.stringify(my_user)
+          },
+            "/home"
+          );
         // console.dir(state_user);
 
         // console.dir(localStorage.getItem('user'));
