@@ -98,23 +98,26 @@ def addbin():
 @database_blueprint.route("/adduser", methods=["POST"])
 @jwt_required()
 def adduser():
-    msgJson = request.get_json()
+    data = request.get_json()
+    user = []
+    
+    for msgJson in data:
+    
+        user.append(User(
+            Person(
+                username=msgJson["username"],
+                name=msgJson["name"],
+                surname=msgJson["surname"],
+                password=msgJson["password"],
+                city=msgJson["city"],
+                birth_year=msgJson["year"],
+                card_number=msgJson["card_number"]
+            ),
+            apartment_ID=msgJson["apartment_ID"],
+            internal_number=msgJson["internal_number"],
+        ))
 
-    user = User(
-        Person(
-            username=msgJson["username"],
-            name=msgJson["name"],
-            surname=msgJson["surname"],
-            password=msgJson["password"],
-            city=msgJson["city"],
-            birth_year=msgJson["year"],
-            card_number=msgJson["card_number"]
-        ),
-        apartment_ID=msgJson["apartment_ID"],
-        internal_number=msgJson["internal_number"],
-    )
-
-    db.session.add(user)
+    db.session.add_all(user)
     db.session.commit()
 
     return Utils.get_response(200, "Done")
@@ -167,7 +170,7 @@ def addoperator():
 
 
 @database_blueprint.route("/addapartment", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def addapartment():
 
     msgJson = request.get_json()
