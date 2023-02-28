@@ -9,7 +9,7 @@ get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_
 
 
 @get_blueprint.route("/getprofileuser/<string:uid>", methods=["GET"])
-#@jwt_required()
+@jwt_required()
 def getprofileuser(uid):
     user = User.query.filter(User.username==uid).first()
     apartment_user= Apartment.query.filter(Apartment.apartment_name==user.apartment_ID).first()

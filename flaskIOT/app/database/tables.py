@@ -54,6 +54,7 @@ class Operator(Person, db.Model):
 class User(Person, db.Model):
     __tablename__ = "user"
     internal_number = db.Column("internal_number", db.Integer)
+    
     # FK
     apartment_ID = db.Column(
         "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name")

@@ -5,9 +5,10 @@ import pandas as pd
 from prophet import Prophet
 import matplotlib.pyplot as plt
 import csv
-from os import makedirs
+import os
 from flasgger import swag_from
 import logging
+from app.utils.utils import Utils
 
 
 fbprophet_blueprint = Blueprint(
@@ -44,8 +45,9 @@ def getprevision(apartment_name=None, tipologia=None):
 
     for bin in bins:
         file = pd.read_csv(
-            f"./predictions_file/{bin.apartment_ID}/prediction_{bin.tipologia}.csv")
-        predictions = file["yhat"]
+            f"./predictions_file/{bin.apartment_ID}/riempimento_{bin.tipologia}.csv")
+
+        predictions = file["y"]
         dates = pd.to_datetime(file["ds"])
 
         json_bin = {"bin": bin.id_bin, "tipologia": bin.tipologia,
@@ -104,9 +106,11 @@ def createprevision(time, apartment_name=None, tipologia=None):
                 timestamps.append(bin_record.timestamp)
                 filling.append(bin_record.riempimento)
 
-            makedirs(f"./predictions_file/{apartment_name}")
+            path = "./predictions_file/" + apartment_name
+            if not os.path.exists(path):
+                os.makedirs(path)
 
-            with open(f"./predictions_file/{apartment_name}/riempimento_{tipologia}.csv", "a+") as csvfile:
+            with open(f"./predictions_file/{apartment_name}/riempimento_{tipologia}.csv", "w") as csvfile:
                 filewriter = csv.writer(
                     csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
                 )
@@ -128,11 +132,13 @@ def createprevision(time, apartment_name=None, tipologia=None):
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
 
-            makedirs(f"./predictions/{apartment_name}/{tipologia}")
+            path = "./predictions/" + apartment_name + "/" + tipologia
+            if not os.path.exists(path):
+                os.makedirs(path)
 
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/dati_attuali.png", format="png")
-                                    
+
             try:
                 m = Prophet()
                 m.fit(df)
@@ -156,7 +162,9 @@ def createprevision(time, apartment_name=None, tipologia=None):
             plt.xlabel("Data")
             plt.ylabel("Livello di riempimento")
 
-            makedirs(f"./predictions/{apartment_name}/{tipologia}")
+            path = "./predictions/" + apartment_name + "/" + tipologia
+            if not os.path.exists(path):
+                os.makedirs(path)
 
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/forecast.png", format="png")
@@ -165,14 +173,17 @@ def createprevision(time, apartment_name=None, tipologia=None):
             m.plot_components(forecast)
             plt.savefig(
                 f"./predictions/{apartment_name}/{tipologia}/components.png", format="png")
-
             """
             prediction = forecast[["yhat"]].values
-            status_previsto = Utils.calcolastatus(
-                Utils, bin.id_bin, prediction[0], None, None, None
-            )
+            dates = forecast[["ds"]].values
+            date_riempimento = ""
+
+            for i in range(len(dates)):
+                if (Utils.calcolastatus(Utils, bin.id_bin, prediction[i]) == 2):
+                        date_riempimento = dates[i]
             
-            Utils.set_previsione_status(bin.id_bin, status_previsto)
+            if date_riempimento != "":
+                Utils.set_previsione_status(bin.id_bin, date_riempimento)
             """
 
     return jsonify({"msg": "Previsioni correttamente create"}), 200
