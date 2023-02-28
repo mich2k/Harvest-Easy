@@ -13,7 +13,7 @@ const Home: NextPage = () => {
     const [user_firstname, setUserFistName] = useState<string>();
     const [user_lastname, setUserLastName] = useState<string>();
     const [apartment_name, setApartmentName] = useState<string>();
-    const [estimated_fill_date, setEstimatedFillDate] = useState<string>(new Date().toJSON());
+    const [estimated_fill_date, setEstimatedFillDate] = useState<string>(new Date().toISOString().split('.')[0]);
     const [today_date, setTodayDate] = useState<string>("default_user");
 
     const [user_role, setUserRole] = useState<string>("default_user");
@@ -29,7 +29,7 @@ const Home: NextPage = () => {
     }
 
     useEffect(() => {
-        setApartmentName(new Date(estimated_fill_date));
+        setApartmentName("ciao");
         setUserFistName("Mario");
         setUserLastName("Rossi");
         setApartmentName("Fermi")
@@ -58,7 +58,7 @@ const Home: NextPage = () => {
                                             <h3 className="text-xl font-semibold mt-2 pt-3 mb-0 pb-1">Apartment {apartment_name}.</h3>
 
                                             <h4 className="text-xl font-semibold mt-1 mb-0 pb-1">Welcome in your house dashboard {user_firstname} {user_lastname}.</h4>
-                                            <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is {new Date().toDateString()}, beautiful day, isn't it?</h4>
+                                            <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is {new Date().toISOString().split('.')[0]} , beautiful day, isn't it?</h4>
 
                                         </div>
                                     </div>
