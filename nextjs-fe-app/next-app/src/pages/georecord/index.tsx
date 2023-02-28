@@ -6,7 +6,7 @@ import Error from '../../components/Error'
 import ErrorAlert from '../../components/ErrorAlert'
 import GenericError from '../../components/GenericError'
 import ReactLoading from 'react-loading';
-
+import axios from 'axios'
 
 const Home: NextPage = () => {
 
@@ -19,9 +19,18 @@ const Home: NextPage = () => {
     const [isGeoAllowanceGiven, setGeoAllowanceGiven] = useState<boolean>(false);
     const [data, setData] = useState(null);
     const [deviceGeoCoordinates, setGeoCoordinates] = useState<{ lat: number, lon: number }>({ "lat": undefined, "lon": undefined });
+
+    const [user, setUser] = useState({ username: '', access_token: '', birth_year: 1900, name: '', last_name: '', city: '', apartment_id: '' });
+
+
     const router = useRouter();
 
+
     const [isGeoSupported, setGeoSupported] = useState<boolean>(true);
+
+
+    const url = "https://flask.gmichele.it";
+
 
 
     useEffect(() => {
@@ -86,6 +95,25 @@ const Home: NextPage = () => {
             setShowAlert(true);
             return;
         }
+
+
+        const data = {
+            username: 'rossi1',
+            password: 'mariorossi'
+        }
+
+
+        axios
+            .post(url + '/login/loginadmin', data, {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+            })
+            .then(({ data }) => {
+                console.log(data);
+            });
+
     }
 
 
