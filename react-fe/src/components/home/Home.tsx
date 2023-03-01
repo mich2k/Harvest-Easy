@@ -4,7 +4,7 @@ import React from "react";
 import User from "../User";
 import { Flowbite } from "flowbite-react";
 
-const Home = (props) => {
+const Home = () => {
   const [user_firstname, setUserFistName] = useState<string>("Loading");
   const [user_lastname, setUserLastName] = useState<string>("Loading");
   const [apartment_name, setApartmentName] = useState<string>("Loading");
@@ -15,27 +15,18 @@ const Home = (props) => {
 
   const [state_user, setUser] = useState<User>();
 
-  
+
 
   useEffect(() => {
     const localst_key = "home_user";
     let u;
-    if (props["user"] != null) {
-      u = new User(props["user"].username, props["user"].password, props["user"].access_token, props["user"].name, props["user"].last_name, props["user"].apartment_id, props["user"].internal_number, props["user"].city, props["user"].birth_year);
-      if (typeof window === "undefined") return;
-
-      localStorage.setItem(localst_key, JSON.stringify(u));
-      console.dir(props["user"], props["user"].length);
-    } else {
-      if (typeof window === "undefined") return;
-      u = JSON.parse(localStorage.getItem(localst_key));
-    }
+    u = undefined;
     setUser(u);
     console.dir(state_user);
 
-    setApartmentName(u.apartment_id);
-    setUserFistName(u.name);
-    setUserLastName(u.last_name);
+    setApartmentName("a");
+    setUserFistName("a");
+    setUserLastName("a");
     console.log(apartment_name);
   }, [user_firstname]);
 

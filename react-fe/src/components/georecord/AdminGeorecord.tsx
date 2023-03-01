@@ -6,6 +6,8 @@ import GenericError from '../GenericError'
 import ReactLoading from 'react-loading';
 import axios from 'axios'
 import React from 'react';
+import { Flowbite } from 'flowbite-react';
+
 const Home = () => {
 
     const APARTMENT_KEY_QUERY = 'ap_id';
@@ -39,9 +41,7 @@ const Home = () => {
 
     }, [isGeoAllowanceGiven]);
 
-    useEffect(() => {
-        import("flowbite/dist/flowbite");
-    }, []);
+
 
     useEffect(() => {
         setApartmentId(String(router.query[APARTMENT_KEY_QUERY]))
