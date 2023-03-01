@@ -1,4 +1,6 @@
-export default function ErrorAlert({ alert_type, body_message = "generic error" }) {
+import React from "react";
+
+export default function ErrorAlert({ alert_type, body_message = "generic error" } : { alert_type: string, body_message: string }) {
   switch (alert_type) {
     case "info":
       return (

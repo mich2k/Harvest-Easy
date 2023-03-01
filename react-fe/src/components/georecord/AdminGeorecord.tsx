@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 
 import Error from '../Error'
-import ErrorAlert from '../ErrorAlert'
+import ErrorAlert from '../ErrorAlert';
 import GenericError from '../GenericError'
 import ReactLoading from 'react-loading';
 import axios from 'axios'
 import React from 'react';
-
 const Home = () => {
 
     const APARTMENT_KEY_QUERY = 'ap_id';

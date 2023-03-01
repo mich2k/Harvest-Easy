@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import withAuth from "../WithAuth";
 import React from "react";
 import User from "../User";
+import { Flowbite } from "flowbite-react";
+
 const Home = (props) => {
   const [user_firstname, setUserFistName] = useState<string>("Loading");
   const [user_lastname, setUserLastName] = useState<string>("Loading");
@@ -12,9 +14,8 @@ const Home = (props) => {
   const [user_role, setUserRole] = useState<string>("default_user");
 
   const [state_user, setUser] = useState<User>();
-  useEffect(() => {
-    import { Flowbite } from "flowbite-react";
-  }, []);
+
+  
 
   useEffect(() => {
     const localst_key = "home_user";

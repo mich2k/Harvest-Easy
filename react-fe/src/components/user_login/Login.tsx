@@ -6,7 +6,7 @@ import axios from 'axios'
 import React from 'react';
 import User from '../User'
 
-const Login = ({ setToken}) => {
+const Login = ({ setToken }: { setToken: string }) => {
 
   const [checked_state, setCheck] = useState(false);
 
