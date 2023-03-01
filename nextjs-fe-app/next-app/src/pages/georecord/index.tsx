@@ -167,15 +167,15 @@ const Home: NextPage = () => {
                                                             />
                                                             <h4 className="text-xl font-semibold mt-1 mb-8 pb-1">Apartment registration tool</h4>
                                                             <h5 className="text-l font-italic mt-1 mb-4 pb-1">You are trying to initialize the following apartment: </h5>
-                                                            <p>
+                                                            <div>
                                                                 <span className="font-bold">Apartment ID:</span> <span>{apartment_id}</span>
-                                                            </p>
-                                                            <p>
+                                                            </div>
+                                                            <div>
                                                                 <span className="font-bold">Your Coordinates:</span> <span>[LA: {deviceGeoCoordinates.lat}, LO: {deviceGeoCoordinates.lon}]</span>
-                                                            </p>
-                                                            <p>
+                                                            </div>
+                                                            <div>
                                                                 <span className="font-bold">Detected geo-reversed city:</span> <span>{apartment_id}</span>
-                                                            </p>
+                                                            </div>
 
                                                         </div>
                                                         <form>

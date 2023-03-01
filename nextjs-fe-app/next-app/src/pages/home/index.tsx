@@ -1,20 +1,18 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import withAuth from '../../components/WithAuth'
+import dynamic from 'next/dynamic';
 
 import User from '../../components/User'
-import PropTypes from 'prop-types';
-
-
 const Home: NextPage = (props) => {
 
 
-    const [user_firstname, setUserFistName] = useState<string>();
-    const [user_lastname, setUserLastName] = useState<string>();
-    const [apartment_name, setApartmentName] = useState<string>();
+    const [user_firstname, setUserFistName] = useState<string>("Loading");
+    const [user_lastname, setUserLastName] = useState<string>("Loading");
+    const [apartment_name, setApartmentName] = useState<string>("Loading");
     const [estimated_fill_date, setEstimatedFillDate] = useState<string>(new Date().toISOString().split('.')[0]);
     const [today_date, setTodayDate] = useState<string>("default_user");
 
@@ -30,113 +28,111 @@ const Home: NextPage = (props) => {
 
     useEffect(() => {
         const localst_key = "home_user";
-        let u;
+        let u: User;
         if (props["user"] != null) {
-            u = new User(props["user"].birth_year, props["user"].name, props["user"].surname, props["user"].access_token, props["user"].apartment_id, props["user"].internal_number, props["user"].city, props["user"].username, props["user"].password);
-            setUser(u);
+            u = new User(props["user"].username, props["user"].password, props["user"].access_token, props["user"].name, props["user"].last_name, props["user"].apartment_id, props["user"].internal_number, props["user"].city, props["user"].birth_year);
+            if (typeof window === 'undefined') return;
+
             localStorage.setItem(localst_key, JSON.stringify(u));
+            console.dir(props["user"], props["user"].length);
 
         } else {
-            u = localStorage.getItem(localst_key);
+            if (typeof window === 'undefined') return;
+            u = JSON.parse(localStorage.getItem(localst_key));
+
         }
-
-
-
-
-        console.dir(u);
+        setUser(u);
         console.dir(state_user);
 
-
-        setApartmentName("ciao");
-        setUserFistName("Mario");
-        setUserLastName("Rossi");
-        setApartmentName("Fermi")
-    }, [])
+        setApartmentName(u.apartment_id);
+        setUserFistName(u.name);
+        setUserLastName(u.last_name);
+        console.log(apartment_name);
+    }, [user_firstname])
 
 
 
 
     return (
-
-        <section className="h-full gradient-form bg-blue-100 md:h-screen">
-            <div suppressHydrationWarning className="container py-12 px-6 h-full">
-                <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
-                    <div className="xl:w-10/12">
-                        <div className="block bg-white shadow-lg rounded-lg">
-                            <div className="lg:flex lg:flex-wrap g-0">
-                                <div className="lg:w-6/12 px-4 md:px-0">
-                                    <div className="md:p-12 md:mx-6">
-                                        <div className="text-left">
-                                            {/* <img
+        <div>
+                <section className="h-full gradient-form bg-blue-100 md:h-screen">
+                    <div className="container py-12 px-6 h-full">
+                        <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
+                            <div className="xl:w-10/12">
+                                <div className="block bg-white shadow-lg rounded-lg">
+                                    <div className="lg:flex lg:flex-wrap g-0">
+                                        <div className="lg:w-6/12 px-4 md:px-0">
+                                            <div className="md:p-12 md:mx-6">
+                                                <div className="text-left">
+                                                    {/* <img
                                                 className="mx-auto w-48"
                                                 width="100px"
                                                 src=""
                                                 alt="logo"
     /> */}
-                                            <h3 className="text-xl font-semibold mt-2 pt-3 mb-0 pb-1">Apartment {apartment_name}.</h3>
+                                                    <h3 className="text-xl font-semibold mt-2 pt-3 mb-0 pb-1">Apartment  {apartment_name}.</h3>
 
-                                            <h4 className="text-xl font-semibold mt-1 mb-0 pb-1">Welcome in your house dashboard {user_firstname} {user_lastname}.</h4>
-                                            <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is {new Date().toISOString().split('.')[0]} , beautiful day, isn't it?</h4>
+                                                    <h4 className="text-xl font-semibold mt-1 mb-0 pb-1">Welcome in your house dashboard {user_firstname} {user_lastname}.</h4>
+                                                    <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is today , beautiful day, isn't it?</h4>
 
-                                        </div>
-                                    </div>
-                                    <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>
+                                                </div>
+                                            </div>
+                                            <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>
 
-                                    <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
-                                        <div className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style={{ width: '69%' }}> 69%</div>
-                                    </div>
-                                    <div className="text-right mt-4">
-                                        Estimated filling:
-                                        <div>
-                                            {estimated_fill_date}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="mb-4 mt-16">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum qui quibusdam, beatae ipsum labore voluptatibus ratione, itaque expedita neque natus consequuntur et culpa voluptatem odit ipsam excepturi accusantium cum laudantium consequatur tenetur necessitatibus velit amet eum optio? Quaerat porro, officia obcaecati excepturi natus quo fugit perferendis eveniet laborum, quas nostrum.</p>
+                                            <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+                                                <div className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style={{ width: '69%' }}> 69%</div>
+                                            </div>
+                                            <div className="text-right mt-4">
+                                                Estimated filling:
 
-                                        <div className="text-center pt-1 mb-12 pb-1">
-                                            <button
-                                                className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3"
-                                                type="button"
-                                                data-mdb-ripple="true"
-                                                data-mdb-ripple-color="light"
+                                            </div>
+                                            <div>
+                                                <div className="mb-4 mt-16">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum qui quibusdam, beatae ipsum labore voluptatibus ratione, itaque expedita neque natus consequuntur et culpa voluptatem odit ipsam excepturi accusantium cum laudantium consequatur tenetur necessitatibus velit amet eum optio? Quaerat porro, officia obcaecati excepturi natus quo fugit perferendis eveniet laborum, quas nostrum.</div>
 
-                                            >
-                                                Log in
-                                            </button>
+                                                <div className="text-center pt-1 mb-12 pb-1">
+                                                    <button
+                                                        className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3"
+                                                        type="button"
+                                                        data-mdb-ripple="true"
+                                                        data-mdb-ripple-color="light"
 
-                                            {/* <a className="text-gray-500" href="#!">Tutto apposto?</a>
+                                                    >
+                                                        Log in
+                                                    </button>
+
+                                                    {/* <a className="text-gray-500" href="#!">Tutto apposto?</a>
                                             
 */}
+                                                </div>
+
+
+                                            </div>
                                         </div>
 
+                                        <div
+                                            className="lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none"
+                                        >
+                                            <div className="text-black px-4 py-6 md:p-12 md:mx-6">
+                                                <h4 className="text-xl font-semibold mb-6">Right card.</h4>
+                                                <div className="text-sm">
+                                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                                                    consequat.
 
-                                    </div>
-                                </div>
+                                                    Spiega che roba è.
 
-                                <div
-                                    className="lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none"
-                                >
-                                    <div className="text-black px-4 py-6 md:p-12 md:mx-6">
-                                        <h4 className="text-xl font-semibold mb-6">Right card.</h4>
-                                        <div className="text-sm">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                            consequat.
-
-                                            Spiega che roba è.
-
-                                            Bidone fantastico bellissimo me lo sposo guarda eccomi ciao.
+                                                    Bidone fantastico bellissimo me lo sposo guarda eccomi ciao.
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
+                </section>
+        </div>
     )
 }
 

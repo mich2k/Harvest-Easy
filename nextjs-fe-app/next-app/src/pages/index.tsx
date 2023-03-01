@@ -1,14 +1,14 @@
-import type { NextPage } from 'next'
 
 import { useState, useEffect } from 'react'
-import { Router, useRouter } from 'next/router'
-
+import {  useRouter } from 'next/router'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import home from './home';
 import axios from 'axios'
 
 
 import User from '../components/User'
 
-const Home: NextPage = () => {
+const Home = () => {
   const router = useRouter();
 
 
@@ -62,7 +62,7 @@ const Home: NextPage = () => {
             pathname: "/home",
             query: JSON.stringify(my_user)
           },
-          // "/home"
+          "/home"
         );
         // console.dir(state_user);
 
