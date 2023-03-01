@@ -81,9 +81,8 @@ def getneighbor(id_bin):
         "Content-Type": "application/json; charset=utf-8",
     }
     
-    call = requests.post(
-        "https://193.197.73.183:8084/ors/v2/matrix/driving-car", json=body, headers=headers
-    ).json() #https://ors.gmichele.it/ors/v2/matrix/driving-car
+    call = requests.post('https://api.openrouteservice.org/v2/matrix/driving-car', json=body, headers=headers).json()
+    #https://ors.gmichele.it/ors/v2/matrix/driving-car
     
     if 'error' in call:
         return 'error: ' + str(call)
