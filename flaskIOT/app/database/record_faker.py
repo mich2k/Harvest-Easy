@@ -13,7 +13,7 @@ sample = {
     "timestamp": "0",
 }
 
-threshold = 0.7
+threshold = 0.85
 
 
 def faker_instances():

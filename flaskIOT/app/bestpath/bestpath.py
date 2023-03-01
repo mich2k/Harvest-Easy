@@ -82,7 +82,7 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
             empty["apartment_ID"] = bin.apartment_ID
             empty["bin"] = bin.tipologia
             to_empty.append(empty)
-
+     
     jobs = []
     i = 0
     j = 0
@@ -100,7 +100,10 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
         if i < len(to_empty):
             while (to_empty[i]["apartment_ID"] == apartment_ID):
                 i = i + 1
-
+    
+    if(len(jobs)==0):
+        return jsonify({"message": "nessun percorso disponibile per mancanza di bidoni pieni"})
+    
     body = {
         "jobs": jobs,
         "vehicles": [{
