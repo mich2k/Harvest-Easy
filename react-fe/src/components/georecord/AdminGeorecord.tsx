@@ -7,8 +7,12 @@ import ReactLoading from 'react-loading';
 import axios from 'axios'
 import React from 'react';
 import { Flowbite } from 'flowbite-react';
+import Coordinates from '../Coordinates';
+import { useSearchParams } from 'react-router-dom';
 
 const Home = () => {
+
+
 
     const APARTMENT_KEY_QUERY = 'ap_id';
 
@@ -18,7 +22,7 @@ const Home = () => {
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isGeoAllowanceGiven, setGeoAllowanceGiven] = useState<boolean>(false);
     const [data, setData] = useState(null);
-    const [deviceGeoCoordinates, setGeoCoordinates] = useState<{ lat: number, lon: number }>({ "lat": undefined, "lon": undefined });
+    const [deviceGeoCoordinates, setGeoCoordinates] = useState<Coordinates>();
 
     const [user, setUser] = useState({ username: '', access_token: '', birth_year: 1900, name: '', last_name: '', city: '', apartment_id: '' });
 
@@ -44,8 +48,13 @@ const Home = () => {
 
 
     useEffect(() => {
-        setApartmentId(String(router.query[APARTMENT_KEY_QUERY]))
-    }, [String(router.query[APARTMENT_KEY_QUERY])])
+
+
+        const queryParameters = new URLSearchParams(window.location.search);
+
+        setApartmentId(String(queryParameters.get(APARTMENT_KEY_QUERY)));
+
+    }, [new URLSearchParams(window.location.search)]);
 
 
     useEffect(() => {
@@ -56,7 +65,7 @@ const Home = () => {
         }
 
         navigator.geolocation.getCurrentPosition(function (position) {
-            setGeoCoordinates({ lat: position.coords.latitude, lon: position.coords.longitude });
+            setGeoCoordinates(new Coordinates(position.coords.latitude, position.coords.longitude));
             setGeoAllowanceGiven(true);
             // console.log("Latitude is :", position.coords.latitude);
             // console.log("Longitude is :", position.coords.longitude);
@@ -81,7 +90,6 @@ const Home = () => {
     }, [])
 
     */
-
 
 
     const onLogInButtonClick = () => {
@@ -113,9 +121,12 @@ const Home = () => {
 
     }
 
+    const [queryParameters] = useSearchParams();
+
+
 
     if (!isGeoSupported) {
-        return <GenericError current_path={router.asPath} body_message={"Your device does not support geo-location, please change device to proceed."}></GenericError>
+        return <GenericError current_path={"test"} body_message={"Your device does not support geo-location, please change device to proceed."}></GenericError>
 
     } else {
 
@@ -134,17 +145,17 @@ const Home = () => {
             );
         }
         else {
-            if (Object.keys(router.query).length === 0
+            if (Object.keys(queryParameters).length === 0
                 || !(APARTMENT_KEY_QUERY in router.query)
                 || router.query[APARTMENT_KEY_QUERY].length === 0) {
                 return <Error
                     header_message="Apartment ID invalid or not specified or a broken QR Code"
                 ></Error>;
             } else {
-                if (!isGeoAllowanceGiven || deviceGeoCoordinates['lat'] === undefined || deviceGeoCoordinates['lon'] === undefined) {
-                    return <GenericError current_path={router.asPath} body_message={"Has not been possible to retrieve geo coordinates from your device, please give geolocation allowance from the settings in your browser or will not be possible to proceed to apartment registration"}></GenericError>
+                if (!isGeoAllowanceGiven || deviceGeoCoordinates === undefined) {
+                    return <GenericError current_path={"test"} body_message={"Has not been possible to retrieve geo coordinates from your device, please give geolocation allowance from the settings in your browser or will not be possible to proceed to apartment registration"}></GenericError>
                 }
-                if (isGeoAllowanceGiven && deviceGeoCoordinates['lat'] !== undefined && deviceGeoCoordinates['lon'] !== undefined && !isLoading) {
+                if (isGeoAllowanceGiven && deviceGeoCoordinates !== undefined && !isLoading) {
                     return (
 
                         <section className="h-full gradient-form bg-gray-200 md:h-screen">
@@ -168,7 +179,12 @@ const Home = () => {
                                                                 <span className="font-bold">Apartment ID:</span> <span>{apartment_id}</span>
                                                             </div>
                                                             <div>
-                                                                <span className="font-bold">Your Coordinates:</span> <span>[LA: {deviceGeoCoordinates.lat}, LO: {deviceGeoCoordinates.lon}]</span>
+                                                                <span className="font-bold">Your Coordinates:</span>
+                                                                
+                                                                <span>LA: {deviceGeoCoordinates.toStringCoordinates()[0]}, LO: {deviceGeoCoordinates.toStringCoordinates()[1]}</span>
+                                                            </div>
+                                                            <div>
+                                                                
                                                             </div>
                                                             <div>
                                                                 <span className="font-bold">Detected geo-reversed city:</span> <span>{apartment_id}</span>
