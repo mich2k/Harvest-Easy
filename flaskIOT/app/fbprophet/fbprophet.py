@@ -183,7 +183,7 @@ def createprevision(time, apartment_name=None, tipologia=None):
             
             for i in range(len(dates)):
                 try:
-                    next_status = util.calcolastatus(bin.id_bin, prediction[i])
+                    next_status = util.calcolastatus(bin.id_bin, prediction[i], prophet=True)
                     if (next_status == 2):
                         date_riempimento = dates[i][0] if dates[i] is not None else ''
                 except Exception as e:

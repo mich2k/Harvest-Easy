@@ -34,12 +34,11 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             last_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(
                 BinRecord.timestamp.desc()).first()
 
-            next_status = utility.calcolastatus(bin.id_bin, last_bin_record.riempimento)
+            status = None if last_bin_record is None else last_bin_record.status
             
-            if to_be_emptied and (next_status == 1 or next_status == 3):
+            if to_be_emptied and (status == 1 or status == 3):
                 continue
 
-            status = None if last_bin_record is None else last_bin_record.status
             filling = None if last_bin_record is None else last_bin_record.riempimento
 
             point["tipologia"] = bin.tipologia
