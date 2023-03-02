@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import csv
 import os
 from flasgger import swag_from
-import logging
+import traceback
 from app.utils.utils import Utils
 
 
@@ -182,12 +182,17 @@ def createprevision(time, apartment_name=None, tipologia=None):
             
             
             for i in range(len(dates)):
-                if (util.calcolastatus(bin.id_bin, prediction[i]) == 2):
-                    date_riempimento = dates[i][0] if dates[i] is not None else ''
-            
+                try:
+                    next_status = util.calcolastatus(bin.id_bin, prediction[i])
+                    if (next_status == 2):
+                        date_riempimento = dates[i][0] if dates[i] is not None else ''
+                except Exception as e:
+                    traceback.print_exc()
+                        
             if str(date_riempimento) != "":
                 Utils.set_previsione_status(bin.id_bin, str(date_riempimento))
-                
+            
+        
     return jsonify({"msg": "Previsioni correttamente create"}), 200
 
 

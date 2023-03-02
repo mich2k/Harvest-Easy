@@ -1,9 +1,9 @@
 from app.database.tables import Admin, Apartment, Bin, User, UserTG, LeaderBoard, BinRecord
 from flask import Blueprint
 from app.utils.utils import Utils
-from flask_jwt_extended import jwt_required
 from app.database.__init__ import db
 from flask import jsonify
+from flask_jwt_extended import jwt_required
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 
@@ -171,7 +171,7 @@ def getscore(usr):
     if res is None:
         return Utils.get_response(400, 'None')
         
-    return Utils.get_response(200, str(res.score))
+    return Utils.get_response(200, str(res.score), True)
 
 
 # Get: ottengo la sessione dell'utente
@@ -185,6 +185,6 @@ def getsession(usr):
         .where(UserTG.id_user == usr)
         .all()
     ):
-        return Utils.get_response(200, str(True))
+        return Utils.get_response(200, str(True), True)
 
-    return Utils.get_response(200, str(False))
+    return Utils.get_response(200, str(False), True)
