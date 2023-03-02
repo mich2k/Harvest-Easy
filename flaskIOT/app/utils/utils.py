@@ -27,7 +27,7 @@ class Utils:
         # self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
-    def calcolastatus(self, id_bin: int, riempimento: float, roll = 0, pitch = 90, co2 = 1000):
+    def calcolastatus(self, id_bin: int, riempimento: float, roll = 0, pitch = 90, co2 = 1000, prophet=False):
         """ 
         Legenda status:
             1: integro e non-pieno, 
@@ -72,15 +72,15 @@ class Utils:
 
         if current_status == 1:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                report(id_bin, db, apartment_ID, riempimento)
+                if not prophet: report(id_bin, db, apartment_ID, riempimento)
                 current_status = 2
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                report(id_bin, db, apartment_ID, 90)
+                if not prophet: report(id_bin, db, apartment_ID, 90)
                 current_status = 3
 
             if co2 >= limite_co2 and co2 is not None:
-                report(id_bin, db, apartment_ID, co2)
+                if not prophet: report(id_bin, db, apartment_ID, co2)
                 current_status = 3
 
             return current_status
@@ -95,18 +95,18 @@ class Utils:
                 db.session.commit()
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                report(id_bin, db, apartment_ID, 90)
+                if not prophet: report(id_bin, db, apartment_ID, 90)
                 current_status = 4
 
             if co2 >= limite_co2 and co2 is not None:
-                report(id_bin, db, apartment_ID, co2)
+                if not prophet: report(id_bin, db, apartment_ID, co2)
                 current_status = 4
 
             return current_status
 
         if current_status == 3:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                report(id_bin, db, apartment_ID, riempimento)
+                if not prophet: report(id_bin, db, apartment_ID, riempimento)
                 current_status = 4
 
             if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:
