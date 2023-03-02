@@ -1,6 +1,6 @@
 import requests
 import json
-from app.database.tables import *
+from app.database.tables import Bin, User, Apartment, UserTG, AlterationRecord
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from os import getenv
 
