@@ -15,4 +15,4 @@ def setsession(usr, idchat):
     )
     db.session.commit()
 
-    return Utils.get_response(200, "Done")
+    return Utils.get_response(200, "Done", True)

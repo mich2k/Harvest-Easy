@@ -34,7 +34,9 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             last_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(
                 BinRecord.timestamp.desc()).first()
 
-            if to_be_emptied and (utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 1 or utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 3):
+            next_status = utility.calcolastatus(bin.id_bin, last_bin_record.riempimento)
+            
+            if to_be_emptied and (next_status == 1 or next_status == 3):
                 continue
 
             status = None if last_bin_record is None else last_bin_record.status
