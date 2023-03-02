@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import withAuth from "../WithAuth";
 import React from "react";
 import User from "../User";
 import { Flowbite } from "flowbite-react";

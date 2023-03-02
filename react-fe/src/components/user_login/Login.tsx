@@ -5,13 +5,15 @@ import home from '../home/Home';
 import axios from 'axios'
 import React from 'react';
 import User from '../User'
+import PropTypes from 'prop-types';
+
 
 const Login = ({ setToken }: { setToken: string }) => {
 
   const [checked_state, setCheck] = useState(false);
 
   const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState<string>('');
 
 
   const [state_user, setUser] = useState<User>();
@@ -21,7 +23,9 @@ const Login = ({ setToken }: { setToken: string }) => {
   const url = "https://flask.gmichele.it";
 
 
-  const handleSubmit = () => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
     console.log(username);
 
     if (!checked_state) {
@@ -71,12 +75,6 @@ const Login = ({ setToken }: { setToken: string }) => {
 
 
   }
-
-  useEffect(() => {
-    import("flowbite/dist/flowbite");
-
-
-  }, []);
 
 
 
@@ -181,3 +179,9 @@ const Login = ({ setToken }: { setToken: string }) => {
 
 
 export default Login
+
+
+
+Login.propTypes = {
+  setToken: PropTypes.func.isRequired
+}

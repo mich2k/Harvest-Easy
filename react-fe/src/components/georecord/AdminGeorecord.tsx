@@ -146,8 +146,7 @@ const Home = () => {
         }
         else {
             if (Object.keys(queryParameters).length === 0
-                || !(APARTMENT_KEY_QUERY in router.query)
-                || router.query[APARTMENT_KEY_QUERY].length === 0) {
+                || !(APARTMENT_KEY_QUERY in queryParameters)) {
                 return <Error
                     header_message="Apartment ID invalid or not specified or a broken QR Code"
                 ></Error>;
