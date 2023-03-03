@@ -6,9 +6,15 @@ import axios from 'axios'
 import React from 'react';
 import User from '../User'
 import PropTypes from 'prop-types';
+import { useNavigate } from "react-router-dom";
+import useToken from '../../useToken';
+const Login = () => {
 
 
-const Login = ({ setToken }: { setToken: string }) => {
+  const { setToken } = useToken();
+
+  const navigate = useNavigate();
+
 
   const [checked_state, setCheck] = useState(false);
 
@@ -25,9 +31,7 @@ const Login = ({ setToken }: { setToken: string }) => {
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
-    console.log(username);
-
+    e.preventDefault();
     if (!checked_state) {
       console.log('check');
       return;
@@ -68,8 +72,11 @@ const Login = ({ setToken }: { setToken: string }) => {
 
         // console.dir(localStorage.getItem('user'));
 
-       // setToken(data["access_token"]);
 
+
+        navigate("/home",{
+          state: { user: my_user }
+        } );
 
       });
 
@@ -181,7 +188,3 @@ const Login = ({ setToken }: { setToken: string }) => {
 export default Login
 
 
-
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
-}

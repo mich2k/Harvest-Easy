@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import React from "react";
 import User from "../User";
 import { Flowbite } from "flowbite-react";
-
+import useToken from "../../useToken";
+import { useLocation } from "react-router-dom";
 const Home = () => {
   const [user_firstname, setUserFistName] = useState<string>("Loading");
   const [user_lastname, setUserLastName] = useState<string>("Loading");
@@ -14,13 +15,17 @@ const Home = () => {
 
   const [state_user, setUser] = useState<User>();
 
+  const {state} = useLocation();
+
+  const user = state as User;
 
 
   useEffect(() => {
+    console.log("useEffect");
+
     const localst_key = "home_user";
-    let u;
-    u = undefined;
-    u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
+    const u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
+    u.fromObj(state["user"]);
     setUser(u);
     console.dir(state_user);
 
