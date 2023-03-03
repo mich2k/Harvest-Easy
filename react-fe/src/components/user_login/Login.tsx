@@ -51,7 +51,7 @@ const Login = ({ setToken }: { setToken: string }) => {
 
         console.log(data);
 
-        let my_user = new User(username, password, data["access_token"], data["name"], data["surname"],
+        const my_user = new User(username, password, data["access_token"], data["name"], data["surname"],
           data["apartment_ID"], data["internal_number"], data["city"], data["birth_year"]);
 
         setUser(my_user);
@@ -68,7 +68,7 @@ const Login = ({ setToken }: { setToken: string }) => {
 
         // console.dir(localStorage.getItem('user'));
 
-        setToken(data["access_token"]);
+       // setToken(data["access_token"]);
 
 
       });

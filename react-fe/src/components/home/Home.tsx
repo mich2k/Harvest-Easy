@@ -20,6 +20,7 @@ const Home = () => {
     const localst_key = "home_user";
     let u;
     u = undefined;
+    u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
     setUser(u);
     console.dir(state_user);
 
@@ -51,7 +52,7 @@ const Home = () => {
                         <h4 className="text-xl font-semibold mt-1 mb-0 pb-1">
                           Welcome in your house dashboard {user_firstname} {user_lastname}.
                         </h4>
-                        <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is today , beautiful day, isn't it?</h4>
+                        <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is today , beautiful day, isn&apos;t it?</h4>
                       </div>
                     </div>
                     <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>

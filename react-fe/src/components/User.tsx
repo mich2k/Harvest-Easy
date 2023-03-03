@@ -5,13 +5,13 @@ class User {
     last_name: string;
     city: string;
     access_token: string;
-    birth_year: Number;
+    birth_year: number;
     apartment_id: string;
-    internal_number: Number;
+    internal_number: number;
   
   
   
-    constructor(username: string, password: string, access_token: string, name: string, last_name: string, apartment_id: string, internal_number: Number, city: string, birth_year?: Number,) {
+    constructor(username: string, password: string, access_token: string, name: string, last_name: string, apartment_id: string, internal_number: number, city: string, birth_year?: number,) {
   
       this.username = username;
       this.password = password;
