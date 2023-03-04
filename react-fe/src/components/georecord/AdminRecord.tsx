@@ -13,14 +13,28 @@ const AdminRecord = () => {
 
   const [people, setPeople] = useState<Person[]>([]);
 
+  const [apartment_waste_sorting, setApartmentWasteSorting] = useState<Set<string>>(new Set());
+
   const handlePeopleChange = (people: Person[]) => {
     setPeople(people);
   };
-
   const { state } = useLocation();
 
   const user = state as User;
 
+  const onCheckboxChange = (type: string) => {
+
+    const newApartmentWasteSorting = new Set(apartment_waste_sorting);
+    if (newApartmentWasteSorting.has(type)) {
+      newApartmentWasteSorting.delete(type);
+    } else {
+      newApartmentWasteSorting.add(type);
+    }
+    setApartmentWasteSorting(newApartmentWasteSorting);
+
+    console.dir(newApartmentWasteSorting);
+
+  }
 
   const onApartmentRegister = () => {
 
@@ -67,37 +81,38 @@ const AdminRecord = () => {
 
                     <PersonList onPeopleChange={handlePeopleChange} ></PersonList>
 
-              <hr className="mt-4 mb-4"></hr>
+                    <hr className="mt-4 mb-4"></hr>
 
                     <div className="ml-4">
                       <h2 className="mb-4 font-semibold text-gray-900 dark:text-white">Check which materials the condominium separates</h2>
                       <ul className="w-48 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <li className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                           <div className="flex items-center pl-3">
-                            <input id="paper-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                              <label htmlFor="vue-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Paper</label>
+                            <input onChange={() => { onCheckboxChange("paper") }} id="paper-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                            <label htmlFor="paper-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Paper</label>
                           </div>
                         </li>
                         <li className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                           <div className="flex items-center pl-3">
-                            <input id="plastic-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                              <label htmlFor="react-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Plastic</label>
+                            <input onChange={() => { onCheckboxChange("plastic") }} id="plastic-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                            <label htmlFor="plastic-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Plastic</label>
                           </div>
                         </li>
                         <li className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                           <div className="flex items-center pl-3">
-                            <input id="glass-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                              <label htmlFor="angular-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Glass</label>
+                            <input onChange={() => { onCheckboxChange("glass") }} id="glass-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                            <label htmlFor="glass-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Glass</label>
                           </div>
                         </li>
                         <li className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                           <div className="flex items-center pl-3">
-                            <input id="organic-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                              <label htmlFor="laravel-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Organic</label>
+                            <input onChange={() => { onCheckboxChange("organic") }} id="organic-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                            <label htmlFor="organic-checkbox" className="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Organic</label>
                           </div>
                         </li>
                       </ul>
                     </div>
+                    <hr className="mt-6 mb-1"></hr>
 
 
 
