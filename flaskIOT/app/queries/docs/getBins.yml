@@ -1,0 +1,35 @@
+summary: Ritorna informazioni su tutti i bidoni monitorati in una città
+parameters:
+  - in: path
+    name: city
+    required: true
+    type: string
+responces:
+  '200':
+    description: Successo
+    content:
+        application.json
+    schema:
+      properties:
+        ListaPunti:
+          type: array
+          items:
+            type: object
+            properties:
+              apartment_ID:
+                example: IDK
+                type: string
+              id_bin:
+                example: 1
+                type: int
+              previsione_status:
+                example: '2022-11-30T02:41:41.000000000'
+                type: datetime
+              tipologia:
+                example: carta
+                type: string
+              ultimo_svuotamento:
+                example: '2022-4-10 11:37:40'
+                type: datetime
+  '401':
+    description: Città non valida

@@ -17,6 +17,8 @@ responses:
   '200':
     description: Previsioni correttamente create
   '401':
-    description: Nome dell'appartamento o tipologia non inseriti
+    description: Tempo inserito non corretto
   '402':
-    description: Appartamento o tipologia non validi
+    description: Nome dell'appartamento o tipologia non validi
+  '403':
+    description: Appartamento non valido

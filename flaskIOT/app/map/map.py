@@ -15,8 +15,12 @@ utility = Utils()
 def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
 
     if Bin.query.filter(Bin.tipologia == bin_type).first() == None and bin_type is not None:
-        return jsonify({"error": "Tipologia non valida"}, 402)
+        return jsonify({"error": "Tipologia non valida"}), 401
 
+    if sel_city is not None:
+        if Apartment.query.filter(Apartment.city == sel_city).all() is None:
+            return jsonify({"error": "Città non valida"}), 402
+        
     apartments = Apartment.query.all(
     ) if sel_city is None else Apartment.query.filter(Apartment.city == sel_city).all()
     points = []
@@ -26,7 +30,8 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             Bin.apartment_ID == apartment.apartment_name).all()
 
         if bin_type is not None:
-            bins = bins.filter(Bin.tipologia == bin_type)
+            bins = Bin.query.filter(
+                Bin.apartment_ID == apartment.apartment_name).filter(Bin.tipologia == bin_type).all()
 
         for bin in bins:
             point = {}
@@ -34,10 +39,11 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             last_bin_record = BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin).order_by(
                 BinRecord.timestamp.desc()).first()
 
-            if to_be_emptied and (utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 1 or utility.calcolastatus(bin.id_bin, last_bin_record.riempimento) == 3):
+            status = None if last_bin_record is None else last_bin_record.status
+            
+            if to_be_emptied and (status == 1 or status == 3):
                 continue
 
-            status = None if last_bin_record is None else last_bin_record.status
             filling = None if last_bin_record is None else last_bin_record.riempimento
 
             point["tipologia"] = bin.tipologia
@@ -74,16 +80,15 @@ def get_map():
 
 # Mappa di tutti i bidoni di una città
 
-
 @map_blueprint.route("/getmap/<string:city>")
+@swag_from('docs/getmap2.yml')
 def getmapfromcity(city):
     return get_points(sel_city=city)
 
 # Mappa di tutti i bidoni di un certo tipo di una città
 
-
 @map_blueprint.route("/getmap/<string:type>&<string:city>")
-@swag_from('docs/map.yml')
+@swag_from('docs/getmap3.yml')
 def get_filteredmap(type, city):
     return get_points(bin_type=type, sel_city=city)
 
@@ -91,11 +96,13 @@ def get_filteredmap(type, city):
 
 
 @map_blueprint.route("/getservicemap")
+@swag_from('docs/getservicemap.yml')
 def get_servicemap():
     return get_points(to_be_emptied=True)
 
 
 @map_blueprint.route("/getservicemap/<string:type>&<string:city>")
+#@swag_from('docs/getservicemap2.yml')
 def get_servicefilteredmap(type, city):
     return get_points(bin_type=type, sel_city=city, to_be_emptied=True)
 

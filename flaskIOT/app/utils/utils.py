@@ -1,7 +1,9 @@
 from datetime import datetime
 from flask import Response
+from sqlalchemy import update
 from os import getenv
-from ..database.tables import *
+from ..database.tables import BinRecord, Bin, Apartment
+from ..database.database import db
 from ..trap.trap import *
 import random
 import json
@@ -25,7 +27,7 @@ class Utils:
         # self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
-    def calcolastatus(self, id_bin, riempimento, roll = 0, pitch = 90, co2 = 1000):
+    def calcolastatus(self, id_bin: int, riempimento: float, roll = 0, pitch = 90, co2 = 1000, prophet=False):
         """ 
         Legenda status:
             1: integro e non-pieno, 
@@ -70,15 +72,15 @@ class Utils:
 
         if current_status == 1:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                report(id_bin, apartment_ID, riempimento)
+                if not prophet: report(id_bin, db, apartment_ID, riempimento)
                 current_status = 2
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                report(id_bin, apartment_ID, 90)
+                if not prophet: report(id_bin, db, apartment_ID, 90)
                 current_status = 3
 
             if co2 >= limite_co2 and co2 is not None:
-                report(id_bin, apartment_ID, co2)
+                if not prophet: report(id_bin, db, apartment_ID, co2)
                 current_status = 3
 
             return current_status
@@ -93,18 +95,18 @@ class Utils:
                 db.session.commit()
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                report(id_bin, apartment_ID, 90)
+                if not prophet: report(id_bin, db, apartment_ID, 90)
                 current_status = 4
 
             if co2 >= limite_co2 and co2 is not None:
-                report(id_bin, apartment_ID, co2)
+                if not prophet: report(id_bin, db, apartment_ID, co2)
                 current_status = 4
 
             return current_status
 
         if current_status == 3:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                report(id_bin, apartment_ID, riempimento)
+                if not prophet: report(id_bin, db, apartment_ID, riempimento)
                 current_status = 4
 
             if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:
@@ -131,7 +133,7 @@ class Utils:
                 current_status = 2
 
             return current_status
-
+    
     def get_organic_threashold(self, apartment_ID, id_bin):
 
         lat = (
@@ -175,8 +177,10 @@ class Utils:
         return current_threashold
 
     def set_previsione_status(id_bin, status_previsto):
-        db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-            {"previsione_status": status_previsto}
+        db.session.execute(
+            update(Bin)
+            .where(Bin.id_bin == id_bin)
+            .values({"previsione_status": status_previsto})
         )
         db.session.commit()
 
@@ -235,12 +239,12 @@ class Utils:
 
         return res
 
-    def get_response(code, message):
+    def get_response(code, message, text=False):
         response = Response()
         response.status = code
-        response.data = json.dumps(message)
-        response.content_type = "application/json"
-        response.mimetype = "application/json"
+        response.data = json.dumps(message) if not text else message
+        response.content_type = "application/json" if not text else "text/plain"
+        response.mimetype = "application/json" if not text else "text/plain"
         return response
 
     @property

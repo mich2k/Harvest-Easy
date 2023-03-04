@@ -1,17 +1,27 @@
 from app.database.tables import Admin, Apartment, Bin, User, UserTG, LeaderBoard, BinRecord
 from flask import Blueprint
 from app.utils.utils import Utils
-from flask_jwt_extended import jwt_required
 from app.database.__init__ import db
 from flask import jsonify
+from flask_jwt_extended import jwt_required
+from app.utils.utils import Utils
+from flasgger import swag_from
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
+
+@get_blueprint.route('/prevision/<int:id_bin>')
+@jwt_required()
+def getprevision(id_bin):
+    bin = Bin.query.filter(Bin.id_bin == id_bin).first()
+    return jsonify(bin.previsione_status)
 
 
 @get_blueprint.route("/getprofileuser/<string:uid>", methods=["GET"])
 @jwt_required()
 def getprofileuser(uid):
     user = User.query.filter(User.username==uid).first()
+    if user is None: return jsonify({"errore": "username non corretto"})
+
     apartment_user= Apartment.query.filter(Apartment.apartment_name==user.apartment_ID).first()
     bins=Bin.query.filter(Bin.apartment_ID==user.apartment_ID).all()
   
@@ -48,6 +58,56 @@ def getprofileuser(uid):
         "bins":bidoni_user
    })
 
+@get_blueprint.route("/getprofileadmin/<string:uid>", methods=["GET"])
+@jwt_required()
+def getprofileadmin(uid):
+    admin = Admin.query.filter(Admin.username==uid).first()
+    if admin is None: return jsonify({"errore": "username non corretto"})
+    
+    apartments = Apartment.query.filter(Apartment.associated_admin==uid).all()
+    appartment_list=[]
+    for apartment in apartments:
+        dictap={
+            "apartment_name": apartment.apartment_name,
+            "apartment_city": apartment.city,
+            "street": apartment.street,
+            "apartment_street_number": apartment.apartment_street_number,
+            "n_internals": apartment.n_internals, 
+            "bins":None
+        }
+        
+        bins=Bin.query.filter(Bin.apartment_ID==apartment.apartment_name).all()
+        bidoni=[]
+        for bin in bins:
+            ultimo_bin_record = (
+                BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
+                .order_by(BinRecord.timestamp.desc())
+                .first()
+            )
+            dict={
+                "id_bin": bin.id_bin,
+                "tipologia": bin.tipologia,
+                "previsione_status": bin.previsione_status,
+                "ultimo_svuotamento": bin.ultimo_svuotamento,
+                "status": Utils.getstringstatus(ultimo_bin_record.status),
+                "temperature": ultimo_bin_record.temperature,
+                "humidity": ultimo_bin_record.humidity,
+                "riempimento": ultimo_bin_record.riempimento
+            }
+            bidoni.append(dict)
+        dictap["bins"]=bidoni
+        appartment_list.append(dictap)
+
+    return jsonify({
+        "username": uid,
+        "name": admin.name,
+        "surname": admin.username,
+        "user_city": admin.city,
+        "birth_year": admin.birth_year,
+        "card_number": admin.card_number,
+        "apartments": appartment_list,
+   })
+
 @get_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
 @jwt_required()
 def dataAdmin(uid):
@@ -61,16 +121,14 @@ def dataAdmin(uid):
 
 
 @get_blueprint.route("/getBins/<string:city>", methods=["GET"])
+#@swag_from('docs/getBins.yml')
 def getbins(city):
-
     # Subquery: Tutti gli appartamenti della cittá indicata
-    db.session.query()
     sq = db.session.query(Apartment.apartment_name).where(
         Apartment.city == city)
 
-    # Query: Tutti i bin negli appartamenti selezionati
-    res = Bin.query().filter(Bin.apartment_ID.in_(sq)).all()
-
+    # Query: Tutti gli user negli appartamenti selezionati
+    res = db.session.query(Bin).filter(Bin.apartment_ID.in_(sq)).all()
     return Utils.sa_dic2json(res)
 
 
@@ -78,12 +136,13 @@ def getbins(city):
 
 
 @get_blueprint.route("/getUsers/<string:city>", methods=["GET"])
+#@swag_from('docs/getUsers.yml') BOH
 def getusers(city):
 
     # Subquery: Tutti gli appartamenti della cittá indicata
     sq = db.session.query(Apartment.apartment_name).where(
         Apartment.city == city)
-
+    
     # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
@@ -94,12 +153,14 @@ def getusers(city):
 
 
 @get_blueprint.route("/getypes/<string:apartment>", methods=["GET"])
+#@swag_from('docs/getypes.yml')
 def getypes(apartment):
-
-    res = db.session.query(Bin.tipologia).filter(
+    res = db.session.query(Bin).filter(
         Bin.apartment_ID == apartment).all()
-
-    return Utils.sa_dic2json(res)
+    tipologie=[]
+    for re in res:
+        tipologie.append(re.tipologia)
+    return jsonify(tipologie)
 
 
 # Get: user dell'appartamento indicato
@@ -117,6 +178,7 @@ def getapartmentusers(apartment):
 
 
 @get_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
+#@swag_from('docs/getBinInfo.yml')
 def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
@@ -165,7 +227,7 @@ def getscore(usr):
     if res is None:
         return Utils.get_response(400, 'None')
         
-    return Utils.get_response(200, str(res.score))
+    return Utils.get_response(200, str(res.score), True)
 
 
 # Get: ottengo la sessione dell'utente
@@ -179,6 +241,6 @@ def getsession(usr):
         .where(UserTG.id_user == usr)
         .all()
     ):
-        return Utils.get_response(200, str(True))
+        return Utils.get_response(200, str(True), True)
 
-    return Utils.get_response(200, str(False))
+    return Utils.get_response(200, str(False), True)

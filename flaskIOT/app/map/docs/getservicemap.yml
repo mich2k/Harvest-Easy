@@ -1,4 +1,4 @@
-summary: Ritorna una lista di punti, ognuno dei quali contiene informazioni sui bidoni monitorati 
+summary: Ritorna una lista di punti, ognuno dei quali contiene informazioni sui bidoni monitorati da svuotare 
 responses:
   '200':
     description: Quando i punti sono correttamente creati
@@ -41,4 +41,3 @@ responses:
       updated:
         example: '2023-02-02 16:55:55'
         type: datetime
-
