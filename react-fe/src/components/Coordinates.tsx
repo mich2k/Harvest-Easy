@@ -2,9 +2,9 @@
 
 
 class Coordinates{
-    lat:Number;
-    lon:Number;
-    constructor(lat:Number,lon:Number){
+    lat:number;
+    lon:number;
+    constructor(lat:number,lon:number){
         this.lat = lat;
         this.lon = lon;
     }

@@ -8,10 +8,11 @@ class User {
   birth_year: number;
   apartment_id: string;
   internal_number: number;
+  tg_username: string;
 
 
 
-  constructor(username: string, password: string, access_token: string, name: string, last_name: string, apartment_id: string, internal_number: number, city: string, birth_year?: number,) {
+  constructor(username: string, password: string, access_token: string, name: string, last_name: string, apartment_id: string, internal_number: number, city: string, birth_year?: number, tg_username?: string) {
 
     this.username = username;
     this.password = password;
@@ -22,6 +23,8 @@ class User {
     this.internal_number = internal_number;
     this.city = city;
     this.birth_year = birth_year ?? 0;
+    this.tg_username = tg_username ?? "None";
+
 
   }
   fromObj(obj: any) {
@@ -33,7 +36,8 @@ class User {
     this.apartment_id = obj.apartment_id;
     this.internal_number = obj.internal_number;
     this.city = obj.city;
-    this.birth_year = obj.birth_year;
+    this.birth_year = obj.birth_year ?? 0;
+    this.tg_username = obj.tg_username ?? "None";
   }
 }
 

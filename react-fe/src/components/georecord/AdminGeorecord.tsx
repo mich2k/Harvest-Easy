@@ -10,7 +10,7 @@ import { Flowbite } from 'flowbite-react';
 import Coordinates from '../Coordinates';
 import { useSearchParams } from 'react-router-dom';
 
-const Home = () => {
+const AdminGeorecord = () => {
 
 
 
@@ -274,4 +274,4 @@ const Home = () => {
     }
 }
 
-export default Home
+export default AdminGeorecord;
