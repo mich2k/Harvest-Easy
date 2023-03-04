@@ -2,13 +2,8 @@ import { useState, useEffect } from "react";
 import React from "react";
 import User from "../User";
 import PersonList from "../PersonList";
+import { Person } from "../PersonList";
 
-
-type Person = {
-  name: string;
-  surname: string;
-  telegramUsername: string;
-};
 
 import { useLocation } from "react-router-dom";
 const AdminRecord = () => {
@@ -55,21 +50,19 @@ const AdminRecord = () => {
                         <h3 className="text-xl font-semibold mt-2 pt-3 mb-0 pb-1">Apartment {apartment_name}.</h3>
 
                         <h4 className="text-xl font-semibold mt-1 mb-0 pb-1">
-                          Welcome in your house dashboard {user_firstname}.
+                          Welcome
                         </h4>
-                        <h4 className="text-l font-semibold mt-1 mb-4 pb-1">Today is today , beautiful day, isn&apos;t it?</h4>
                       </div>
                     </div>
-                    <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>
+                    <h3 className="ml-4 text-xl font-semibold mt-2 pt-3 mb-4 pb-1">First-time apartment registration</h3>
 
                     <PersonList onPeopleChange={handlePeopleChange} ></PersonList>
-                    <div className="text-right mt-4">Estimated filling:</div>
                     <div>
-                      <div className="mb-4 mt-16">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum qui quibusdam, beatae ipsum labore voluptatibus ratione, itaque expedita neque natus consequuntur et culpa voluptatem odit ipsam excepturi accusantium cum laudantium consequatur tenetur necessitatibus velit amet eum optio? Quaerat porro, officia obcaecati excepturi natus quo fugit perferendis eveniet laborum, quas nostrum.</div>
+                      <div className="m-4 mb-4 mt-16">Cosa permette di fare questo tool? Spiegaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</div>
 
                       <div className="text-center pt-1 mb-12 pb-1">
                         <button className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
-                          Log in
+                          Register Apartment
                         </button>
 
                         {/* <a className="text-gray-500" href="#!">Tutto apposto?</a>

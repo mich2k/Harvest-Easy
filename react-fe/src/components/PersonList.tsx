@@ -4,6 +4,10 @@ export type Person = {
     name: string;
     surname: string;
     telegramUsername: string;
+    password: string;
+    rfid_card: string;
+    birth_year: number;
+    intern_number: number;
 };
 
 type Props = {
@@ -13,7 +17,10 @@ type Props = {
 const PersonList = (props: Props) => {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [extension, setExtension] = useState(0);
+    const [birth_year, setBirthYear] = useState(0);
+    const [intern_number, setInternNumber] = useState(0);
+    const [rfid_card, setRfidCard] = useState('');
+    const [password, setPassword] = useState('');
     const [telegramUsername, setTelegramUsername] = useState('');
     const [people, setPeople] = useState<Person[]>([]);
 
@@ -22,7 +29,18 @@ const PersonList = (props: Props) => {
             name,
             surname,
             telegramUsername,
+            password,
+            rfid_card,
+            birth_year,
+            intern_number
         };
+
+
+        if (!name || !surname || !telegramUsername || !password || !rfid_card || !birth_year || !intern_number) {
+            alert('Please fill all the fields');
+            return;
+        }
+
         const newPeople = [...people, newPerson];
         setPeople(newPeople);
         if (props.onPeopleChange) {
@@ -30,7 +48,10 @@ const PersonList = (props: Props) => {
         }
         setName('');
         setSurname('');
-        setExtension(0);
+        setBirthYear(1900);
+        setInternNumber(0);
+        setRfidCard('');
+        setPassword('');
         setTelegramUsername('');
     };
 
@@ -70,12 +91,39 @@ const PersonList = (props: Props) => {
                 </label>
                 <br />
                 <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                    Extension:
+                    Birth Year:
                     <input
                         className='w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         type="number"
-                        value={extension}
-                        onChange={(e) => setExtension(parseInt(e.target.value))}
+                        value={birth_year}
+                        onChange={(e) => setBirthYear(parseInt(e.target.value))}
+                    />
+                </label>                <br />
+                <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                    Password:
+                    <input
+                        className='w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        type="text"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </label>                <br />
+                <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                    Intern Number:
+                    <input
+                        className='w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        type="number"
+                        value={intern_number}
+                        onChange={(e) => setInternNumber(parseInt(e.target.value))}
+                    />
+                </label>                <br />
+                <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                    RFID Card:
+                    <input
+                        className='w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        type="number"
+                        value={rfid_card}
+                        onChange={(e) => setBirthYear(parseInt(e.target.value))}
                     />
                 </label>
                 <br />
