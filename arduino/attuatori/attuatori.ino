@@ -12,7 +12,7 @@
 
 #define ID_BIN 1
 #define SERVER_ADDR "https://flask.gmichele.it/"
-#define RST_PIN         33 //22       //pin di reset    
+#define RST_PIN         33       
 #define SCK             18
 #define MISO            19
 #define MOSI            23
@@ -110,18 +110,11 @@ void loop() {
       for (byte i = 0; i < mfrc522.uid.size; i++) {
         inStringHex += String(mfrc522.uid.uidByte[i], HEX);
       }
-
-      for (byte i = 0; i < mfrc522.uid.size; i++) {
-        inStringDec += String(mfrc522.uid.uidByte[i], DEC);
-      }
-      Serial.println(F("Card UID DEC:"));
-      Serial.print(inStringDec);
-      Serial.println();
       Serial.println(F("Card UID HEX:"));
       Serial.print(inStringHex);
       Serial.println();
 
-    /*
+    
       //controllare se l'utente ha disponibilità di accesso
       String serverPath= "https://flask.gmichele.it/check/checkuid/" + String(inStringHex) + "&" + String(ID_BIN);
       http.begin(serverPath.c_str());
@@ -145,16 +138,17 @@ void loop() {
       }
       int code = (int) myObject["code"];
       Serial.println(String(code));
-      */
-      checkrisp(201); //code
+      
+      checkrisp(code); 
       http.end();
 
       inStringHex = "";
       inStringDec = "";
       delay(3000);
       Serial.println("nuova carta");
+      mfrc522.PCD_Init();
     }
-
+  
   //AGGIORNO IL DISPLAY ogni 30 minuti
     if ((millis() - lastTime) > timerDelay) {
       visualizza(90);
@@ -180,7 +174,8 @@ void checkrisp(int respCode){
       lcd.setCursor(0,1);
       lcd.print("Autorizzato");
       //visualizzo appartamento più vicino
-      /*
+      delay(3000);
+
       String serverPath = "https://flask.gmichele.it/neighbor/getneighbor/" + String(ID_BIN);
       http.begin(serverPath.c_str());
       Serial.println(serverPath.c_str());
@@ -208,10 +203,8 @@ void checkrisp(int respCode){
       Serial.print("via = ");
       Serial.println(via);
       Serial.print("numero = ");
-      Serial.println();
-      */
-      delay(4000);
-      String indirizzo = "via Buon Pastore 89"; //"via " + via " " + str(numero)
+      Serial.println(numero);
+      String indirizzo = via + " " + String(numero);
       lcd.clear();
       lcd.setCursor(2,1);
       lcd.print(indirizzo);
@@ -219,7 +212,7 @@ void checkrisp(int respCode){
         lcd.scrollDisplayLeft();
         delay(500);
       }
-      delay(4000);
+      delay(2000);
       visualizza(90);      
       return;
 	  }
@@ -268,6 +261,7 @@ void visualizza(int batteria){
   Serial.println(myObject);
   if (JSON.typeof(myObject) == "undefined") {
     Serial.println("Parsing input failed!");
+    return;
   }
   String status="";
   int status_attuale = (int) myObject["status"]; //"Ready"; //status_attuale 
@@ -291,7 +285,14 @@ void visualizza(int batteria){
   lcd.createChar(2,battery);
   lcd.setCursor(0,0);
   lcd.write(1);
-  lcd.print(String(riempimento*100));
+  riempimento = (int)(riempimento*100);
+  if (riempimento >= 10){
+    lcd.print(String(riempimento));
+  }
+  else{
+    lcd.setCursor(2,0);
+    lcd.print(String(riempimento));
+  }
   lcd.setCursor(3,0);
   lcd.print((char)37); //percentuale
   lcd.setCursor(4,0);
