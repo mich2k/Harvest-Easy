@@ -121,29 +121,35 @@ const PersonList = (props: Props) => {
                     RFID Card:
                     <input
                         className='w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        type="number"
+                        type="text"
                         value={rfid_card}
-                        onChange={(e) => setBirthYear(parseInt(e.target.value))}
+                        onChange={(e) => setRfidCard(e.target.value)}
                     />
                 </label>
                 <br />
                 <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+
                     Telegram Username:
-                    <input
-                        type="text"
-                        className='w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        value={telegramUsername}
-                        onChange={(e) => setTelegramUsername(e.target.value)}
-                    />
+
+                    <div className="flex">
+                        <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                            @
+                        </span>
+                        <input onChange={(e) => setTelegramUsername(e.target.value)}
+                            value={telegramUsername}
+                            type="text" id="website-admin" className="w-40 rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="easy_whistleblower" />
+                    </div>
+
                 </label>
+
                 <br />
-                <button onClick={addPerson}>Add Person</button>
+                <button className='className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"' onClick={addPerson}>Add Person</button>
             </div>
             <ul>
                 {people.map((person, index) => (
                     <li key={index}>
-                        {person.name} {person.surname} () @{person.telegramUsername}
-                        <button onClick={() => removePerson(index)}>Remove</button>
+                        [{person.name}, {person.surname}, {person.birth_year}, {person.rfid_card}, {person.password}, {person.intern_number}, @{person.telegramUsername}]
+                        <button className='ml-3 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900' onClick={() => removePerson(index)}>Remove</button>
                     </li>
                 ))}
             </ul>
