@@ -37,7 +37,5 @@ responses:
               tipologia:
                 example: carta
                 type: string
-  '401':
-    description: Nome dell'appartamento non inserito
   '402':
     description: Nome dell'appartamento non valido o non ha nessun bidone

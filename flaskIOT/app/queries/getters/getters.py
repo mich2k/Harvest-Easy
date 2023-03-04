@@ -5,6 +5,7 @@ from app.database.__init__ import db
 from flask import jsonify
 from flask_jwt_extended import jwt_required
 from app.utils.utils import Utils
+from flasgger import swag_from
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 
@@ -59,7 +60,6 @@ def getprofileuser(uid):
 
 @get_blueprint.route("/getprofileadmin/<string:uid>", methods=["GET"])
 @jwt_required()
-#aggiungi ultimo bin record
 def getprofileadmin(uid):
     admin = Admin.query.filter(Admin.username==uid).first()
     if admin is None: return jsonify({"errore": "username non corretto"})
@@ -121,16 +121,14 @@ def dataAdmin(uid):
 
 
 @get_blueprint.route("/getBins/<string:city>", methods=["GET"])
+#@swag_from('docs/getBins.yml')
 def getbins(city):
-
     # Subquery: Tutti gli appartamenti della cittá indicata
-    db.session.query()
     sq = db.session.query(Apartment.apartment_name).where(
         Apartment.city == city)
 
-    # Query: Tutti i bin negli appartamenti selezionati
-    res = Bin.query().filter(Bin.apartment_ID.in_(sq)).all()
-
+    # Query: Tutti gli user negli appartamenti selezionati
+    res = db.session.query(Bin).filter(Bin.apartment_ID.in_(sq)).all()
     return Utils.sa_dic2json(res)
 
 
@@ -138,12 +136,13 @@ def getbins(city):
 
 
 @get_blueprint.route("/getUsers/<string:city>", methods=["GET"])
+#@swag_from('docs/getUsers.yml') BOH
 def getusers(city):
 
     # Subquery: Tutti gli appartamenti della cittá indicata
     sq = db.session.query(Apartment.apartment_name).where(
         Apartment.city == city)
-
+    
     # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
@@ -154,12 +153,14 @@ def getusers(city):
 
 
 @get_blueprint.route("/getypes/<string:apartment>", methods=["GET"])
+#@swag_from('docs/getypes.yml')
 def getypes(apartment):
-
-    res = db.session.query(Bin.tipologia).filter(
+    res = db.session.query(Bin).filter(
         Bin.apartment_ID == apartment).all()
-
-    return Utils.sa_dic2json(res)
+    tipologie=[]
+    for re in res:
+        tipologie.append(re.tipologia)
+    return jsonify(tipologie)
 
 
 # Get: user dell'appartamento indicato
@@ -177,6 +178,7 @@ def getapartmentusers(apartment):
 
 
 @get_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
+#@swag_from('docs/getBinInfo.yml')
 def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()

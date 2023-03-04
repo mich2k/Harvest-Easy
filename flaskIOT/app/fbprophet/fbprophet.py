@@ -29,7 +29,7 @@ def getprevision(apartment_name=None, tipologia=None):
 
     if apartment_name is not None:
         if Bin.query.filter(Bin.apartment_ID == apartment_name).first() == None:
-            return jsonify({"error": "Apartment name not valid or it doesn't have any bin"}), 401
+            return jsonify({"error": "Apartment name not valid or it doesn't have any bin"}), 402
 
     array_pred = []
 

@@ -1,12 +1,16 @@
-summary: Ritorna una lista di punti, ognuno dei quali contiene sui bidoni di Modena di una certa tipologia
+summary: Ritorna una lista di punti, ognuno dei quali contiene informazioni sui bidoni di una città di una certa tipologia
 parameters:
   - in: path
     name: tipologia
     required: true
     type: string
+  - in: path
+    name: città
+    required: true
+    type: string
 responses:
   '200':
-    description: Quando la tipologia è corretta
+    description: Quando i punti sono correttamente creati
     content:
         application.json
     schema:
@@ -40,10 +44,13 @@ responses:
               status:
                 example: integro e pieno
                 type: string
+              tipologia:
+                example: carta
+                type: string
       updated:
         example: '2023-02-02 16:55:55'
         type: datetime
   '401':
-    description: Tipologia non inserita
-  '402':
     description: Tipologia non valida
+  '402':
+    description: Città non valida

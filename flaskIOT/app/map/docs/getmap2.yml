@@ -1,4 +1,9 @@
-summary: Ritorna una lista di punti, ognuno dei quali contiene informazioni sui bidoni monitorati 
+summary: Ritorna una lista di punti, ognuno dei quali contiene informazioni sui bidoni di una certa città
+parameters:
+  - in: path
+    name: city
+    required: true
+    type: string
 responses:
   '200':
     description: Quando i punti sono correttamente creati
@@ -41,4 +46,6 @@ responses:
       updated:
         example: '2023-02-02 16:55:55'
         type: datetime
+  '402':
+    description: Città non valida
 

@@ -42,6 +42,4 @@ responses:
                 example: carta
                 type: string
   '401':
-    description: Nome dell'appartamento o tipologia non inseriti
-  '402':
-    description: Tipologia o nome dell'appartamento non corretti
+    description: Nome dell'appartamento o tipologia non validi
