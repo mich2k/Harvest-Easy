@@ -59,7 +59,7 @@ def create_faker(db):
 
     # Bin
     for faker in fakers:
-        db.session.add(Bin(faker))
+        db.session.add(Bin(faker['tipologia'], apartment_ID=faker['apartment_ID']))
 
     # Admin
     db.session.add_all(

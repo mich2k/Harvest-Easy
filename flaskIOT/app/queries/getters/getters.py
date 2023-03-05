@@ -3,6 +3,8 @@ from flask import Blueprint
 from app.utils.utils import Utils
 from app.database.__init__ import db
 from flask import jsonify
+from os import listdir
+from os.path import isdir
 from flask_jwt_extended import jwt_required
 from app.utils.utils import Utils
 from flasgger import swag_from
@@ -225,7 +227,7 @@ def getscore(usr):
     res = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
     
     if res is None:
-        return Utils.get_response(400, 'None')
+        return Utils.get_response(400, 0)
         
     return Utils.get_response(200, str(res.score), True)
 
@@ -244,3 +246,26 @@ def getsession(usr):
         return Utils.get_response(200, str(True), True)
 
     return Utils.get_response(200, str(False), True)
+
+
+# Get: ottengo la top10 della classifica generale
+
+@get_blueprint.route("/leaderboard", methods=['GET'])
+def getleaderboard():
+
+    records = db.session.query(LeaderBoard).distinct(db.func.max()).all()
+   
+    if records is not None:
+        return Utils.sa_dic2json(records[:-1])
+    else:
+        return Utils.get_response(200, "Empty Leaderboard", text=True)
+
+@get_blueprint.route("/urlprevision/<string:apartment>")
+def geturlprevision(apartment):
+    out = []
+    
+    for dir in listdir(f'./predictions/{apartment}/'):
+        if isdir(f'./predictions/{apartment}/{dir}'):
+            out += [f'./predictions/{apartment}/{dir}/' + file for file in listdir(f'./predictions/{apartment}/{dir}')]
+    
+    return out 

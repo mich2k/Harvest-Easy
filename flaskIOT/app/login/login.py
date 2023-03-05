@@ -6,6 +6,7 @@ from ..utils.utils import Utils
 from app.login.__init__ import bcrypt
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required
 from datetime import timedelta
+import requests
 import json
 from flasgger import swag_from
 
@@ -82,57 +83,75 @@ def profileuser():
     }), 200
 
 
-@ login_blueprint.route('/registeruser', methods=['POST'])
+# TODO
+@ login_blueprint.route('/ApartmentInit', methods=['POST'])
 # @swag_from('docs/registeruser.yml')
 def registeruser():
-    msgJson = request.get_json()
-    name = msgJson["name"]
-    surname = msgJson["surname"]
-    password = msgJson["password"]
-    city = msgJson["city"]
-    username = msgJson["username"]
-    birth_year = msgJson["birth_year"]
-    card_number = msgJson["card_number"]
-    apartment_ID = msgJson["apartment_ID"]
-    internal_number = msgJson["internal_number"]
+    data = request.get_json()
 
-    if not username.isalnum() or " " in username:
-        return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 400
+    URL = getenv('URL_REVERSE')
 
-    if User.query.filter(
-            User.username == username).first() is not None:
-        return jsonify({"error": "Username already exists"}), 409
+    user = []
+    user_tg = []
+    bin = []
+    
+    print(data)
+    
+    # Adding people
+    for msgJson in data['final_people']:
+        username=msgJson['name'] + msgJson['surname']
+        
+        if not username.isalnum() or " " in username:
+            continue
+            #return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 400
 
-    new_user = User(
-        Person(
-            username=username,
-            name=name,
-            surname=surname,
-            password=generate_password(password),
-            city=city,
-            birth_year=birth_year,
-            card_number=card_number
-        ),
-        apartment_ID,
-        internal_number,
+        if db.session.query(User).where(
+                User.username == username).first() is not None:
+            continue
+            #return jsonify({"error": "Username already exists"}), 409
+
+        user.append(User(
+            Person(
+                username=username,
+                name=msgJson["name"],
+                surname=msgJson["surname"],
+                password=msgJson["password"],
+                city=data["common_city"],
+                birth_year=msgJson["birth_year"],
+                card_number=msgJson["rfid_card"]
+            ),
+            apartment_ID=data['apartment_name'],
+            internal_number=msgJson["intern_number"],
+        ))
+        
+        user_tg.append(UserTG(id_user=msgJson['telegramUsername'], id_chat="", logged=False, associated_user=username))
+
+    # Adding bins
+    for bins in data['apartment_waste_sorting']:
+        bin.append(Bin(tipologia=bins, apartment_ID=data['apartment_name']))
+       
+    #https://osm.gmichele.it/reverse?lat=44.6280877&lon=10.9166076&format=json
+
+    req = requests.get(URL + f"?lat={data['apartment_coords']['lat']}&lon={data['apartment_coords']['lon']}&format=json").json()
+    print(req)
+    apartment = Apartment(
+        apartment_name=data["apartment_name"],
+        city=req["address"]['city'],
+        street=req["address"]["road"],
+        lat=data['apartment_coords']['lat'],
+        lng=data['apartment_coords']['lon'],
+        apartment_street_number=int(req['address']['house_number']) if 'house_number' in req['address'] else 0,
+        n_internals=len(user),
+        associated_admin=data["admin_username"],
     )
-    db.session.add(new_user)
+
+    db.session.add(apartment)    
+    db.session.add_all(user)
+    db.session.add_all(user_tg)
+    db.session.add_all(bin)
     db.session.commit()
 
-    access_token = create_access_token(identity=username)
-
-    return jsonify({
-        "access_token": access_token,
-        "id": new_user.id,
-        "name": new_user.name,
-        "surname": new_user.surname,
-        "city": new_user.city,
-        "internal_number": new_user.internal_number,
-        "birth_year": new_user.birth_year,
-        "card_number": new_user.card_number,
-        "apartment_ID": new_user.apartment_ID
-    }), 200
-
+    return jsonify('Success'), 200
 
 # OPERATOR
 
