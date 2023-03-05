@@ -1,8 +1,9 @@
+#include <Servo.h>
+
 #include <ArduinoJson.h>
 #include <Arduino_JSON.h>
 #include <SPI.h>
 #include <MFRC522.h>
-//#include <Servo.h> 
 #include <Esp32WifiManager.h>
 #include <stdlib.h>
 #include <LiquidCrystal_I2C.h>
@@ -12,12 +13,12 @@
 
 #define ID_BIN 1
 #define SERVER_ADDR "https://flask.gmichele.it/"
-#define RST_PIN         33       
+#define RST_PIN         33       //pin di reset  
 #define SCK             18
 #define MISO            19
 #define MOSI            23
 #define SDA             21
-
+#define SERVO_PIN 26
 
 //ICONE
 byte filling[8] = { 
@@ -58,17 +59,16 @@ StaticJsonDocument<1024> jsonMsg1;
 JSONVar myObject;
 String msg1, msg2;
 
-//#define PIN_SERVO  3
-MFRC522 mfrc522(SDA, RST_PIN);   // Create MFRC522 instance.
+MFRC522 mfrc522(SDA, RST_PIN);   
 
 String inStringDec = "";
 String inStringHex = "";
 
-//Servo servo; // servo object representing the MG 996R servo
 MFRC522::Uid uid;
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
+Servo servoMotor;
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 3600000;
@@ -90,8 +90,8 @@ void connectToWiFi() {
 void setup() {
   Serial.begin(9600); 
   connectToWiFi();
-  //servo.attach(PIN_SERVO);
-  while (!Serial);      
+  while (!Serial);
+  servoMotor.attach(SERVO_PIN);      
   lcd.init();
   lcd.clear();         
   lcd.backlight();
@@ -164,8 +164,22 @@ void checkrisp(int respCode){
 	  if(respCode == 200){ //se utente è autorizzato e il bidone vuoto
       lcd.setCursor(0,1);
       lcd.print("Autorizzato");
-      //aziono il servo
+      //apro coperchio
+      for (int pos = 0; pos <= 90; pos += 1) {
+        servoMotor.write(pos);
+        delay(15); // waits 15ms to reach the position
+      }
+
+      delay(30000); //attendo 2 minuti   120000
+
+      //chiudo coperchio      
+      for (int pos = 90; pos >= 0; pos -= 1) {
+        servoMotor.write(pos);
+        delay(15); // waits 15ms to reach the position
+      }
+
       delay(4000);
+      
       visualizza(90);
       return;
 	  }
@@ -173,9 +187,9 @@ void checkrisp(int respCode){
     if(respCode == 201){  //se utente è autorizzato ma il bidone è pieno 
       lcd.setCursor(0,1);
       lcd.print("Autorizzato");
-      //visualizzo appartamento più vicino
+      
       delay(3000);
-
+      //visualizzo appartamento più vicino
       String serverPath = "https://flask.gmichele.it/neighbor/getneighbor/" + String(ID_BIN);
       http.begin(serverPath.c_str());
       Serial.println(serverPath.c_str());
@@ -212,7 +226,9 @@ void checkrisp(int respCode){
         lcd.scrollDisplayLeft();
         delay(500);
       }
+
       delay(2000);
+
       visualizza(90);      
       return;
 	  }
@@ -228,8 +244,21 @@ void checkrisp(int respCode){
     if(respCode == 203){  //se utente è OPERATORE/ADMIN 
       lcd.setCursor(0,1);
       lcd.print("Autorizzato");
-      //aziono il servo
+
+      for (int pos = 0; pos <= 90; pos += 1) {
+        servoMotor.write(pos);
+        delay(15); // waits 15ms to reach the position
+      }
+
+      delay(30000); //attendo 2 minuti
+
+      for (int pos = 90; pos >= 0; pos -= 1) {
+        servoMotor.write(pos);
+        delay(15); // waits 15ms to reach the position
+      }
+
       delay(4000);
+
       visualizza(90);
       return;
     }
