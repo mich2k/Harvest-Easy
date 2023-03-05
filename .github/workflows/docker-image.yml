@@ -17,6 +17,6 @@ jobs:
     - name: Build the Docker image
       run: docker build ./react-fe/app --file ./react-fe/app/prod.Dockerfile --tag mick2k1/iot-react-fe:latest
     - name: Push the Image
-      run: docker login -u mick2k1 -p {{ secrets.IOT_TOKEN }} && docker push mick2k1/iot-react-fe:latest
+      run: docker login -u mick2k1 -p ${{ secrets.IOT_TOKEN }} && docker push mick2k1/iot-react-fe:latest
 
       
