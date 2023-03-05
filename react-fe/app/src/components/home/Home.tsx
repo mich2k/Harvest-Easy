@@ -18,6 +18,8 @@ const Home = () => {
 
   const {state} = useLocation();
 
+
+  
   const user = state as User;
 
 
