@@ -14,7 +14,7 @@ export default function GenericError({ current_path = "/", body_message = "Sorry
           <p className="text-2xl">{body_message}</p>
           <Link  
           to={current_path} rel="noopener noreferrer" className="px-8 py-3 font-semibold rounded dark:bg-violet-400 dark:text-gray-900">
-            <a className="px-8 py-3 font-semibold rounded dark:bg-violet-400 dark:text-gray-900">Back to homepage</a>
+            <span className="px-8 py-3 font-semibold rounded dark:bg-violet-400 dark:text-gray-900">Back to homepage</span>
           </Link>
         </div>
       </section>

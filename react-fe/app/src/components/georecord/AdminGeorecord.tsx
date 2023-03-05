@@ -6,9 +6,8 @@ import GenericError from '../GenericError'
 import ReactLoading from 'react-loading';
 import axios from 'axios'
 import React from 'react';
-import { Flowbite } from 'flowbite-react';
 import Coordinates from '../Coordinates';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const AdminGeorecord = () => {
 
@@ -25,6 +24,12 @@ const AdminGeorecord = () => {
     const [deviceGeoCoordinates, setGeoCoordinates] = useState<Coordinates>();
 
     const [user, setUser] = useState({ username: '', access_token: '', birth_year: 1900, name: '', last_name: '', city: '', apartment_id: '' });
+    const [searchParams] = useSearchParams();
+
+    const navigate = useNavigate();
+
+    const [admin_username, setUsername] = useState<string>('');
+    const [admin_password, setPassword] = useState<string>('');
 
 
 
@@ -50,11 +55,11 @@ const AdminGeorecord = () => {
     useEffect(() => {
 
 
-        const queryParameters = new URLSearchParams(window.location.search);
+        const ap_id = String(searchParams.get(APARTMENT_KEY_QUERY));
 
-        setApartmentId(String(queryParameters.get(APARTMENT_KEY_QUERY)));
+        setApartmentId(ap_id);
 
-    }, [new URLSearchParams(window.location.search)]);
+    }, []);
 
 
     useEffect(() => {
@@ -78,20 +83,6 @@ const AdminGeorecord = () => {
     })
 
 
-    /*
-    useEffect(() => {
-        setLoading(true)
-        fetch('https://flask.gmichele.it/getBins/Modena')
-            .then((res) => res.json())
-            .then((data) => {
-                setData(data)
-                setLoading(false)
-            })
-    }, [])
-
-    */
-
-
     const onLogInButtonClick = () => {
         console.log(checked_state);
 
@@ -103,8 +94,8 @@ const AdminGeorecord = () => {
 
 
         const data = {
-            username: 'rossi1',
-            password: 'mariorossi'
+            username: admin_username,
+            password: admin_password
         }
 
 
@@ -119,10 +110,13 @@ const AdminGeorecord = () => {
                 console.log(data);
             });
 
+
+
+        navigate("/admin_home", {
+            state: { coords: deviceGeoCoordinates, admin_username: admin_username, apartment_id: apartment_id, auth_token: user.access_token }
+        });
+
     }
-
-    const [queryParameters] = useSearchParams();
-
 
 
     if (!isGeoSupported) {
@@ -145,8 +139,7 @@ const AdminGeorecord = () => {
             );
         }
         else {
-            if (Object.keys(queryParameters).length === 0
-                || !(APARTMENT_KEY_QUERY in queryParameters)) {
+            if (apartment_id === undefined || apartment_id === null || apartment_id === "") {
                 return <Error
                     header_message="Apartment ID invalid or not specified or a broken QR Code"
                 ></Error>;
@@ -179,11 +172,11 @@ const AdminGeorecord = () => {
                                                             </div>
                                                             <div>
                                                                 <span className="font-bold">Your Coordinates:</span>
-                                                                
+
                                                                 <span>LA: {deviceGeoCoordinates.toStringCoordinates()[0]}, LO: {deviceGeoCoordinates.toStringCoordinates()[1]}</span>
                                                             </div>
                                                             <div>
-                                                                
+
                                                             </div>
                                                             <div>
                                                                 <span className="font-bold">Detected geo-reversed city:</span> <span>{apartment_id}</span>
@@ -196,16 +189,19 @@ const AdminGeorecord = () => {
                                                                 <input
                                                                     type="text"
                                                                     className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                                                                    id="exampleFormControlInput1"
+                                                                    id="admin_username_textinput"
                                                                     placeholder="Admin username"
+                                                                    onChange={(e) => { setUsername(e.target.value) }}
                                                                 />
                                                             </div>
                                                             <div className="mb-4">
                                                                 <input
                                                                     type="password"
                                                                     className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                                                                    id="exampleFormControlInput2"
+                                                                    id="admin_password_textinput"
                                                                     placeholder="Master password"
+                                                                    onChange={(e) => { setPassword(e.target.value) }}
+
                                                                 />
                                                             </div>
                                                             {data}
