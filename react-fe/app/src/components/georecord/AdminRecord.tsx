@@ -5,6 +5,21 @@ import PersonList from "../PersonList";
 import { Person } from "../PersonList";
 
 
+class toSendMsg {
+  final_people: Person[];
+  apartment_waste_sorting: string[];
+  common_city: string;
+  apartment_name: string;
+  timestamp: string;
+  constructor(final_people: Person[], apartment_waste_sorting: string[], common_city: string, apartment_name: string, timestamp: string) {
+    this.final_people = final_people;
+    this.apartment_waste_sorting = apartment_waste_sorting;
+    this.common_city = common_city;
+    this.apartment_name = apartment_name;
+    this.timestamp = timestamp;
+  }
+}
+
 import { useLocation } from "react-router-dom";
 const AdminRecord = () => {
   const [cmn_city, setCommonCity] = useState<string>("Unknown");
@@ -39,13 +54,17 @@ const AdminRecord = () => {
   const onApartmentRegister = () => {
 
     console.dir(people);
+    const msg = new toSendMsg(people, Array.from(apartment_waste_sorting), cmn_city, apartment_name, new Date().toISOString());
+
+    console.dir(msg);
+    console.dir(JSON.stringify(msg));
 
   }
 
   return (
     <div>
       <section className="h-full gradient-form bg-blue-100 md:h-screen overflow-auto	">
-        <div className="container py-12 px-6 h-full">
+        <div className="container pl-5 py-12 h-full">
           <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
             <div className="xl:w-10/12">
               <div className="block bg-white shadow-lg rounded-lg">
@@ -59,9 +78,9 @@ const AdminRecord = () => {
                                                 src=""
                                                 alt="logo"
     /> */}
-                        <h3 className="text-xl font-semibold mt-2 pt-3 mb-0 pb-1">Apartment {apartment_name}.</h3>
+                        <h3 className="text-xl font-semibold ml-4 mt-2 pt-3 mb-0 pb-1">Apartment {apartment_name}.</h3>
 
-                        <h4 className="text-xl font-semibold mt-1 mb-0 pb-1">
+                        <h4 className="text-xl ml-4 font-semibold mt-1 mb-0 pb-1">
                           Welcome
                         </h4>
                       </div>
@@ -118,7 +137,7 @@ const AdminRecord = () => {
 
 
                     <div>
-                      <div className="m-4 mb-4 mt-16">Cosa permette di fare questo tool? Spiegaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</div>
+                      <div className="m-4 mb-4 mt-16">Fill all the req. fields & press Register, in this way the apartment and the users will be created.</div>
 
                       <div className="text-center pt-1 mb-12 pb-1">
                         <button onClick={onApartmentRegister} className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
