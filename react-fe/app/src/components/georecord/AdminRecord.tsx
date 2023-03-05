@@ -91,7 +91,7 @@ const AdminRecord = () => {
 
     }
 
-    const url = "https://flask.gmichele.it/";
+    const url = "https://flask.gmichele.it";
 
     const msg = new toSendMsg(people, Array.from(apartment_waste_sorting), cmn_city, apartment_id, new Date().toISOString(), admin_username, apartment_coords as Coordinates);
 
