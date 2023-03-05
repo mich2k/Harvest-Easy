@@ -15,6 +15,7 @@ services:
       - WEATHER_KEY=8db7edbf3f049e2543fb1115755351c0
       - FLASK_CONFIG=docker_local
       - FAKER=True
+      - URL_REVERSE=https://osm.gmichele.it/reverse
   bot_telegram:
     build:
         dockerfile: Dockerfile
@@ -28,10 +29,8 @@ services:
         - URL_get=http://iotproj:5000/get/
         - URL_set=http://iotproj:5000/set/
         - URL_check=http://iotproj:5000/check/
-
     profiles:
       - donotstart
-
 
   nextjs_app:
     image: mick2k1/iot-nextjs-fe

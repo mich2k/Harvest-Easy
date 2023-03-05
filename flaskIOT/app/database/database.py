@@ -1,15 +1,11 @@
-import requests
 import app.trap.trap as tp
 from sqlalchemy import update, delete
 from flask import request, Blueprint, session, redirect, jsonify
-from os import getenv
 from app.database.tables import *
 from .faker import create_faker
 from .__init__ import db, DB_status
 from ..utils.utils import Utils
 from flask_jwt_extended import jwt_required
-
-URL = "https://osm.gmichele.it/search"
 
 # Lo userò per verificare se il DB è stato già creato
 db_manager = DB_status()
@@ -28,13 +24,14 @@ def createDB():
     """
 
     if not db_manager.already_done:
-
-        db.drop_all()
-        db.create_all()
-
-        # if getenv("FAKER") == "True":
-        create_faker(db)
-
+        try:
+            db.drop_all()
+            db.create_all()
+        
+            # if getenv("FAKER") == "True":
+            create_faker(db)
+        except:
+            print('Error during db creation')
         db_manager.setstatus(db, True)
 
         """
@@ -43,7 +40,7 @@ def createDB():
         quindi si farà un redirect ad essa
         """
         if "last_url" in session:
-            print(session['last_url'])
+            print('last_url: ' + str(session['last_url']))
             return redirect(session["last_url"])
 
         return Utils.get_response(200, "Done")
@@ -75,137 +72,11 @@ def addrecord():
 
     return Utils.get_response(200, "Done")
 
-
-# AGGIUNTA DI UN BIDONE
- 
-
-@database_blueprint.route("/addbin", methods=["POST"])
-@jwt_required()
-def addbin():
-    msgJson = request.get_json()
-
-    db.session.add(Bin(msgJson))
-    db.session.commit()
-
-    return Utils.get_response(200, "Done")
-
-
-# TODO Creare un'unica route per l'aggiunta di un utente/admin/operatore sfruttando un campo: role
-
-# AGGIUNTA DI UN USER
-
-
-@database_blueprint.route("/adduser", methods=["POST"])
-@jwt_required()
-def adduser():
-    data = request.get_json()
-    user = []
-    
-    for msgJson in data:
-    
-        user.append(User(
-            Person(
-                username=msgJson["username"],
-                name=msgJson["name"],
-                surname=msgJson["surname"],
-                password=msgJson["password"],
-                city=msgJson["city"],
-                birth_year=msgJson["year"],
-                card_number=msgJson["card_number"]
-            ),
-            apartment_ID=msgJson["apartment_ID"],
-            internal_number=msgJson["internal_number"],
-        ))
-
-    db.session.add_all(user)
-    db.session.commit()
-
-    return Utils.get_response(200, "Done")
-
-
 # Adders
-
-# AGGIUNTA DI UN ADMIN
-
-
-@database_blueprint.route("/addAdmin/<string:username>&<string:name>&<string:surname>&<string:password>&<string:city>&<int:birth_year>", methods=["GET"])
-@jwt_required()
-def addadmin(username, name, surname, password, city, birth_year):
-    admin = Admin(Person(username, name, surname, password, city, birth_year))
-
-    db.session.add(admin)
-    db.session.commit()
-
-    return Utils.get_response(200, "Done")
-
-
-# AGGIUNTA DI UN OPERATORE
-
-
-@database_blueprint.route("/addoperator", methods=["POST"])
-@jwt_required()
-def addoperator():
-    msgJson = request.get_json()
-    operator = Operator(
-        Person(
-            username=msgJson["username"],
-            name=msgJson["name"],
-            surname=msgJson["surname"],
-            password=msgJson["password"],
-            city=msgJson["city"],
-            birth_year=msgJson["year"],
-            card_number=msgJson["card_number"],
-        ),
-        id=msgJson["id"],
-    )
-
-    db.session.add(operator)
-    db.session.commit()
-    return Utils.get_response(200, "Done")
-
 
 # AGGIUNTA DI UN APARTMENT
 # inserire qui lat e long dell'appartamento tramite chiamata ad API
 # da verificare chiamata ad API
-
-
-@database_blueprint.route("/addapartment", methods=["POST"])
-#@jwt_required()
-def addapartment():
-
-    msgJson = request.get_json()
-
-    address = (
-        msgJson["street"] + " " +
-        str(msgJson["street_number"]) + " " + msgJson["city"]
-    )
-
-    params = {
-        "q": address + " Italia",
-    }
-
-    req = requests.get(URL, params=params)
-    result = req.json()
-
-    lat = result[0]["lat"]
-    lng = result[0]["lon"]
-
-    apartment = Apartment(
-        apartment_name=msgJson["apartment_name"],
-        city=msgJson["city"],
-        street=msgJson["street"],
-        lat=lat,
-        lng=lng,
-        apartment_street_number=msgJson["street_number"],
-        n_internals=msgJson["n_internals"],
-        associated_admin=msgJson["associated_admin"],
-    )
-
-    db.session.add(apartment)
-
-    db.session.commit()
-
-    return Utils.get_response(200, "Done")
 
 # Print tables
 
