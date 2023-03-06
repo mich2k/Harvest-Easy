@@ -194,7 +194,7 @@ class Utils:
         elif status == 4:
             return "manomesso, pieno"
         else:
-            return "Error"
+            return "awaiting greet"
 
     def randomTime(rdm=True):
         # (24*60*60) = 86400 H/M/S
