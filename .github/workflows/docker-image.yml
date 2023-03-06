@@ -1,0 +1,22 @@
+name: React Docker image build+push Continuous Integration
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build ./react-fe/app --file ./react-fe/app/prod.Dockerfile --tag mick2k1/iot-react-fe:latest
+    - name: Push the Image
+      run: docker login -u mick2k1 -p ${{ secrets.IOT_TOKEN }} && docker push mick2k1/iot-react-fe:latest
+
+      

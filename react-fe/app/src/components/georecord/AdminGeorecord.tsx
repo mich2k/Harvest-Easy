@@ -20,10 +20,8 @@ const AdminGeorecord = () => {
     const [show_alert, setShowAlert] = useState<boolean>(false);
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isGeoAllowanceGiven, setGeoAllowanceGiven] = useState<boolean>(false);
-    const [data, setData] = useState(null);
     const [deviceGeoCoordinates, setGeoCoordinates] = useState<Coordinates>();
 
-    const [user, setUser] = useState({ username: '', access_token: '', birth_year: 1900, name: '', last_name: '', city: '', apartment_id: '' });
     const [searchParams] = useSearchParams();
 
     const navigate = useNavigate();
@@ -72,8 +70,6 @@ const AdminGeorecord = () => {
         navigator.geolocation.getCurrentPosition(function (position) {
             setGeoCoordinates(new Coordinates(position.coords.latitude, position.coords.longitude));
             setGeoAllowanceGiven(true);
-            // console.log("Latitude is :", position.coords.latitude);
-            // console.log("Longitude is :", position.coords.longitude);
         }, function (error) {
             if (error.code == error.PERMISSION_DENIED) {
                 console.log("permission denied");
@@ -84,13 +80,13 @@ const AdminGeorecord = () => {
 
 
     const onLogInButtonClick = () => {
-        console.log(checked_state);
 
         if (!checked_state) {
             console.log('check');
             setShowAlert(true);
             return;
         }
+
 
 
         const data = {
@@ -108,13 +104,18 @@ const AdminGeorecord = () => {
             })
             .then(({ data }) => {
                 console.log(data);
+                if (data['access_token'] === undefined) {
+                    return <Error header_message="Invalid credentials" body_message="The credentials you have entered are not valid, please try again"></Error>
+                } else {
+                    navigate("/admin_home", {
+                        state: { coords: deviceGeoCoordinates, access_token: data['access_token'], admin_username: admin_username, apartment_id: apartment_id },
+                    });
+                }
+
             });
 
 
 
-        navigate("/admin_home", {
-            state: { coords: deviceGeoCoordinates, admin_username: admin_username, apartment_id: apartment_id, auth_token: user.access_token }
-        });
 
     }
 
@@ -204,7 +205,6 @@ const AdminGeorecord = () => {
 
                                                                 />
                                                             </div>
-                                                            {data}
                                                             <div className="text-center pt-1 mb-12 pb-1">
                                                                 <button
                                                                     className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3"
