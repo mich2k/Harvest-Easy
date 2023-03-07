@@ -1,4 +1,4 @@
-from flask import Flask, request, session
+from flask import Flask, session
 from config import Config
 from app.database.__init__ import db
 from app.database.database import database_blueprint
@@ -8,7 +8,6 @@ from app.queries.checkers.checkers import check_blueprint
 from app.neighbor.neighbor import neighbor_blueprint
 from app.bestpath.bestpath import path_blueprint
 from app.map.map import map_blueprint
-from app.geofirstrecord.geofirstrecord import geofirstrecord_blueprint
 from app.fbprophet.fbprophet import fbprophet_blueprint
 from app.handler.error_handler import handler_blueprint
 from app.login.login import login_blueprint
@@ -21,7 +20,10 @@ from flasgger import Swagger
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
-
+try:
+    session.clear()
+except:
+    print('Session already cleaned')
 
 template = {
     "swagger": "2.0",
@@ -101,7 +103,6 @@ jwt.init_app(app)
 
 
 #Registrazione Blueprint
-app.register_blueprint(geofirstrecord_blueprint, url_prefix='/geofr')
 app.register_blueprint(database_blueprint, url_prefix='/db')
 app.register_blueprint(get_blueprint, url_prefix='/get')
 app.register_blueprint(set_blueprint, url_prefix='/set')
@@ -117,14 +118,4 @@ app.register_blueprint(login_blueprint)
 def testoHTML():
     session.clear()
     return '<h1>Smart Bin</h1>'
-
-@app.route('/esp', methods=['POST'])
-def data():
-    data = request.get_json()
-    return 'Value: ' + data.get('temp', 'No name')
-
-@app.route('/<string:name>&<int:id>')
-def test(name, id):
-    return '<h2> name:' + str(type(name)) + ' id:' + str(type(id)) + '</h2>'
-
 

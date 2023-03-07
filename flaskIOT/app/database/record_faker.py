@@ -15,7 +15,6 @@ sample = {
 
 threshold = 0.85
 
-
 def faker_instances():
     # Campiono un bidone a caso
     selected_bin = sample["id_bin"] = utils.Utils.get_random_int(1, 8)

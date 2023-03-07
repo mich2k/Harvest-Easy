@@ -44,7 +44,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             if to_be_emptied and (status == 1 or status == 3):
                 continue
 
-            filling = None if last_bin_record is None else last_bin_record.riempimento
+            filling = 'Empty' if last_bin_record is None else last_bin_record.riempimento
 
             point["tipologia"] = bin.tipologia
             point["apartment_name"] = apartment.apartment_name
@@ -55,7 +55,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             point["lat"] = apartment.lat
             point["lng"] = apartment.lng
             point["previsione"] = bin.previsione_status if bin.previsione_status != "" else "Not avaible yet"
-            point["riempimento"] = filling
+            point["riempimento"] = filling 
 
             points.append(point)
 

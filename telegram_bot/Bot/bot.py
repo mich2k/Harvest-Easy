@@ -40,6 +40,16 @@ async def get_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(text.init_error_message)
 
 
+async def get_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    id_user = update.effective_user.name
+    
+    if requests.get(url_get + f'getSession/{id_user}').content.decode('UTF-8') == 'True':
+        resp = requests.get(url_get + f'leaderboard')
+        
+        await update.message.reply_text('Leaderboard attuale:\n' + str(resp.content.decode('UTF-8')))
+    else:
+        await update.message.reply_text(text.init_error_message)
+
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Attende che il valore presente nel pulsante venga cliccato
@@ -57,6 +67,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text=f"Answer: {send_choice.content.decode('utf-8')}")
 
 
+
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text.help_text)
 
@@ -71,6 +82,7 @@ if __name__ == '__main__':
 
     start_handler = CommandHandler('start', start)
     get_score_handler = CommandHandler('score', get_score)
+    get_leaderboard_handler = CommandHandler('leaderboard', get_leaderboard)
     help_handler = CommandHandler('help', helper)
 
     call_handler = CallbackQueryHandler(status)

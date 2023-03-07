@@ -107,16 +107,13 @@ class Bin(db.Model):
 
     # FK
     apartment_ID = db.Column(
-        "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name")
+        "apartment_name", db.String, db.ForeignKey("apartment.apartment_name")
     )
 
-    def __init__(self, jsonObj):
-        self.id_bin = jsonObj["idbin"]
-        self.tipologia = jsonObj["tipologia"]
-        self.apartment_ID = jsonObj["apartment_ID"]
+    def __init__(self, tipologia: str, apartment_ID: str):
+        self.tipologia = tipologia
+        self.apartment_ID = apartment_ID
 
-        # da decommentare solo per il faker
-        self.ultimo_svuotamento = jsonObj["ultimo_svuotamento"]
 
 
 class BinRecord(db.Model):
@@ -154,7 +151,7 @@ class Apartment(db.Model):
     lat = db.Column("lat", db.Float)
     lng = db.Column("lng", db.Float)
     apartment_street_number = db.Column(
-        "apartment_street_number", db.Integer, nullable=False)
+        "apartment_street_number", db.String, nullable=False)
     n_internals = db.Column("n_internals", db.Integer, nullable=False)
 
     # FK
@@ -168,7 +165,7 @@ class Apartment(db.Model):
         street: str,
         lat: str,
         lng: str,
-        apartment_street_number: int,
+        apartment_street_number: str,
         n_internals: int,
         associated_admin: str,
     ):

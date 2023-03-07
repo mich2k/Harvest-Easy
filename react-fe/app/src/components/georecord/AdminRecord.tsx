@@ -55,8 +55,8 @@ const AdminRecord = () => {
     setApartmentCoords(state["coords"]);
     setUsername(state["admin_username"]);
     setApartmentId(state["apartment_id"]);
-    setAuthToken(state["auth_token"]);
-  }, [])
+    setAuthToken(state["access_token"]);
+  }, [state])
 
 
 
@@ -76,13 +76,26 @@ const AdminRecord = () => {
 
   const onApartmentRegister = () => {
 
+    if (Array.from(apartment_waste_sorting).length == 0 || people.length == 0) {
 
-    const url = "https://flask.gmichele.it/";
+      alert("Please add at least one user or specify apartment waste sorting type(s)");
+
+      return;
+    }
+
+
+
+    if (cmn_city == "Unknown") {
+      alert("Please specify the city where the apartment is located");
+      return;
+
+    }
+
+    const url = "https://flask.gmichele.it";
 
     const msg = new toSendMsg(people, Array.from(apartment_waste_sorting), cmn_city, apartment_id, new Date().toISOString(), admin_username, apartment_coords as Coordinates);
 
     console.dir(msg);
-
 
 
     axios
@@ -122,20 +135,14 @@ const AdminRecord = () => {
                     <div className="lg:w-6/12 px-4 md:px-0">
                       <div className="md:p-12 md:mx-6">
                         <div className="text-left">
-                          {/* <img
-                                                className="mx-auto w-48"
-                                                width="100px"
-                                                src=""
-                                                alt="logo"
-    /> */}
-                          <h3 className="text-xl font-semibold ml-4 mt-2 pt-3 mb-0 pb-1">Apartment {apartment_id}.</h3>
+                          <h3 className="text-xl font-semibold ml-4 mt-2 pt-3 mb-0 pb-1">Apartment &quot;{apartment_id}&quot;</h3>
 
                           <h4 className="text-xl ml-4 font-semibold mt-1 mb-0 pb-1">
                             Welcome
                           </h4>
                         </div>
                       </div>
-                      <h3 className="ml-4 text-xl font-semibold mt-2 pt-3 mb-4 pb-1">First-time apartment registration</h3>
+                      <h3 className="ml-4 text-xl font-semibold mt-2 pt-3 mb-4 pb-1">First-time apartment registration tool</h3>
                       <div className="ml-4">
                         <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                           Apartment City:
@@ -193,10 +200,6 @@ const AdminRecord = () => {
                           <button onClick={onApartmentRegister} className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
                             Register Apartment
                           </button>
-
-                          {/* <a className="text-gray-500" href="#!">Tutto apposto?</a>
-                                            
-*/}
                         </div>
                       </div>
                     </div>
