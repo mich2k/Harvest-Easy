@@ -151,7 +151,7 @@ class Apartment(db.Model):
     lat = db.Column("lat", db.Float)
     lng = db.Column("lng", db.Float)
     apartment_street_number = db.Column(
-        "apartment_street_number", db.Integer, nullable=False)
+        "apartment_street_number", db.String, nullable=False)
     n_internals = db.Column("n_internals", db.Integer, nullable=False)
 
     # FK
@@ -165,7 +165,7 @@ class Apartment(db.Model):
         street: str,
         lat: str,
         lng: str,
-        apartment_street_number: int,
+        apartment_street_number: str,
         n_internals: int,
         associated_admin: str,
     ):

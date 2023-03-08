@@ -83,8 +83,9 @@ def profileuser():
     }), 200
 
 
-# TODO
-@ login_blueprint.route('/ApartmentInit', methods=['POST'])
+
+@login_blueprint.route('/ApartmentInit', methods=['POST'])
+@jwt_required()
 # @swag_from('docs/registeruser.yml')
 def registeruser():
     data = request.get_json()
@@ -99,7 +100,8 @@ def registeruser():
     
     # Adding people
     for msgJson in data['final_people']:
-        username=msgJson['name'] + msgJson['surname']
+        
+        username = msgJson['name'] + msgJson['surname']
         
         if not username.isalnum() or " " in username:
             continue
@@ -133,14 +135,14 @@ def registeruser():
     #https://osm.gmichele.it/reverse?lat=44.6280877&lon=10.9166076&format=json
 
     req = requests.get(URL + f"?lat={data['apartment_coords']['lat']}&lon={data['apartment_coords']['lon']}&format=json").json()
-    print(req)
+
     apartment = Apartment(
         apartment_name=data["apartment_name"],
         city=req["address"]['city'],
         street=req["address"]["road"],
         lat=data['apartment_coords']['lat'],
         lng=data['apartment_coords']['lon'],
-        apartment_street_number=int(req['address']['house_number']) if 'house_number' in req['address'] else 0,
+        apartment_street_number= req['address']['house_number'] if 'house_number' in req['address'] else "0",
         n_internals=len(user),
         associated_admin=data["admin_username"],
     )
