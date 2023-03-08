@@ -61,22 +61,9 @@ const Login = () => {
         setUser(my_user);
 
 
-        /*router.push(
-          {
-            pathname: "/home",
-            query: JSON.stringify(my_user)
-          },
-          "/home"
-        );*/
-        // console.dir(state_user);
-
-        // console.dir(localStorage.getItem('user'));
-
-
-
-        navigate("/home",{
-          state: { user: my_user }
-        } );
+        navigate("/home", {
+          state: { apartment_name: data["apartment_ID"], firstname: data["name"], surname: data["surname"], access_token: data["access_token"], city: data["city"], internal_number: data["internal_number"], user: my_user }
+        });
 
       });
 
