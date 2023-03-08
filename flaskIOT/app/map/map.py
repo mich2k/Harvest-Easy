@@ -106,12 +106,21 @@ def get_servicemap():
 def get_servicefilteredmap(type, city):
     return get_points(bin_type=type, sel_city=city, to_be_emptied=True)
 
-# Mappa completa per Utenti
+
+# Mappa per Utenti
 
 
 @map_blueprint.route("/viewmap")
 def viewmap():
     return render_template("viewmap.html", path='getmap')
+
+@map_blueprint.route("/viewmap/<string:city>")
+def viewmap2(city):
+    return render_template("viewmap.html", path='getmap/' + city)
+
+@map_blueprint.route("/viewmap/<string:type>&<string:city>")
+def viewmap3(type, city):
+    return render_template("viewmap.html", path='getmap/'+ type + '&' + city)
 
 # Mappa per HERA che filtra in base alla città
 
@@ -119,3 +128,9 @@ def viewmap():
 @map_blueprint.route("/viewmapservice")
 def viewmapservice():
     return render_template("viewmap.html", path='getservicemap')
+
+
+@map_blueprint.route("/viewmapservice/<string:type>&<string:city>")
+def viewmapservice2(type, city):
+    return render_template("viewmap.html", path='getservicemap/' + type + '&' + city)
+
