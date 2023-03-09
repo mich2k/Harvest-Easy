@@ -22,6 +22,11 @@ const Home = () => {
   const url = "https://flask.gmichele.it";
 
   const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const typologyColorMap = { "vetro": "bg-green-600", "plastica": "bg-blue-600", "carta": "bg-yellow-300", "umido": "bg-orange-900", "other": "bg-black-600" };
+
+
+  const type = "carta";
+
 
   useEffect(() => {
     if (!state) {
@@ -45,20 +50,21 @@ const Home = () => {
   useEffect(() => {
     axios.get(url + "/get/prevision/" + state["apartment_name"], {
       headers: {
-        Authorization: "Bearer " + state_user?.access_token
+        Authorization: "Bearer " + state["access_token"]
       }
     }).then((response) => {
-      console.log(response.data);
+      const data = response.data;
+      console.log(data);
+      console.dir(JSON.parse(data));
 
     }).catch((error) => {
-      //console.log(error);
-      console.log("error prevision");
+      console.log(error);
     });
   })
 
   return (
     <div>
-      <section className="h-full gradient-form bg-blue-100 md:h-screen">
+      <section className="h-full gradient-form bg-blue-100 md:h-screen overflow-auto">
         <div className="container py-12 h-full">
           <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
             <div className="xl:w-10/12">
@@ -78,7 +84,9 @@ const Home = () => {
 
                     <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>
 
-                    <BinProphetRecord date="test" sort_type="test_tip" />
+
+                    <BinProphetRecord color={typologyColorMap[type].length === 0 ? typologyColorMap["other"] : typologyColorMap[type]} date="test" sort_type="test_tip" filling={parseFloat("0.95")}/>
+                    <BinProphetRecord color={typologyColorMap[type].length === 0 ? typologyColorMap["other"] : typologyColorMap[type]} date="test" sort_type="test_tip" filling={parseFloat("1.0")}/>
 
 
                     <div className="mb-4 mt-16">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum qui quibusdam, beatae ipsum labore voluptatibus ratione, itaque expedita neque natus consequuntur et culpa voluptatem odit ipsam excepturi accusantium cum laudantium consequatur tenetur necessitatibus velit amet eum optio? Quaerat porro, officia obcaecati excepturi natus quo fugit perferendis eveniet laborum, quas nostrum.</div>
