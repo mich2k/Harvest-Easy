@@ -55,8 +55,9 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
+    
     msgJson["status"] = Utils.calcolastatus(
-        db,
+        Utils,
         msgJson["id_bin"],
         msgJson["riempimento"],
         msgJson["roll"],
@@ -64,12 +65,12 @@ def addrecord():
         msgJson["co2"],
         False
     )
-
+    msgJson["timestamp"] = str(datetime.utcnow().replace(microsecond=0))
     sf = BinRecord(msgJson)
     db.session.add(sf)
     db.session.commit()
 
-    return Utils.get_response(200, "Done")
+    return "Done", 200
 
 # Adders
 
