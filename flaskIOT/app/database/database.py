@@ -55,17 +55,16 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
-    msgJson["status"] = 1
-    """
-    Utils.calcolastatus(
+    msgJson["status"] = Utils.calcolastatus(
         db,
         msgJson["id_bin"],
         msgJson["riempimento"],
         msgJson["roll"],
         msgJson["pitch"],
         msgJson["co2"],
+        False
     )
-    """
+
     sf = BinRecord(msgJson)
     db.session.add(sf)
     db.session.commit()

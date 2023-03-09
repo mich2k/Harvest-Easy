@@ -152,7 +152,9 @@ class Utils:
 
         req = requests.get(self.WEATHERE_API_URL, params=params)
         res = req.json()
-
+        if 'error' in res:
+            return 'error: ' + str(res)
+        
         # conversione kelvin-celsius
         temp = int(res["main"]["temp"] - 272.15)
 
