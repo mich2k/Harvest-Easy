@@ -24,7 +24,7 @@
           }
         };
         console.dir(xobj);
-        xobj.open("GET", "{{ path }}", true);
+        xobj.open("GET", '{{ path }}' , true);
         xobj.setRequestHeader("Access-Control-Allow-Origin", "*");
         xobj.send(null);
       }
