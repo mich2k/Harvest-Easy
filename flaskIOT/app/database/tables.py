@@ -107,7 +107,7 @@ class Bin(db.Model):
 
     # FK
     apartment_ID = db.Column(
-        "apartment_name", db.String, db.ForeignKey("apartment.apartment_name")
+        "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name")
     )
 
     def __init__(self, tipologia: str, apartment_ID: str):

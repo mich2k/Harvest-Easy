@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Response
 from sqlalchemy import update
 from os import getenv
-from ..database.tables import BinRecord, Bin, Apartment
+from app.database.tables import Apartment, Bin, BinRecord
 from ..database.database import db
 from ..trap.trap import *
 import random
@@ -43,19 +43,19 @@ class Utils:
         # Seleziono il bidone passato
         current_bin = BinRecord.query.filter(
             BinRecord.associated_bin == id_bin)
-
+        
         # Estraggo lo status corrente o, se non presente, lo imposto di default ad 1 (suppongo un bidone nuovo: integro e vuoto)
         current_status = (
             BinRecord.query.filter(BinRecord.associated_bin == id_bin)
             .order_by(BinRecord.timestamp.desc())
             .first()
         ).status if current_bin.count() else 1
-
-        type = (Bin.query.filter(Bin.id_bin == id_bin)).first().tipologia
-
+        
+        type = Bin.query.filter(Bin.id_bin == id_bin).first().tipologia
+        
         apartment_ID = (Bin.query.filter(
             Bin.id_bin == id_bin)).first().apartment_ID
-
+        
         if type == "umido":
             # Mesi caldi
             current_threashold = self.get_organic_threashold(apartment_ID, id_bin) if datetime.now(
@@ -69,7 +69,7 @@ class Utils:
 
         elif type == "vetro":
             current_threashold = self.soglie["vetro"]
-
+        
         if current_status == 1:
             if float(riempimento) >= current_threashold and riempimento is not None:
                 if not prophet: report(id_bin, db, apartment_ID, riempimento)
@@ -152,7 +152,9 @@ class Utils:
 
         req = requests.get(self.WEATHERE_API_URL, params=params)
         res = req.json()
-
+        if 'error' in res:
+            return 'error: ' + str(res)
+        
         # conversione kelvin-celsius
         temp = int(res["main"]["temp"] - 272.15)
 
@@ -256,3 +258,5 @@ class Utils:
     @property
     def get_post_key(self):
         return self.key
+    
+  
