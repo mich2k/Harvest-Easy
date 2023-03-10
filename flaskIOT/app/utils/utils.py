@@ -205,11 +205,9 @@ class Utils:
             rtime = int(random.random() * 86400)
             dtime = int(random.random() * 360)
 
-            year = 2022  # random.randrange(2022, 2023)
-            month = int(dtime / 30) if int(dtime /
-                                           30) != 0 else int(dtime / 30) + 1
-            day = int(dtime / 12) if int(dtime /
-                                         12) != 0 else int(dtime / 12) + 1
+            year = 2023  # random.randrange(2022, 2023)
+            month = 3
+            day = datetime.now().day + 1 if datetime.now().day < 31 else datetime.now().day
             hours = int(rtime / 3600)
             minutes = int((rtime - hours * 3600) / 60)
             seconds = rtime - hours * 3600 - minutes * 60

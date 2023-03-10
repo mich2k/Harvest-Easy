@@ -8,15 +8,31 @@ from os.path import isdir
 from flask_jwt_extended import jwt_required
 from app.utils.utils import Utils
 from flasgger import swag_from
+from datetime import datetime, timedelta
+import requests, base64
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 
-@get_blueprint.route('/prevision/<int:id_bin>')
-@jwt_required()
-def getprevision(id_bin):
-    bin = Bin.query.filter(Bin.id_bin == id_bin).first()
-    return jsonify(bin.previsione_status)
-
+@get_blueprint.route('/prevision/<string:apartment>')
+#@jwt_required()
+def getprevision(apartment):
+    
+    bins = db.session.query(Bin.id_bin, Bin.previsione_status, Bin.tipologia).where(Bin.apartment_ID == apartment).all()
+    
+    answ = []
+    
+    for bin in list(bins):
+        data = {}
+        resp = requests.get('https://flask.gmichele.it/get/getrecord/'+ str(bin[0])).json()
+        
+        data['previsione_status'] = bin[1] if bin[1] != '' else datetime.isoformat(datetime.now() + timedelta(days=1))
+        data['tipologia'] = bin[2]
+        data['status'] = resp['status']
+        data['riempimento'] = resp['riempimento']
+        
+        answ.append(data)
+    
+    return jsonify(answ)
 
 @get_blueprint.route("/getprofileuser/<string:uid>", methods=["GET"])
 @jwt_required()
@@ -262,10 +278,18 @@ def getleaderboard():
 
 @get_blueprint.route("/urlprevision/<string:apartment>")
 def geturlprevision(apartment):
-    out = []
-    
+    out =  {}
+    files = []
+    types = []
     for dir in listdir(f'./predictions/{apartment}/'):
         if isdir(f'./predictions/{apartment}/{dir}'):
-            out += [f'./predictions/{apartment}/{dir}/' + file for file in listdir(f'./predictions/{apartment}/{dir}')]
+            types.append(dir)
+            files += [f'./predictions/{apartment}/{dir}/' + file for file in listdir(f'./predictions/{apartment}/{dir}') if file == 'forecast.png']        
     
-    return out 
+    for file, type in zip(files, types):
+        print(file)
+        with open(file, 'rb') as img_file:
+            out[type] = base64.b64encode(img_file.read()).decode('ascii')
+    
+    print(out)
+    return jsonify(out)

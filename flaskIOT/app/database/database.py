@@ -30,8 +30,9 @@ def createDB():
         
             # if getenv("FAKER") == "True":
             create_faker(db)
-        except:
-            print('Error during db creation')
+        except Exception as e:
+            
+            print('Error during db creation: ' + str(e))
         db_manager.setstatus(db, True)
 
         """
