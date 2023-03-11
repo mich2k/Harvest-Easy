@@ -13,7 +13,6 @@ const ImmaginiPrevisioni: React.FC<Props> = ({ previsioni }) => {
     return (
         <div>
             {Object.keys(previsioni).map((key:string, index) => (
-
                 <img key={index} src={`data:image/png;base64,${previsioni[key]}`} alt={key} />
             ))}
         </div>

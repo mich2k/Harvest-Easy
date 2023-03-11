@@ -7,18 +7,10 @@ import useToken from "../../useToken";
 import { BinProphetRecord } from "../BinProphetRecord";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Base64Image from "../Base64Img";
-import ImmaginiPrevisioni from "../ImmaginiPrevisioni";
+import Base64toRenderedImages from "../Base64toRenderedImages";
 
 const Home = () => {
 
-
-  interface base64Previsions {
-    vetro?: string;
-    carta?: string;
-    plastica?: string;
-    umido?: string;
-  }
 
   interface apartmentPrevisions {
     previsione_status: Date;  // ETA Filling date
@@ -28,21 +20,11 @@ const Home = () => {
   }
 
 
-  const [user_firstname, setUserFistName] = useState<string>("Loading");
-  const [user_lastname, setUserLastName] = useState<string>("Loading");
-  const [apartment_name, setApartmentName] = useState<string>("Loading");
-  const [estimated_fill_date, setEstimatedFillDate] = useState<string>(new Date().toISOString().split(".")[0]);
-  const [today_date, setTodayDate] = useState<string>("default_user");
 
-  const [user_role, setUserRole] = useState<string>("default_user");
-
-  const [state_user, setUser] = useState<User>();
   const [isOpen, setIsOpen] = useState(false);
 
   const { state } = useLocation();
 
-  const [datePrevision, setDatePrevision] = useState<apartmentPrevisions[] | undefined>([]);
-  const [base64ChartPrevision, setbase64ChartPrevision] = useState<base64Previsions | undefined>({});
   const [dateData, setDateData] = useState<any>();
   const [imgData, setImgData] = useState<any>();
 
@@ -71,7 +53,7 @@ const Home = () => {
     const localst_key = "home_user";
     const u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
     u.fromObj(state["user"]);
-    setUser(u);
+
   }, []);
 
 
@@ -110,15 +92,6 @@ const Home = () => {
     });
   }, [state]);
 
-
-  const iteratate64ToImg = () => {
-    if (imgData) {
-      return [imgData].map((item: any, index: any) => {
-        return <Base64Image key={index} base64={item["previsione_status"]} />
-      })
-    }
-
-  }
 
   return (
     <div>
@@ -171,11 +144,7 @@ const Home = () => {
                         <h4 className="text-xl font-semibold mb-6">Prevision Charts:</h4>
                         <div className="">Check the actual filling forecast for each data-avialable typlogy for your apartment &hearts; </div>
                         <div className="my-6">
-                          <span>ciao</span>
-
-                          <span> {String(imgData)}</span>
-
-                          <ImmaginiPrevisioni previsioni={imgData}></ImmaginiPrevisioni>
+                          <Base64toRenderedImages previsioni={imgData}></Base64toRenderedImages>
                         </div>
                       </div>
                     </div>
