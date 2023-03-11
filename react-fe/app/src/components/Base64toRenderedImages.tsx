@@ -9,7 +9,7 @@ interface Props {
 }
 
 const ImmaginiPrevisioni: React.FC<Props> = ({ previsioni }) => {
-    if(!previsioni) return (<div>loading</div>);
+    if(!previsioni) return (<div className='text-bold'>Loading previsions or not avialable yet for your apartment.</div>);
     return (
         <div>
             {Object.keys(previsioni).map((key:string, index) => (
