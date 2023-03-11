@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import useToken from '../../useToken';
 const Login = () => {
 
-
   const { setToken } = useToken();
 
   const navigate = useNavigate();
@@ -65,6 +64,8 @@ const Login = () => {
           state: { apartment_name: data["apartment_ID"], firstname: data["name"], surname: data["surname"], access_token: data["access_token"], city: data["city"], internal_number: data["internal_number"], user: my_user }
         });
 
+      }).catch((error) => {
+        console.dir(error);
       });
 
 

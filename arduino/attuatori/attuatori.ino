@@ -73,8 +73,8 @@ unsigned long lastTime = 0;
 unsigned long timerDelay = 3600000;
 String sensorReadings;
 
-const char* ssid = "IOT"; // Qui va inserito il nome della propria rete WiFi
-const char* password = "ciaociao1";// Qui va inserita la password di rete
+const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
+const char* password = "altalena";// Qui va inserita la password di rete
 
 void connectToWiFi() {
   WiFi.begin(ssid, password); 
