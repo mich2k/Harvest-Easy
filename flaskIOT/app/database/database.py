@@ -48,7 +48,6 @@ def createDB():
 
     return Utils.get_response(500, "Already done")
 
-
 # AGGIUNTA DI INFORMAZIONI SUL BIDONE
 # Le informazioni saranno inviate mediante JSON ogni N secondi.
 
@@ -80,6 +79,21 @@ def addrecord():
 # da verificare chiamata ad API
 
 # Print tables
+@database_blueprint.route('/getrecord/<string:idbin>')
+def getbinrecord(idbin):
+
+    ultimo_bin_record = (
+        BinRecord.query.filter(BinRecord.associated_bin == idbin)
+        .order_by(BinRecord.timestamp.desc())
+        .first()
+    )
+
+    return {
+        "status": ultimo_bin_record.status,
+        "temperatura": ultimo_bin_record.temperature,
+        "riempimento": ultimo_bin_record.riempimento
+    }
+
 
 @database_blueprint.route("/items", methods=["GET"])
 def stampaitems():

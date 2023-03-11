@@ -207,7 +207,7 @@ class Utils:
 
             year = 2023  # random.randrange(2022, 2023)
             month = 3
-            day = datetime.now().day + 1 if datetime.now().day < 31 else datetime.now().day
+            day = random.randint(1, 31)
             hours = int(rtime / 3600)
             minutes = int((rtime - hours * 3600) / 60)
             seconds = rtime - hours * 3600 - minutes * 60
@@ -229,6 +229,9 @@ class Utils:
     def get_random():
         return random.random()
 
+    def get_limited_random(low: float, upper: float):
+        return random.uniform(low, upper)
+    
     def sa_dic2json(query):
 
         res = []

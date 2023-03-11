@@ -17,9 +17,18 @@ from flask_cors import CORS
 from app.login.__init__ import bcrypt, jwt
 from flasgger import Swagger
 
+
+def getUtils():
+    return myutils
+
+
+
+
+
 #creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
+
 try:
     session.clear()
 except:
@@ -44,6 +53,12 @@ template = {
 swagger = Swagger(app, template=template)
 
 CORS(app, resource={
+    r"/login/*":{
+        'origins':'*'
+    },
+    r"/get/*":{
+        'origins':'*'
+    },
     r"/db/*":{
         'origins':'*'
     }   
@@ -52,9 +67,6 @@ CORS(app, resource={
 myconfig = Config
 app.config.from_object(myconfig)
 myutils = Utils()
-
-def getUtils():
-    return myutils
 
 # config update according to environment,
     # will be mandatory when the app will be larger
@@ -114,8 +126,10 @@ app.register_blueprint(fbprophet_blueprint, url_prefix='/pred')
 app.register_blueprint(handler_blueprint)
 app.register_blueprint(login_blueprint)
 
-@app.route('/') 
-def testoHTML():
-    session.clear()
-    return '<h1>Smart Bin</h1>'
 
+@app.before_first_request
+
+
+
+if __name__ == 'flasky':
+    print('Initialization...')

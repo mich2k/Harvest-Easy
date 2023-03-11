@@ -16,6 +16,7 @@ services:
       - FLASK_CONFIG=docker_local
       - FAKER=True
       - URL_REVERSE=https://osm.gmichele.it/reverse
+      - URL_get=http://127.0.0.1:5000/get/getrecord/
   bot_telegram:
     build:
         dockerfile: Dockerfile
@@ -29,6 +30,7 @@ services:
         - URL_get=http://iotproj:5000/get/
         - URL_set=http://iotproj:5000/set/
         - URL_check=http://iotproj:5000/check/
+        - URL_map=http://iotproj:5000/map/getmap/
     profiles:
       - donotstart
 
