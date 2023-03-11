@@ -3,14 +3,15 @@ from app.database.tables import Apartment, Bin, BinRecord
 from app.utils.utils import Utils
 from flask import render_template
 import datetime
+from os import getenv
 from flask import jsonify
 from flasgger import swag_from
-import json
 
 map_blueprint = Blueprint(
     "map", __name__, template_folder="templates", static_folder='static')
 
 utility = Utils()
+URL = getenv('URL_map')
 
 @map_blueprint.route("/getmap")
 @map_blueprint.route("/getmap/<string:sel_city>")
@@ -116,11 +117,11 @@ def viewmap():
 
 @map_blueprint.route("/viewmap/<string:city>")
 def viewmap2(city):
-    return render_template("viewmap.html", path='http://127.0.0.1:5000/map/getmap/' + city)
+    return render_template("viewmap.html", path=URL + city)
 
 @map_blueprint.route("/viewmap/<string:type>&<string:city>")
 def viewmap3(type, city):
-    return render_template("viewmap.html", path='http://127.0.0.1:5000/map/getmap/'+ type + '%26' + city)
+    return render_template("viewmap.html", path=URL + type + '%26' + city)
 
 # Mappa per HERA che filtra in base alla città
 

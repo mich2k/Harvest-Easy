@@ -3,7 +3,7 @@ from flask import Blueprint
 from app.utils.utils import Utils
 from app.database.__init__ import db
 from flask import jsonify
-from os import listdir
+from os import listdir, getenv
 from os.path import isdir
 from flask_jwt_extended import jwt_required
 from app.utils.utils import Utils
@@ -12,6 +12,23 @@ from datetime import datetime, timedelta
 import requests, base64
 
 get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
+URL = getenv('URL_get')
+
+def getbinrecord(idbin):
+
+    ultimo_bin_record = (
+        BinRecord.query.filter(BinRecord.associated_bin == idbin)
+        .order_by(BinRecord.timestamp.desc())
+        .first()
+    )
+
+    return {
+        "status": ultimo_bin_record.status,
+        "temperatura": ultimo_bin_record.temperature,
+        "riempimento": ultimo_bin_record.riempimento
+    }
+
+
 
 @get_blueprint.route('/prevision/<string:apartment>')
 #@jwt_required()
@@ -22,14 +39,15 @@ def getprevision(apartment):
     answ = []
     
     for bin in list(bins):
+        
         data = {}
-        resp = requests.get('https://flask.gmichele.it/get/getrecord/'+ str(bin[0])).json()
+        resp = getbinrecord(bin[0])
         
         data['previsione_status'] = bin[1] if bin[1] != '' else datetime.isoformat(datetime.now() + timedelta(days=1))
         data['tipologia'] = bin[2]
         data['status'] = resp['status']
         data['riempimento'] = resp['riempimento']
-        
+
         answ.append(data)
     
     return jsonify(answ)
@@ -204,22 +222,6 @@ def getbininfo(idbin):
     return Utils.sa_dic2json(res)
 
 
-@get_blueprint.route("/getrecord/<string:idbin>", methods=["GET"])
-def getbinrecord(idbin):
-
-    ultimo_bin_record = (
-        BinRecord.query.filter(BinRecord.associated_bin == idbin)
-        .order_by(BinRecord.timestamp.desc())
-        .first()
-    )
-
-    return {
-        "status": ultimo_bin_record.status,
-        "temperatura": ultimo_bin_record.temperature,
-        "riempimento": ultimo_bin_record.riempimento
-    }
-
-
 # Get: ottengo tutte le informazioni dell'appartamento indicato
 
 
@@ -291,5 +293,4 @@ def geturlprevision(apartment):
         with open(file, 'rb') as img_file:
             out[type] = base64.b64encode(img_file.read()).decode('ascii')
     
-    print(out)
     return jsonify(out)
