@@ -8,22 +8,23 @@ import { BinProphetRecord } from "../BinProphetRecord";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Base64Image from "../Base64Img";
+import ImmaginiPrevisioni from "../ImmaginiPrevisioni";
 
 const Home = () => {
 
 
-  type base64Prevision = {
-    [key: string]: string
-  };
+  interface base64Previsions {
+    vetro?: string;
+    carta?: string;
+    plastica?: string;
+    umido?: string;
+  }
 
   interface apartmentPrevisions {
     previsione_status: Date;  // ETA Filling date
     riempimento: number;    // Actual Filling percentage
     status: number;         // FSM status
-    tipologia: "carta" | "plastica" | "vetro";
-    // Type of waste, sorting type
-
-
+    tipologia: "carta" | "plastica" | "vetro";  // Type of waste, sorting type
   }
 
 
@@ -41,7 +42,9 @@ const Home = () => {
   const { state } = useLocation();
 
   const [datePrevision, setDatePrevision] = useState<apartmentPrevisions[] | undefined>([]);
-  const [base64ChartPrevision, setbase64ChartPrevision] = useState<base64Prevision[] | undefined>([]);
+  const [base64ChartPrevision, setbase64ChartPrevision] = useState<base64Previsions | undefined>({});
+  const [dateData, setDateData] = useState<any>();
+  const [imgData, setImgData] = useState<any>();
 
   const url = "https://flask.gmichele.it";
 
@@ -61,7 +64,6 @@ const Home = () => {
     if (!state) {
       return;
     }
-    console.dir(state);
   }, [state])
 
   useEffect(() => {
@@ -70,11 +72,14 @@ const Home = () => {
     const u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
     u.fromObj(state["user"]);
     setUser(u);
-    console.dir(state_user);
-
-
   }, []);
 
+
+  useEffect(() => {
+    console.dir(dateData);
+    console.dir(imgData);
+
+  }, [dateData, imgData]);
 
   useEffect(() => {
     axios.get(url + "/get/urlprevision/" + state["apartment_name"], {
@@ -83,39 +88,34 @@ const Home = () => {
       }
     }).then((response) => {
       const data = response.data;
-      setbase64ChartPrevision(data);
-      //console.dir(data);
-      console.dir(base64ChartPrevision);
+      setImgData(data);
+      console.dir(data);
+    }).catch((error) => {
+      console.log(error);
+    });
 
+  }, [state]);
+
+
+  useEffect(() => {
+    axios.get(url + "/get/prevision/" + state["apartment_name"], {
+      headers: {
+        Authorization: "Bearer " + state["access_token"]
+      }
+    }).then((response) => {
+      const data = response.data;
+      setDateData(data);
     }).catch((error) => {
       console.log(error);
     });
   }, [state]);
 
 
-  useEffect(() => {
-    console.log(state["apartment_name"]);
-    async () => {
-      await axios.get(url + "/get/prevision/" + state["apartment_name"], {
-        headers: {
-          Authorization: "Bearer " + state["access_token"]
-        }
-      }).then((response) => {
-        const data = response.data;
-        setDatePrevision(data);
-        console.dir(datePrevision);
-      }).catch((error) => {
-        console.log(error);
-      });
-    }
-  }, [state]);
-
-
   const iteratate64ToImg = () => {
-    if (base64ChartPrevision) {
-    //  return base64ChartPrevision.map((item, index) => {
-    //   return <Base64Image key={index} base64={item["previsione_status"]} />
-    // })
+    if (imgData) {
+      return [imgData].map((item: any, index: any) => {
+        return <Base64Image key={index} base64={item["previsione_status"]} />
+      })
     }
 
   }
@@ -171,8 +171,11 @@ const Home = () => {
                         <h4 className="text-xl font-semibold mb-6">Prevision Charts:</h4>
                         <div className="">Check the actual filling forecast for each data-avialable typlogy for your apartment &hearts; </div>
                         <div className="my-6">
-                    <span>ciao</span>
+                          <span>ciao</span>
 
+                          <span> {String(imgData)}</span>
+
+                          <ImmaginiPrevisioni previsioni={imgData}></ImmaginiPrevisioni>
                         </div>
                       </div>
                     </div>
