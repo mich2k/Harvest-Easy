@@ -90,7 +90,7 @@ class Utils:
             if float(riempimento) < current_threashold and riempimento is not None:
                 current_status = 1
                 db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-                    {"ultimo_svuotamento": datetime.now()}
+                    {"ultimo_svuotamento": str(datetime.utcnow().replace(microsecond=0))}
                 )
                 db.session.commit()
 
@@ -122,7 +122,7 @@ class Utils:
             if float(riempimento) < current_threashold and riempimento is not None:
                 current_status = 3
                 db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-                    {"ultimo_svuotamento": datetime.now()}
+                    {"ultimo_svuotamento": str(datetime.utcnow().replace(microsecond=0))}
                 )
                 db.session.commit()
                 
