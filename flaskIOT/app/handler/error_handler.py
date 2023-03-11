@@ -18,7 +18,7 @@ def db_handler(error):
         return redirect("http://127.0.0.1:5000/db")
 
     
-    return redirect("https://flask.gmichele.it/db")
+    return Utils.get_response(400, 'Error in DB: not created.')
 
 
 @handler_blueprint.app_errorhandler(Exception)

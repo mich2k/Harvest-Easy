@@ -1,5 +1,4 @@
 #include <Servo.h>
-
 #include <ArduinoJson.h>
 #include <Arduino_JSON.h>
 #include <SPI.h>
@@ -160,31 +159,31 @@ void loop() {
 
 void checkrisp(int respCode){
 
-  if(respCode > 0){ 
-	  if(respCode == 200 or respCode==203){ //se utente è autorizzato e il bidone vuoto o se utente è un operatore
-      lcd.setCursor(0,1);
-      lcd.print("Autorizzato");
-      //apro coperchio
-      for (int pos = 0; pos <= 90; pos += 1) {
-        servoMotor.write(pos);
-        delay(15); // waits 15ms to reach the position
+  if(respCode > 0){
+      if(respCode == 200 or respCode==203){ //se utente è autorizzato e il bidone vuoto o se utente è un operatore
+        lcd.setCursor(0,1);
+        lcd.print("Autorizzato");
+        //apro coperchio
+        for (int pos = 0; pos <= 90; pos += 1) {
+            servoMotor.write(pos);
+            delay(15); // waits 15ms to reach the position
+        }
+
+        delay(30000); //attendo 2 minuti   120000
+
+      //chiudo coperchio
+        for (int pos = 90; pos >= 0; pos -= 1) {
+            servoMotor.write(pos);
+            delay(15); // waits 15ms to reach the position
+        }
+
+        delay(4000);
+
+        visualizza(90);
+        return;
       }
 
-      delay(30000); //attendo 2 minuti   120000
-
-      //chiudo coperchio      
-      for (int pos = 90; pos >= 0; pos -= 1) {
-        servoMotor.write(pos);
-        delay(15); // waits 15ms to reach the position
-      }
-
-      delay(4000);
-      
-      visualizza(90);
-      return;
-	  }
-
-    if(respCode == 201){  //se utente è autorizzato ma il bidone è pieno 
+    if(respCode == 201){  //se utente è autorizzato ma il bidone è pieno
       lcd.setCursor(0,1);
       lcd.print("Autorizzato");
       

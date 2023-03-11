@@ -3,6 +3,7 @@ from app.database.tables import Apartment, Bin, BinRecord
 from app.utils.utils import Utils
 from flask import render_template
 import datetime
+from os import getenv
 from flask import jsonify
 from flasgger import swag_from
 
@@ -10,8 +11,11 @@ map_blueprint = Blueprint(
     "map", __name__, template_folder="templates", static_folder='static')
 
 utility = Utils()
+URL = getenv('URL_map')
 
-
+@map_blueprint.route("/getmap")
+@map_blueprint.route("/getmap/<string:sel_city>")
+@map_blueprint.route("/getmap/<string:bin_type>&<string:sel_city>")
 def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
 
     if Bin.query.filter(Bin.tipologia == bin_type).first() == None and bin_type is not None:
@@ -64,7 +68,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
         "listaPunti": points,
     }
 
-    return jsonify(viewmap), 200
+    return jsonify(viewmap)
 
 
 @map_blueprint.route("/")
@@ -73,21 +77,18 @@ def main():
 
 
 # MAPPA COMPLETA CON TUTTI I BIDONI
-@map_blueprint.route("/getmap")
 @swag_from('docs/getmap.yml')
 def get_map():
     return get_points()
 
 # Mappa di tutti i bidoni di una città
 
-@map_blueprint.route("/getmap/<string:city>")
 @swag_from('docs/getmap2.yml')
 def getmapfromcity(city):
     return get_points(sel_city=city)
 
 # Mappa di tutti i bidoni di un certo tipo di una città
 
-@map_blueprint.route("/getmap/<string:type>&<string:city>")
 @swag_from('docs/getmap3.yml')
 def get_filteredmap(type, city):
     return get_points(bin_type=type, sel_city=city)
@@ -116,11 +117,11 @@ def viewmap():
 
 @map_blueprint.route("/viewmap/<string:city>")
 def viewmap2(city):
-    return render_template("viewmap.html", path='getmap/' + city)
+    return render_template("viewmap.html", path=URL + city)
 
 @map_blueprint.route("/viewmap/<string:type>&<string:city>")
 def viewmap3(type, city):
-    return render_template("viewmap.html", path='getmap/'+ type + '&' + city)
+    return render_template("viewmap.html", path=URL + type + '%26' + city)
 
 # Mappa per HERA che filtra in base alla città
 
