@@ -9,7 +9,6 @@ interface Props {
     status: number;         // FSM status
   }
 
-const typologyColorMap = { "vetro": "bg-green-600", "plastica": "bg-blue-600", "carta": "bg-yellow-300", "umido": "bg-orange-900", "other": "bg-black-600" };
 
 
 export const BinProphetList = ({ msg: apartmentPrevisions }) => {
