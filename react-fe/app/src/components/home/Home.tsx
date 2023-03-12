@@ -59,7 +59,7 @@ const Home = () => {
 
   useEffect(() => {
     console.dir(dateData);
-    console.dir(imgData);
+    //console.dir(imgData);
 
   }, [dateData, imgData]);
 
@@ -71,7 +71,6 @@ const Home = () => {
     }).then((response) => {
       const data = response.data;
       setImgData(data);
-      console.dir(data);
     }).catch((error) => {
       console.log(error);
     });
@@ -87,6 +86,7 @@ const Home = () => {
     }).then((response) => {
       const data = response.data;
       setDateData(data);
+      console.dir(data);
     }).catch((error) => {
       console.log(error);
     });
