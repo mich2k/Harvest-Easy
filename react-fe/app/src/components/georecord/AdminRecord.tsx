@@ -116,7 +116,12 @@ const AdminRecord = () => {
 
         console.dir(data);
 
-
+        const ret = JSON.parse(data);
+        if (ret.success == true) {
+          return <GenericError current_path={"/"} body_message={`Apartment ${state["apartment_id"]} added successfully!`}></GenericError>
+        }else{
+          return <GenericError current_path={"/"} body_message={`Something went wrong while adding ${state["apartment_id"]} apartment`}></GenericError>
+        }
 
 
       });
