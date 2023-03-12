@@ -86,7 +86,7 @@ const AdminGeorecord = () => {
     const onLogInButtonClick = () => {
 
         if (!checked_state) {
-            console.log('check');
+            //console.log('check');
             setShowAlert(true);
             return;
         }
@@ -107,7 +107,7 @@ const AdminGeorecord = () => {
                 },
             })
             .then(({ data }) => {
-                console.log(data);
+                //console.log(data);
                 if (data['access_token'] === undefined) {
                     return <Error header_message="Invalid credentials" body_message="The credentials you have entered are not valid, please try again"></Error>
                 } else {
@@ -223,7 +223,6 @@ const AdminGeorecord = () => {
                                                                     <input onChange={() => { setCheck(!checked_state); }} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                                                     <label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Confirm apartment id</label>
                                                                 </div>
-                                                                <a className="text-gray-500" href="#!">Valuta funzione da inserire</a>
                                                             </div>
                                                             <div id="alert"> {show_alert ? <ErrorAlert alert_type={'warn'} body_message={"Please confirm by checking the checkbox in order to confirm you want to init this apartment"}></ErrorAlert> : null} </div>
 

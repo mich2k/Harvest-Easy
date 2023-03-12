@@ -137,9 +137,6 @@ const Home = () => {
                         {isOpen ? <FaMinus /> : <FaPlus />}
                         {isOpen ? 'Hide' : 'Show'}
                       </button>
-                      {/* <a className="text-gray-500" href="#!">Tutto apposto?</a>
-                                            
-*/}
                     </div>
                   </div>
                 </div>
