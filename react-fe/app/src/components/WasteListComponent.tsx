@@ -11,7 +11,7 @@ interface WasteInfo {
 }
 
 interface Props {
-  wasteList: WasteInfo[];
+  wasteList: WasteInfo;
 }
 
 const WasteListComponent: React.FC<Props> = ({ wasteList }) => {
@@ -19,12 +19,15 @@ const WasteListComponent: React.FC<Props> = ({ wasteList }) => {
 
   return (
     <div>
-      {Object.keys(wasteList).map((wasteInfo, index) => (
-        <div key={index}>
-          <h3>Tipologia di rifiuto: ${wasteInfo[0]}</h3>
-
-        </div>
-      ))}
+      {Object.keys(wasteList).map((wasteInfoKey, index) => {
+      const wasteInfo = wasteList[wasteInfoKey as keyof WasteInfo];
+        return (
+          <div key={index}>
+            <h3>Tipologia di rifiuto: {wasteInfoKey}</h3>
+            <div>Stato: {wasteInfo.status}</div>
+          </div>
+        );
+      })}
     </div>
   );
 };

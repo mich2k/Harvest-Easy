@@ -141,7 +141,7 @@ const Home = () => {
                     <div className="lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none">
                       <div className="text-black px-4 py-6 md:p-12 md:mx-6">
                         <h4 className="text-xl font-semibold mb-6">Prevision Charts:</h4>
-                        <div className="">Check the actual filling forecast for each data-avialable typlogy for your apartment &hearts; </div>
+                        <div className="">Check the actual filling forecast for each data-available typology for your apartment &hearts; </div>
                         <div className="my-6">
                           <Base64toRenderedImages previsioni={imgData}></Base64toRenderedImages>
                         </div>
