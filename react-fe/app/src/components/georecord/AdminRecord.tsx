@@ -47,6 +47,12 @@ const AdminRecord = () => {
   };
   const { state } = useLocation();
 
+  useEffect(() => {
+    document.title = "Admin Init";
+  }, [])
+
+
+
 
   useEffect(() => {
     if (!state) {
