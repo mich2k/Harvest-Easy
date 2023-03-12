@@ -1,6 +1,6 @@
 import React from 'react';
 import { BinProphetRecord } from './BinProphetRecord';
-import { GreenCircle, RedCircle } from './icons/Circles';
+import { GreenCircle, RedCircle, YellowCircle } from './icons/Circles';
 interface WasteData {
   previsione_status: Date;
   riempimento: number;
@@ -39,7 +39,7 @@ const WasteListComponent: React.FC<Props> = ({ wasteList }) => {
             <hr></hr>
             <div className='font-medium mb-4 mt-2'>
               Tipologia rifiuto:  <span className='uppercase'>{wasteInfoKey}</span></div>
-            <div>Stato: {wasteInfo.status === 1 ? <GreenCircle></GreenCircle> : <RedCircle></RedCircle>}</div>
+            <div className='mb-4'>Stato: {wasteInfo.status === 1 ? <span> <GreenCircle></GreenCircle> OK!</span> : wasteInfo.status == 2 ? <span><YellowCircle></YellowCircle> FULL!</span> : <span> <RedCircle></RedCircle> DANGER!</span>}</div>
             <BinProphetRecord filling={wasteInfo.riempimento} sort_type={wasteInfoKey} color={typologyColorMap[wasteInfoKey]} date={String(wasteInfo.previsione_status)}></BinProphetRecord>
           </div>
         );
