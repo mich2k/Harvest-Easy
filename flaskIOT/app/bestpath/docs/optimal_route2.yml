@@ -1,4 +1,4 @@
-summary: Cammino ottimo di svuotamento dei bidoni partendo dalla posizione indicata
+summary: Cammino ottimo di svuotamento dei bidoni di una certa tipologia partendo dalla posizione indicata
 parameters:
   - in: path
     name: lat
@@ -8,6 +8,10 @@ parameters:
     name: lng
     required: true
     type: float
+  - in: path
+    name: tipologia
+    required: true
+    type: string
 
 responses:
   '200':

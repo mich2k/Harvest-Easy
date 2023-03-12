@@ -1,4 +1,4 @@
-summary: Crea previsioni di riempimento tramite fbprophet
+summary: Crea previsioni di riempimento tramite prophet
 parameters:
   - default: 5
     in: path
