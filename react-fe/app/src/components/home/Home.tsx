@@ -59,7 +59,7 @@ const Home = () => {
 
   useEffect(() => {
     console.dir(dateData);
-    console.dir(imgData);
+    //console.dir(imgData);
 
   }, [dateData, imgData]);
 
@@ -71,7 +71,6 @@ const Home = () => {
     }).then((response) => {
       const data = response.data;
       setImgData(data);
-      console.dir(data);
     }).catch((error) => {
       console.log(error);
     });
@@ -87,6 +86,7 @@ const Home = () => {
     }).then((response) => {
       const data = response.data;
       setDateData(data);
+      console.dir(data);
     }).catch((error) => {
       console.log(error);
     });
@@ -113,7 +113,7 @@ const Home = () => {
                       </div>
                     </div>
 
-                    <hr className="mb-6"></hr>
+                    <div className="mb-6"></div>
 
                     <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>
 
@@ -121,7 +121,13 @@ const Home = () => {
 
                     <WasteListComponent wasteList={dateData}></WasteListComponent>
 
+                    
                     <div className="mb-4 mt-16">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum qui quibusdam, beatae ipsum labore voluptatibus ratione, itaque expedita neque natus consequuntur et culpa voluptatem odit ipsam excepturi accusantium cum laudantium consequatur tenetur necessitatibus velit amet eum optio? Quaerat porro, officia obcaecati excepturi natus quo fugit perferendis eveniet laborum, quas nostrum.</div>
+                    
+                    <hr></hr>
+                    <h3 className="mt-6 text-xl font-semibold pt-3 mb-4 pb-1">Check your apartment forecast by clicking down here!</h3>
+                    <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">And let me guess 🔮</h3>
+
 
                     <div className="text-center pt-1 mb-12 pb-1">
                       <button

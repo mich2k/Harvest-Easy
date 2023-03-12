@@ -1,4 +1,4 @@
-summary: Crea previsioni di riempimento tramite fbprophet per uno specifico appartamento e una specifica tipologia di bidoni
+summary: Crea previsioni di riempimento tramite prophet per uno specifico appartamento e una specifica tipologia di bidoni
 parameters:
   - in: path
     name: apartment_name
