@@ -44,7 +44,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!checked_state) {
-      console.log('check');
+      //console.log('check');
       return;
     }
 
@@ -64,7 +64,7 @@ const Login = () => {
       })
       .then(({ data }) => {
 
-        console.log(data);
+        //console.log(data);
 
         const my_user = new User(username, password, data["access_token"], data["name"], data["surname"],
           data["apartment_ID"], data["internal_number"], data["city"], data["birth_year"]);
