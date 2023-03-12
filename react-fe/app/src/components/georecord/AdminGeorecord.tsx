@@ -37,7 +37,11 @@ const AdminGeorecord = () => {
 
     const url = "https://flask.gmichele.it";
 
-
+    useEffect(() => {
+        document.title = "Admin Georecord";
+      }, [])
+    
+    
 
     useEffect(() => {
         setLoading(true);

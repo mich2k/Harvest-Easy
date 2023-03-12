@@ -49,6 +49,8 @@ const Home = () => {
 
   useEffect(() => {
 
+    document.title = "Home";
+
     const u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
     u.fromObj(state["user"]);
 
