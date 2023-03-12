@@ -22,10 +22,7 @@ def getUtils():
     return myutils
 
 
-
-
-
-#creo applicazione
+# creo applicazione
 appname = "IOT - SmartBin"
 app = Flask(appname)
 
@@ -38,12 +35,12 @@ template = {
     "swagger": "2.0",
     "info": {
         "title": "Smart Bin API",
-        "description": "API about our Smart Bin", 
-        "contact":{
+        "description": "API about our Smart Bin",
+        "contact": {
             "responsibleOrganization": "",
             "responsibleDeveloper": ""
         },
-        "version":"1.0.0",
+        "version": "1.0.0",
         "basePath": "api",
         "schemes": ["http", "https"],
         "operationId": "getmybin"
@@ -53,15 +50,15 @@ template = {
 swagger = Swagger(app, template=template)
 
 CORS(app, resource={
-    r"/login/*":{
-        'origins':'*'
+    r"/login/*": {
+        'origins': '*'
     },
-    r"/get/*":{
-        'origins':'*'
+    r"/get/*": {
+        'origins': '*'
     },
-    r"/db/*":{
-        'origins':'*'
-    }   
+    r"/db/*": {
+        'origins': '*'
+    }
 }, supports_credentials=True)
 
 myconfig = Config
@@ -69,13 +66,13 @@ app.config.from_object(myconfig)
 myutils = Utils()
 
 # config update according to environment,
-    # will be mandatory when the app will be larger
+# will be mandatory when the app will be larger
 
 # print(getenv('FLASK_CONFIG')) # if you want to print the env var you are passing
-    # notice: is already passed by localboot.sh, so you don't need to pass it again
+# notice: is already passed by localboot.sh, so you don't need to pass it again
 
-# is very important to refer to the db path from the config file, otherwise 
-    # it will not work
+# is very important to refer to the db path from the config file, otherwise
+# it will not work
 
 if(getenv('FLASK_CONFIG') is None):
     print("FLASK_CONFIG not set in environment")
@@ -83,22 +80,22 @@ if(getenv('FLASK_CONFIG') is None):
 elif(getenv('FLASK_CONFIG') == 'docker'):
     app.config.update(
         #SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
-        DEBUG = True,
-        TESTING = False,
+        DEBUG=True,
+        TESTING=False,
     )
     print("NOTE: Using docker debug config")
 elif(getenv('FLASK_CONFIG') == 'local'):
     app.config.update(
         #SQLALCHEMY_DATABASE_URI = 'sqlite:///out.db',
-        DEBUG = True,
-        TESTING = False,
+        DEBUG=True,
+        TESTING=False,
     )
     print("NOTE: Using local config")
 elif(getenv('FLASK_CONFIG') == 'docker_production'):
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
-        DEBUG = False,
-        TESTING = False,
+        SQLALCHEMY_DATABASE_URI='sqlite:///database.db',
+        DEBUG=False,
+        TESTING=False,
     )
     print("NOTE: Using docker production config")
 else:
@@ -106,15 +103,15 @@ else:
     #raise RuntimeError("Wrong config, exiting..")
 
 
-#Inizializzazione DB
+# Inizializzazione DB
 db.init_app(app)
 
-#Inizializzazione Bcrypt 
+# Inizializzazione Bcrypt
 bcrypt = bcrypt.init_app(app)
 jwt.init_app(app)
 
 
-#Registrazione Blueprint
+# Registrazione Blueprint
 app.register_blueprint(database_blueprint, url_prefix='/db')
 app.register_blueprint(get_blueprint, url_prefix='/get')
 app.register_blueprint(set_blueprint, url_prefix='/set')
@@ -125,11 +122,3 @@ app.register_blueprint(map_blueprint, url_prefix='/map')
 app.register_blueprint(fbprophet_blueprint, url_prefix='/pred')
 app.register_blueprint(handler_blueprint)
 app.register_blueprint(login_blueprint)
-
-
-
-#@app.before_first_request
-
-
-if __name__ == 'flasky':
-    print('Initialization...')

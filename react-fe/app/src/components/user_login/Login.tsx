@@ -8,7 +8,14 @@ import User from '../User'
 import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
 import useToken from '../../useToken';
+
+
+
+
 const Login = () => {
+
+
+
 
   const { setToken } = useToken();
 
@@ -26,6 +33,11 @@ const Login = () => {
 
 
   const url = "https://flask.gmichele.it";
+
+
+  useEffect(() => {
+    document.title = "Login";
+  }, [])
 
 
 

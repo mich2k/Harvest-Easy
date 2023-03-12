@@ -67,7 +67,7 @@ def checkusername(usr):
         if asw[0]:
             found = True
 
-    return Utils.get_response(200 if found else 400, str(found))
+    return Utils.get_response(200 if found else 400, str(found), True)
 
 
 @check_blueprint.route("/checkSession/<string:userid>", methods=["GET"])

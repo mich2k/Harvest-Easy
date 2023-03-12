@@ -36,19 +36,19 @@ def getprevision(apartment):
     
     bins = db.session.query(Bin.id_bin, Bin.previsione_status, Bin.tipologia).where(Bin.apartment_ID == apartment).all()
     
-    answ = []
+    answ = {}
     
     for bin in list(bins):
         
         data = {}
         resp = getbinrecord(bin[0])
         
-        data['previsione_status'] = bin[1] if bin[1] != '' else datetime.isoformat(datetime.now() + timedelta(days=1))
+        data['previsione_status'] = bin[1]
         data['tipologia'] = bin[2]
         data['status'] = resp['status']
         data['riempimento'] = resp['riempimento']
 
-        answ.append(data)
+        answ[bin[2]] = data
     
     return jsonify(answ)
 
@@ -273,10 +273,14 @@ def getsession(usr):
 @get_blueprint.route("/leaderboard", methods=['GET'])
 def getleaderboard():
 
-    records = db.session.query(LeaderBoard).distinct(db.func.max()).all()
-   
+    records = db.session.query(LeaderBoard.associated_user, db.func.count(LeaderBoard.score)*10).group_by(LeaderBoard.associated_user).all()
+    asw = ""
+    
     if records is not None:
-        return Utils.sa_dic2json(records[:-1])
+        for record in records:
+           asw += record[0] + ': ' + str(record[1]) + '\n'  
+        
+        return Utils.get_response(200, asw, text=True)
     else:
         return Utils.get_response(200, "Empty Leaderboard", text=True)
 

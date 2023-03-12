@@ -8,7 +8,7 @@ import { BinProphetRecord } from "../BinProphetRecord";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Base64toRenderedImages from "../Base64toRenderedImages";
-
+import WasteListComponent from "../WasteListComponent";
 const Home = () => {
 
 
@@ -33,7 +33,6 @@ const Home = () => {
 
 
   const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  const typologyColorMap = { "vetro": "bg-green-600", "plastica": "bg-blue-600", "carta": "bg-yellow-300", "umido": "bg-orange-900", "other": "bg-black-600" };
 
 
   const type = "carta";
@@ -50,7 +49,8 @@ const Home = () => {
 
   useEffect(() => {
 
-    const localst_key = "home_user";
+    document.title = "Home";
+
     const u = new User("default_user", "default_user", "default_user", "default_user", "default_user", "default_user", 0, "default_user", 0);
     u.fromObj(state["user"]);
 
@@ -113,12 +113,13 @@ const Home = () => {
                       </div>
                     </div>
 
+                    <hr className="mb-6"></hr>
+
                     <h3 className="text-xl font-semibold mt-2 pt-3 mb-4 pb-1">Let me guess 🔮</h3>
 
 
-                    <BinProphetRecord color={typologyColorMap[type].length === 0 ? typologyColorMap["other"] : typologyColorMap[type]} date="test" sort_type="test_tip" filling={parseFloat("0.95")} />
-                    <BinProphetRecord color={typologyColorMap[type].length === 0 ? typologyColorMap["other"] : typologyColorMap[type]} date="test" sort_type="test_tip" filling={parseFloat("1.0")} />
 
+                    <WasteListComponent wasteList={dateData}></WasteListComponent>
 
                     <div className="mb-4 mt-16">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum qui quibusdam, beatae ipsum labore voluptatibus ratione, itaque expedita neque natus consequuntur et culpa voluptatem odit ipsam excepturi accusantium cum laudantium consequatur tenetur necessitatibus velit amet eum optio? Quaerat porro, officia obcaecati excepturi natus quo fugit perferendis eveniet laborum, quas nostrum.</div>
 
@@ -142,7 +143,7 @@ const Home = () => {
                     <div className="lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none">
                       <div className="text-black px-4 py-6 md:p-12 md:mx-6">
                         <h4 className="text-xl font-semibold mb-6">Prevision Charts:</h4>
-                        <div className="">Check the actual filling forecast for each data-avialable typlogy for your apartment &hearts; </div>
+                        <div className="">Check the actual filling forecast for each data-available typology for your apartment &hearts; </div>
                         <div className="my-6">
                           <Base64toRenderedImages previsioni={imgData}></Base64toRenderedImages>
                         </div>

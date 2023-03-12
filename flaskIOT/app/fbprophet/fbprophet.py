@@ -129,10 +129,10 @@ def createprevision(time, apartment_name=None, tipologia=None):
             # plotting the actual values
             plt.plot(df.ds, df.y)
 
-            plt.title(
-                f"Dati attuali di riempimento {tipologia} dell'appartamento {apartment_name}")
-            plt.xlabel("Data")
-            plt.ylabel("Livello di riempimento")
+           # plt.title(
+           #     f"Dati attuali di riempimento {tipologia} dell'appartamento {apartment_name}")
+            plt.xlabel("Date")
+            plt.ylabel("Filling")
 
             path = "./predictions/" + apartment_name + "/" + tipologia
             if not os.path.exists(path):
