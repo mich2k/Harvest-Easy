@@ -259,7 +259,8 @@ def deletebinrecord(id_record):
 @database_blueprint.route('/solved/<string:uid>&<string:idbin>')
 def solved(uid, idbin):
     
-    """Workflow:
+    """
+        Workflow:
         - 1): Dall'uid ottengo l'utente
         - 2): Dall'idbin ottengo l'alteration record attiva
         - 2): Aggiorno il campo is_solved
@@ -270,22 +271,28 @@ def solved(uid, idbin):
     
     user = db.session.query(UserTG.associated_user).where(UserTG.id_chat == uid).first()[0]
     record = db.session.query(AlterationRecord.alteration_id).filter(AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
+    
+    
+    # Check if already solved
+    if not record:
+        return Utils.get_response(200, 'Segnalazione già risolta')
+    
+    
     last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
-        
+    
+    db.session.add(LeaderBoard(last_score.score + 10 if last_score else 10, idbin, user, record))
+    db.session.commit()
+    
+    return Utils.get_response(200, 'Fatto, aggiunti 10 punti per la segnalazione')
+
+
+@database_blueprint.route('/report/<string:uid>&<string:idbin>')
+def report(uid, idbin):
     db.session.execute(
         update(AlterationRecord)
         .where(AlterationRecord.associated_bin == idbin)
         .values({"is_solved": True})
     )
-        
-    db.session.add(LeaderBoard(last_score.score + 10 if last_score else 10, idbin, user, record))
-    db.session.commit()
-    
-    return Utils.get_response(200, 'Fatto, aggiunti 10 punti per la risoluzione')
-
-
-@database_blueprint.route('/report/<string:uid>&<string:idbin>')
-def report(uid, idbin):
     return Utils.get_response(200, f'Contacting HERA from {uid} for {idbin}')
 
 
@@ -300,4 +307,22 @@ def test_trap():
     tp.report(7, db, coord=56)
     tp.report(3, db, filling=56, coord=56, co2=56)
 
+    return 'Done'
+
+
+@database_blueprint.route("/testleaderboard/<string:user>&<string:idbin>")
+def test_leaderboard(user, idbin):
+    try:    
+        record = db.session.query(AlterationRecord.alteration_id).filter(AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
+
+
+        # Check if already solved
+        if not record:
+            return Utils.get_response(200, 'Segnalazione già risolta')
+        last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
+
+        db.session.add(LeaderBoard(last_score.score + 10 if last_score else 10, idbin, user, record))
+        db.session.commit()
+    except:
+        return 'Error'
     return 'Done'

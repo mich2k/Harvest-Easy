@@ -36,19 +36,19 @@ def getprevision(apartment):
     
     bins = db.session.query(Bin.id_bin, Bin.previsione_status, Bin.tipologia).where(Bin.apartment_ID == apartment).all()
     
-    answ = []
+    answ = {}
     
     for bin in list(bins):
         
         data = {}
         resp = getbinrecord(bin[0])
         
-        data['previsione_status'] = bin[1] if bin[1] != '' else datetime.isoformat(datetime.now() + timedelta(days=1))
+        data['previsione_status'] = bin[1]
         data['tipologia'] = bin[2]
         data['status'] = resp['status']
         data['riempimento'] = resp['riempimento']
 
-        answ.append(data)
+        answ[bin[2]] = data
     
     return jsonify(answ)
 
@@ -157,7 +157,7 @@ def dataAdmin(uid):
 
 
 @get_blueprint.route("/getBins/<string:city>", methods=["GET"])
-#@swag_from('docs/getBins.yml')
+@swag_from('docs/getBins.yml')
 def getbins(city):
     # Subquery: Tutti gli appartamenti della cittá indicata
     sq = db.session.query(Apartment.apartment_name).where(
@@ -172,7 +172,7 @@ def getbins(city):
 
 
 @get_blueprint.route("/getUsers/<string:city>", methods=["GET"])
-#@swag_from('docs/getUsers.yml') BOH
+@swag_from('docs/getUsers.yml')
 def getusers(city):
 
     # Subquery: Tutti gli appartamenti della cittá indicata
@@ -189,7 +189,7 @@ def getusers(city):
 
 
 @get_blueprint.route("/getypes/<string:apartment>", methods=["GET"])
-#@swag_from('docs/getypes.yml')
+@swag_from('docs/getypes.yml')
 def getypes(apartment):
     res = db.session.query(Bin).filter(
         Bin.apartment_ID == apartment).all()
@@ -203,6 +203,7 @@ def getypes(apartment):
 
 
 @get_blueprint.route("/getApartmentUsers/<string:apartment>", methods=["GET"])
+@swag_from('docs/getapartment_users.yml')
 def getapartmentusers(apartment):
 
     res = db.session.query(User).filter(User.apartment_ID == apartment).all()
@@ -214,7 +215,7 @@ def getapartmentusers(apartment):
 
 
 @get_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
-#@swag_from('docs/getBinInfo.yml')
+@swag_from('docs/getBinInfo.yml')
 def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
@@ -226,6 +227,7 @@ def getbininfo(idbin):
 
 
 @get_blueprint.route("/getApartment/<string:name>", methods=["GET"])
+@swag_from('docs/getApartment.yml')
 def getapartment(name):
     res = db.session.query(Apartment).where(
         Apartment.apartment_name == name).all()
@@ -271,10 +273,14 @@ def getsession(usr):
 @get_blueprint.route("/leaderboard", methods=['GET'])
 def getleaderboard():
 
-    records = db.session.query(LeaderBoard).distinct(db.func.max()).all()
-   
+    records = db.session.query(LeaderBoard.associated_user, db.func.count(LeaderBoard.score)*10).group_by(LeaderBoard.associated_user).all()
+    asw = ""
+    
     if records is not None:
-        return Utils.sa_dic2json(records[:-1])
+        for record in records:
+           asw += record[0] + ': ' + str(record[1]) + '\n'  
+        
+        return Utils.get_response(200, asw, text=True)
     else:
         return Utils.get_response(200, "Empty Leaderboard", text=True)
 

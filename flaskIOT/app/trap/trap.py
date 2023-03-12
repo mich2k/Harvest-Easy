@@ -13,7 +13,7 @@ URL = f"https://api.telegram.org/bot{TOKEN}/"
 def report(idbin, db, filling=None, coord=None, co2=None):
 
     if idbin is None:
-        raise Exception('idbin in trap Modulo is None')
+        raise Exception('idbin in trap module is None')
 
     apartment = Bin.query.where(Bin.id_bin == idbin).first().apartment_ID
     
@@ -31,8 +31,8 @@ def report(idbin, db, filling=None, coord=None, co2=None):
         text += f"\n- Rilevata elevata quantità di CO2 nel bidone: {co2}.\nPossibile incendio in corso"
         event += ' in fiamme'
     
-    keyboard = [[InlineKeyboardButton("Risolto", callback_data='solved')],
-            [InlineKeyboardButton("Segnala", callback_data='report')]]
+    keyboard = [[InlineKeyboardButton("Segnala", callback_data='solved')],
+            [InlineKeyboardButton("Risolto", callback_data='report')]]
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     

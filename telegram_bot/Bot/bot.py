@@ -11,16 +11,12 @@ url_get = getenv('URL_get')
 url_set = getenv('URL_set')
 url_check = getenv('URL_check')
 
-async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(text.welcome_message)
-
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if update.message is not None:
         id_user = update.effective_user.name
 
-        if requests.get(url_check + f'checkUsername/{id_user}'):
+        if requests.get(url_check + f'checkUsername/{id_user}').content.decode('UTF-8') == 'True':
             requests.get(url_set + f'set_TelegramSession/{id_user}&{update.message.chat.id}')
             await update.message.reply_text(f'Sessione salvata, benvenuto: {id_user}')
 
@@ -42,11 +38,11 @@ async def get_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def get_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
     id_user = update.effective_user.name
-    
+
     if requests.get(url_get + f'getSession/{id_user}').content.decode('UTF-8') == 'True':
         resp = requests.get(url_get + f'leaderboard')
         
-        await update.message.reply_text('Leaderboard attuale:\n' + str(resp.content.decode('UTF-8')))
+        await update.message.reply_text('Leaderboard attuale:\n ' + str(resp.content.decode('UTF-8')))
     else:
         await update.message.reply_text(text.init_error_message)
 
@@ -64,7 +60,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     send_choice = requests.get(url_db + ('solved/' if answer ==
                  'solved' else 'report/') + f'{query.from_user.id}&{int(id_bin)}')
 
-    await query.edit_message_text(text=f"Answer: {send_choice.content.decode('utf-8')}")
+    await query.edit_message_text(text=f"{send_choice.content.decode('utf-8')}")
 
 
 
@@ -76,10 +72,6 @@ if __name__ == '__main__':
 
     application = ApplicationBuilder().token(TOKEN).build()
 
-    # fix
-    welcome_handler = ChatMemberHandler(
-        welcome, ChatMemberHandler.ANY_CHAT_MEMBER)
-
     start_handler = CommandHandler('start', start)
     get_score_handler = CommandHandler('score', get_score)
     get_leaderboard_handler = CommandHandler('leaderboard', get_leaderboard)
@@ -87,7 +79,7 @@ if __name__ == '__main__':
 
     call_handler = CallbackQueryHandler(status)
 
-    application.add_handlers([welcome_handler, start_handler,
+    application.add_handlers([start_handler,get_leaderboard_handler,
                              call_handler, get_score_handler, help_handler])
 
     application.run_polling()

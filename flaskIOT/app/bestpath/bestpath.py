@@ -2,6 +2,7 @@ from flask import Blueprint
 from app.database.tables import Apartment, Bin, BinRecord
 from flask import render_template
 import requests
+import os
 from os import getenv
 import datetime
 import json
@@ -156,7 +157,7 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
             step["type"] = "step"
 
         best_path["steps"].append(step)
-    #viewmap(best_path)
+    viewmap(best_path)
     return best_path
 
 
@@ -204,6 +205,9 @@ def viewmap(bpath):
         "listaPunti": points,
     }
 
+    path = "./out/"
+    if not os.path.exists(path):
+        os.makedirs(path)
     with open("./out/path.json", "w") as outfile:
         json.dump(viewmap, outfile)
     

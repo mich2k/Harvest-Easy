@@ -1,0 +1,17 @@
+summary: Ritorna le tipologie di bidoni associate a quell'appartamento
+parameters:
+  - in: path
+    name: apartment
+    required: true
+    type: string
+responses:
+  '200':
+    description: Successo
+    content:
+        application.json
+    schema:
+      type: array
+      items:
+        type: string
+        example: carta
+        

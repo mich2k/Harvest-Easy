@@ -103,6 +103,7 @@ def get_servicemap():
 
 
 @map_blueprint.route("/getservicemap/<string:type>&<string:city>")
+@swag_from('docs/getservicemap2.yml')
 #@swag_from('docs/getservicemap2.yml')
 def get_servicefilteredmap(type, city):
     return get_points(bin_type=type, sel_city=city, to_be_emptied=True)
