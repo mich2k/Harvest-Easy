@@ -34,7 +34,7 @@ except:
 template = {
     "swagger": "2.0",
     "info": {
-        "title": "Smart Bin API",
+        "title": "Harvest Easy",
         "description": "API about our Smart Bin",
         "contact": {
             "responsibleOrganization": "",

@@ -13,9 +13,7 @@ map_blueprint = Blueprint(
 utility = Utils()
 URL = getenv('URL_map')
 
-@map_blueprint.route("/getmap")
-@map_blueprint.route("/getmap/<string:sel_city>")
-@map_blueprint.route("/getmap/<string:bin_type>&<string:sel_city>")
+
 def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
 
     if Bin.query.filter(Bin.tipologia == bin_type).first() == None and bin_type is not None:
@@ -77,18 +75,19 @@ def main():
 
 
 # MAPPA COMPLETA CON TUTTI I BIDONI
+@map_blueprint.route("/getmap")
 @swag_from('docs/getmap.yml')
 def get_map():
     return get_points()
 
 # Mappa di tutti i bidoni di una città
-
+@map_blueprint.route("/getmap/<string:sel_city>")
 @swag_from('docs/getmap2.yml')
 def getmapfromcity(city):
     return get_points(sel_city=city)
 
 # Mappa di tutti i bidoni di un certo tipo di una città
-
+@map_blueprint.route("/getmap/<string:bin_type>&<string:sel_city>")
 @swag_from('docs/getmap3.yml')
 def get_filteredmap(type, city):
     return get_points(bin_type=type, sel_city=city)
