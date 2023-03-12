@@ -225,4 +225,6 @@ def getmap():
 def map():
     return render_template("bpathmap.html", path='getpoints')
     
-    
+@path_blueprint.route('//<float:km>&<float:kWatt>')
+def compute_km(km):
+    return 'Done'

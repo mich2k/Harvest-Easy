@@ -64,6 +64,7 @@ def checkadmin(uid, password):
 def checkusername(usr):
     found = False
     for asw in db.session.query(UserTG.id_user == usr).all():
+        print(asw)
         if asw[0]:
             found = True
 
