@@ -163,23 +163,26 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
 
 # cammino con solo inizio
 @path_blueprint.route("/optimal_route/<float:lat>&<float:lng>")
-#@swag_from('/docs/optimal_route.yml')
+@swag_from('docs/optimal_route.yml')
 def bpath(lat, lng):
     return optimal_route(lat, lng, tipologia=None)
 
 # cammino con inizio e fine
 @path_blueprint.route("/optimal_route/<float:lat_init>&<float:lng_init>&<float:lat_end>&<float:lng_end>")
+@swag_from('docs/optimal_route3.yml')
 def bpath2(lat_init, lng_init, lat_end, lng_end):
     return optimal_route(lat_init, lng_init, lat_end, lng_end)
 
 # cammino con solo inizio per una certa tipologia di bidoni
 @path_blueprint.route("/optimal_route/<float:lat>&<float:lng>&<string:tipologia>")
+@swag_from('docs/optimal_route2.yml')
 def bpath3(lat, lng, tipologia):
     return optimal_route(lat, lng, tipologia)
 
 
 # cammino con inizio e fine per una certa tipologia di bidoni
 @path_blueprint.route("/optimal_route/<float:lat_init>&<float:lng_init>&<float:lat_end>&<float:lng_end>&<string:tipologia>")
+@swag_from('docs/optimal_route3.yml')
 def bpath4(lat_init, lng_init, lat_end, lng_end, tipologia):
    return optimal_route(lat_init, lng_init, lat_end, lng_end, tipologia)
 
