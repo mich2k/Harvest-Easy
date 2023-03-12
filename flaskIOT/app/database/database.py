@@ -10,7 +10,8 @@ from flask_jwt_extended import jwt_required
 # Lo userò per verificare se il DB è stato già creato
 db_manager = DB_status()
 
-database_blueprint = Blueprint("database", __name__, template_folder="templates", url_prefix="/db")
+database_blueprint = Blueprint(
+    "database", __name__, template_folder="templates", url_prefix="/db")
 
 # CREA IL DB A RUNTIME, SE GIà PRESENTE DROPPA TUTTE LE TABLES
 # È LA PRIMA ROUTE DA RAGGIUNGERE QUANDO SI AVVIA IL SISTEMA
@@ -27,11 +28,11 @@ def createDB():
         try:
             db.drop_all()
             db.create_all()
-        
+
             # if getenv("FAKER") == "True":
             create_faker(db)
         except Exception as e:
-            
+
             print('Error during db creation: ' + str(e))
         db_manager.setstatus(db, True)
 
@@ -55,7 +56,7 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
-    
+
     msgJson["status"] = Utils.calcolastatus(
         Utils,
         msgJson["id_bin"],
@@ -79,6 +80,8 @@ def addrecord():
 # da verificare chiamata ad API
 
 # Print tables
+
+
 @database_blueprint.route('/getrecord/<string:idbin>')
 def getbinrecord(idbin):
 
@@ -112,19 +115,21 @@ def stampaitems():
 
     return res
 
+
 @database_blueprint.route("/records")
 def printmore():
     res = []
-    
+
     elenco = [AlterationRecord.query.all(),
               LeaderBoard.query.all()]
-    
+
     for queries in elenco:
         res.append({queries[0].__tablename__: Utils.sa_dic2json(queries)})
 
     return res
 
 # delete
+
 
 @database_blueprint.route("/deleteuser/<string:username>", methods=["GET"])
 def deleteuser(username):
@@ -254,11 +259,11 @@ def deletebinrecord(id_record):
 # Route sfruttate dal bot telegram
 
 # solved e report sono route utilizzate per comunicare se un evento di vandalismo sia stato risolto o meno
-# solved si occupa di aggiornare la leaderboard  
+# solved si occupa di aggiornare la leaderboard
+
 
 @database_blueprint.route('/solved/<string:uid>&<string:idbin>')
 def solved(uid, idbin):
-    
     """
         Workflow:
         - 1): Dall'uid ottengo l'utente
@@ -268,21 +273,23 @@ def solved(uid, idbin):
             - 3.1): Se si aggiorno il punteggio (score non None)
             - 3.2): Altrimenti lo aggiungo e aggiorno il punteggio (score None)    
     """
-    
-    user = db.session.query(UserTG.associated_user).where(UserTG.id_chat == uid).first()[0]
-    record = db.session.query(AlterationRecord.alteration_id).filter(AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
-    
-    
+
+    user = db.session.query(UserTG.associated_user).where(
+        UserTG.id_chat == uid).first()[0]
+    record = db.session.query(AlterationRecord.alteration_id).filter(
+        AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
+
     # Check if already solved
     if not record:
         return Utils.get_response(200, 'Segnalazione già risolta')
-    
-    
-    last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
-    
-    db.session.add(LeaderBoard(last_score.score + 10 if last_score else 10, idbin, user, record))
+
+    last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(
+        LeaderBoard.record_id.desc()).first()
+
+    db.session.add(LeaderBoard(last_score.score +
+                   10 if last_score else 10, idbin, user, record))
     db.session.commit()
-    
+
     return Utils.get_response(200, 'Fatto, aggiunti 10 punti per la segnalazione')
 
 
@@ -312,16 +319,18 @@ def test_trap():
 
 @database_blueprint.route("/testleaderboard/<string:user>&<string:idbin>")
 def test_leaderboard(user, idbin):
-    try:    
-        record = db.session.query(AlterationRecord.alteration_id).filter(AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
-
+    try:
+        record = db.session.query(AlterationRecord.alteration_id).filter(
+            AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
 
         # Check if already solved
         if not record:
             return Utils.get_response(200, 'Segnalazione già risolta')
-        last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
+        last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(
+            LeaderBoard.record_id.desc()).first()
 
-        db.session.add(LeaderBoard(last_score.score + 10 if last_score else 10, idbin, user, record))
+        db.session.add(LeaderBoard(last_score.score +
+                       10 if last_score else 10, idbin, user, record))
         db.session.commit()
     except:
         return 'Error'

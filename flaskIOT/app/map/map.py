@@ -13,6 +13,7 @@ map_blueprint = Blueprint(
 utility = Utils()
 URL = getenv('URL_map')
 
+
 @map_blueprint.route("/getmap")
 @map_blueprint.route("/getmap/<string:sel_city>")
 @map_blueprint.route("/getmap/<string:bin_type>&<string:sel_city>")
@@ -24,7 +25,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
     if sel_city is not None:
         if Apartment.query.filter(Apartment.city == sel_city).all() is None:
             return jsonify({"error": "Città non valida"}), 402
-        
+
     apartments = Apartment.query.all(
     ) if sel_city is None else Apartment.query.filter(Apartment.city == sel_city).all()
     points = []
@@ -44,7 +45,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
                 BinRecord.timestamp.desc()).first()
 
             status = None if last_bin_record is None else last_bin_record.status
-            
+
             if to_be_emptied and (status == 1 or status == 3):
                 continue
 
@@ -59,7 +60,7 @@ def get_points(bin_type=None, sel_city=None, to_be_emptied=False):
             point["lat"] = apartment.lat
             point["lng"] = apartment.lng
             point["previsione"] = bin.previsione_status if bin.previsione_status != "" else "Not avaible yet"
-            point["riempimento"] = filling 
+            point["riempimento"] = filling
 
             points.append(point)
 
@@ -83,11 +84,13 @@ def get_map():
 
 # Mappa di tutti i bidoni di una città
 
+
 @swag_from('docs/getmap2.yml')
 def getmapfromcity(city):
     return get_points(sel_city=city)
 
 # Mappa di tutti i bidoni di un certo tipo di una città
+
 
 @swag_from('docs/getmap3.yml')
 def get_filteredmap(type, city):
@@ -104,7 +107,7 @@ def get_servicemap():
 
 @map_blueprint.route("/getservicemap/<string:type>&<string:city>")
 @swag_from('docs/getservicemap2.yml')
-#@swag_from('docs/getservicemap2.yml')
+# @swag_from('docs/getservicemap2.yml')
 def get_servicefilteredmap(type, city):
     return get_points(bin_type=type, sel_city=city, to_be_emptied=True)
 
@@ -116,9 +119,11 @@ def get_servicefilteredmap(type, city):
 def viewmap():
     return render_template("viewmap.html", path='getmap')
 
+
 @map_blueprint.route("/viewmap/<string:city>")
 def viewmap2(city):
     return render_template("viewmap.html", path=URL + city)
+
 
 @map_blueprint.route("/viewmap/<string:type>&<string:city>")
 def viewmap3(type, city):
@@ -135,4 +140,3 @@ def viewmapservice():
 @map_blueprint.route("/viewmapservice/<string:type>&<string:city>")
 def viewmapservice2(type, city):
     return render_template("viewmap.html", path='getservicemap/' + type + '&' + city)
-
