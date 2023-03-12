@@ -57,8 +57,7 @@ class User(Person, db.Model):
     
     # FK
     apartment_ID = db.Column(
-        "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name")
-    )
+        "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name"))
 
     def __init__(self, p: Person, apartment_ID: str, internal_number: int):
         super().__init__(p.username, p.name, p.surname,
@@ -205,11 +204,11 @@ class LeaderBoard(db.Model):
         "associatedbin", db.String, db.ForeignKey("bin.id_bin"))
     associated_user = db.Column(
         "user", db.String, db.ForeignKey("user.username"))
-    alteration_solved = db.Column(
-        "alteration_solved", db.String, db.ForeignKey("alterationRecord.record"))
+    alteration_reported = db.Column(
+        "alteration_reported", db.String, db.ForeignKey("alterationRecord.record"))
 
-    def __init__(self, score: int, associated_bin: str, associated_user: str, alteration_solved: str) -> None:
+    def __init__(self, score: int, associated_bin: str, associated_user: str, alteration_reported: str) -> None:
         self.score = score
         self.associated_bin = associated_bin
         self.associated_user = associated_user
-        self.alteration_solved = alteration_solved
+        self.alteration_reported = alteration_reported

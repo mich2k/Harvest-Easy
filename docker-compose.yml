@@ -31,8 +31,6 @@ services:
         - URL_set=http://iotproj:5000/set/
         - URL_check=http://iotproj:5000/check/
         - URL_map=http://iotproj:5000/map/getmap/
-    profiles:
-      - donotstart
 
   nextjs_app:
     image: mick2k1/iot-nextjs-fe
