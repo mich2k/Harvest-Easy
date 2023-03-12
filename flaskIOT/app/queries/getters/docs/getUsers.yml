@@ -1,0 +1,46 @@
+summary: Ritorna informazioni su tutti gli utenti in una città
+parameters:
+  - in: path
+    name: city
+    required: true
+    type: string
+responses:
+  '200':
+    description: Successo
+    content:
+        application.json
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          apartment_ID:
+            example: IDK
+            type: string
+          birth_year:
+            example: 2001
+            type: int
+          card_number:
+            example: d3370a5
+            type: string
+          city:
+            example: Modena
+            type: string
+          id:
+            example: 1
+            type: int
+          internal_number:
+            example: 15
+            type: int
+          name:
+            example: Vincenzo
+            type: string
+          password:
+            example: $2b$10$CD7Wz4YF.Amo4moLl9i/qerh1e1O7HmDgfKP6pMvevjRx3dCzR0la
+            type: string
+          surname:
+            example: Lapadula
+            type: string
+          username:
+            example: vinz
+            type: string

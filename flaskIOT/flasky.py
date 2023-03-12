@@ -127,8 +127,8 @@ app.register_blueprint(handler_blueprint)
 app.register_blueprint(login_blueprint)
 
 
-@app.before_first_request
 
+#@app.before_first_request
 
 
 if __name__ == 'flasky':

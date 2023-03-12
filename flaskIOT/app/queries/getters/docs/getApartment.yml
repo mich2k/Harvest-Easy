@@ -1,0 +1,40 @@
+summary: Ritorna informazioni sull'appartamento indicato
+parameters:
+  - in: path
+    name: name
+    required: true
+    type: string
+responses:
+  '200':
+    description: Successo
+    content:
+        application.json
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          apartment_name:
+            example: Fermi
+            type: string
+          apartment_street_number:
+            example: 49
+            type: int
+          associated_admin:
+            example: rossi
+            type: string
+          city:
+            example: Modena
+            type: string
+          lat:
+            example: 44.6194014
+            type: float
+          lng:
+            example: 10.9217465
+            type: float
+          n_internals:
+            example: 155
+            type: int
+          street:
+            example: via Giuseppe Fava
+            type: string

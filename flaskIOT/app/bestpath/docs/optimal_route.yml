@@ -1,4 +1,13 @@
-summary: Cammino ottimo di svuotamento dei bidoni partendo dal punto indicato
+summary: Cammino ottimo di svuotamento dei bidoni partendo dalla posizione indicata
+parameters:
+  - in: path
+    name: lat
+    required: true
+    type: float
+  - in: path
+    name: lng
+    required: true
+    type: float
 responses:
   '200':
     description: Quando le coordinate sono corrette
@@ -7,8 +16,8 @@ responses:
     schema:
       properties:
         duration:
+          example: 1290
           type: int
-          example: 2281
         steps:
           type: array
           items:
@@ -17,13 +26,11 @@ responses:
               arrival:
                 example: 0
                 type: int
-              location:
-                type: array
-                items:
-                  type: float
               tipo:
                 type: string
                 example: start #enum: [start, end, step]
+              location:
+                type: float
+                example: 10.2389088s
   '401':
-    description: Latitudine o longitudine scorretti
-  
+    description: Latitudine o longitudine scorretti'

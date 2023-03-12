@@ -157,7 +157,7 @@ def dataAdmin(uid):
 
 
 @get_blueprint.route("/getBins/<string:city>", methods=["GET"])
-#@swag_from('docs/getBins.yml')
+@swag_from('docs/getBins.yml')
 def getbins(city):
     # Subquery: Tutti gli appartamenti della cittá indicata
     sq = db.session.query(Apartment.apartment_name).where(
@@ -172,7 +172,7 @@ def getbins(city):
 
 
 @get_blueprint.route("/getUsers/<string:city>", methods=["GET"])
-#@swag_from('docs/getUsers.yml') BOH
+@swag_from('docs/getUsers.yml')
 def getusers(city):
 
     # Subquery: Tutti gli appartamenti della cittá indicata
@@ -189,7 +189,7 @@ def getusers(city):
 
 
 @get_blueprint.route("/getypes/<string:apartment>", methods=["GET"])
-#@swag_from('docs/getypes.yml')
+@swag_from('docs/getypes.yml')
 def getypes(apartment):
     res = db.session.query(Bin).filter(
         Bin.apartment_ID == apartment).all()
@@ -203,6 +203,7 @@ def getypes(apartment):
 
 
 @get_blueprint.route("/getApartmentUsers/<string:apartment>", methods=["GET"])
+@swag_from('docs/getapartment_users.yml')
 def getapartmentusers(apartment):
 
     res = db.session.query(User).filter(User.apartment_ID == apartment).all()
@@ -214,7 +215,7 @@ def getapartmentusers(apartment):
 
 
 @get_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
-#@swag_from('docs/getBinInfo.yml')
+@swag_from('docs/getBinInfo.yml')
 def getbininfo(idbin):
 
     res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
@@ -226,6 +227,7 @@ def getbininfo(idbin):
 
 
 @get_blueprint.route("/getApartment/<string:name>", methods=["GET"])
+@swag_from('docs/getApartment.yml')
 def getapartment(name):
     res = db.session.query(Apartment).where(
         Apartment.apartment_name == name).all()
