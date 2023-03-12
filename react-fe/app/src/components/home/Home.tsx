@@ -137,8 +137,6 @@ const Home = () => {
                         {isOpen ? <FaMinus /> : <FaPlus />}
                         {isOpen ? 'Hide' : 'Show'}
                       </button>
-                                            
-*/}
                     </div>
                   </div>
                 </div>
