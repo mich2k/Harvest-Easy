@@ -49,10 +49,10 @@
         //var objJSON = eval("(function(){return " + response + ";})()");
 
         var objJSON = JSON.parse(response);
-        console.log(objJSON);
+        //console.log(objJSON);
 
         var listapunti = objJSON.listaPunti; // recupero la lista dei punti
-        console.log(listapunti);
+        //console.log(listapunti);
 
         for (var i = 0; i < listapunti.length; ) {
           if (listapunti[i] === undefined) {
@@ -63,8 +63,8 @@
           var content = "Apartment name: " + listapunti[i].apartment_name + "<br>Address: " + listapunti[i].address + "<br>";
 
           while (fixed_apartment === listapunti[i].apartment_name) {
-            console.log(listapunti[i]);
-            console.log(i);
+            // console.log(listapunti[i]);
+            // console.log(i);
 
             content += "<br>Type: " + listapunti[i].tipologia + "<br>Status: " + listapunti[i].status + "<br>Prevision: " + listapunti[i].previsione + "<br>Filling: " + listapunti[i].riempimento + "<br>";
 

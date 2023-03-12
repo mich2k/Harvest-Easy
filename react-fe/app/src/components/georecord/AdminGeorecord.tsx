@@ -86,7 +86,7 @@ const AdminGeorecord = () => {
     const onLogInButtonClick = () => {
 
         if (!checked_state) {
-            console.log('check');
+            //console.log('check');
             setShowAlert(true);
             return;
         }
@@ -107,7 +107,7 @@ const AdminGeorecord = () => {
                 },
             })
             .then(({ data }) => {
-                console.log(data);
+                //console.log(data);
                 if (data['access_token'] === undefined) {
                     return <Error header_message="Invalid credentials" body_message="The credentials you have entered are not valid, please try again"></Error>
                 } else {

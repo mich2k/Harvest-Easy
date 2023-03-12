@@ -52,10 +52,10 @@
               //var objJSON = eval("(function(){return " + response + ";})()");
 
               var objJSON = JSON.parse(response);
-              console.log(objJSON);
+              //console.log(objJSON);
 
               var listapunti = objJSON.listaPunti; // recupero la lista dei punti
-              console.log(listapunti);
+              //console.log(listapunti);
 
               for (var i = 0, len = listapunti.length; i < len; i++) {
                   var punto = listapunti[i];
@@ -66,7 +66,7 @@
                       .bindPopup(content)
                       .openPopup();
               }
-              console.log(coords);
+              //console.log(coords);
               //L.polyline(coords).addTo(map);
 
           });
