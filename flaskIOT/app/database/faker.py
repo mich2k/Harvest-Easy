@@ -165,15 +165,15 @@ def create_faker(db):
             ),
             User(
                 Person(
-                    username="chad",
+                    username="mick",
                     name="Michele",
                     surname="Giarletta",
                     password=generate_password("michelegiarletta"),
-                    city="Avellino",
-                    birth_year=2002,
+                    city="Modena",
+                    birth_year=2001,
                     card_number="d3370a6"
                 ),
-                "Cuoppo",
+                "Fermi",
                 67,
             ),
             User(
