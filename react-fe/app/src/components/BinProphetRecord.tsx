@@ -8,7 +8,7 @@ export const BinProphetRecord = (props: {filling:number, sort_type: string, date
                     {(props.filling*100).toFixed(2)}%
                 </div>
             </div>
-            <div className="text-right mt-4 italic">Estimated filling: {(new Date(props.date).toDateString())}</div>
+            <div className="text-right mt-4 italic">Estimated filling: {props.date === "" || !props.date ? "Prevision out of range" : (new Date(props.date).toDateString())}</div>
         </div>
     );
 
