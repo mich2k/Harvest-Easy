@@ -167,7 +167,7 @@ const AdminGeorecord = () => {
                                                             <img
                                                                 className="mx-auto w-48"
                                                                 width="100px"
-                                                                src="https://e7.pngegg.com/pngimages/165/760/png-clipart-s-s-c-napoli-2017-audi-cup-stadio-san-paolo-football-uefa-champions-league-football-ssc-napoli-2017-audi-cup.png"
+                                                                src="https://hero.gmichele.it/HE-Logo.jpg"
                                                                 alt="logo"
                                                             />
                                                             <h4 className="text-xl font-semibold mt-1 mb-8 pb-1">Apartment registration tool</h4>
