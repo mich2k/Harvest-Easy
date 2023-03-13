@@ -82,7 +82,7 @@ def create_faker(db):
                     name="Mario",
                     surname="Verdi",
                     password=generate_password("marioverdi"),
-                    city="Avellino",
+                    city="Modena",
                     birth_year=2000,
                     card_number="d3370a9"
                 )
@@ -93,7 +93,7 @@ def create_faker(db):
                     name="Luigi",
                     surname="Rossi",
                     password=generate_password("luigirossi"),
-                    city="Moliterno",
+                    city="Modena",
                     birth_year=2000,
                     card_number="d3370a0"
                 )
@@ -157,7 +157,7 @@ def create_faker(db):
                     surname="Lapadula",
                     password=generate_password("vincenzolapadula"),
                     city="Modena",
-                    birth_year=2001,
+                    birth_year=2000,
                     card_number="d3370a5"
                 ),
                 "Fermi",
@@ -215,7 +215,7 @@ def create_faker(db):
         [
             UserTG("@vinz20110", "",
                    logged=False, associated_user="vinz"),
-            UserTG("@mich2k", "", logged=False, associated_user="chad"),
+            UserTG("@mich2k", "", logged=False, associated_user="mick"),
         ]
     )
 
