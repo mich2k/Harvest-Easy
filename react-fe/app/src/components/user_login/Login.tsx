@@ -1,11 +1,8 @@
 
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import home from '../home/Home';
 import axios from 'axios'
 import React from 'react';
 import User from '../User'
-import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
 import useToken from '../../useToken';
 
@@ -15,9 +12,6 @@ import useToken from '../../useToken';
 const Login = () => {
 
 
-
-
-  const { setToken } = useToken();
 
   const navigate = useNavigate();
 
@@ -100,8 +94,8 @@ const Login = () => {
                       <img
                         className="mx-auto w-48"
                         width="100px"
-                        src="https://e7.pngegg.com/pngimages/165/760/png-clipart-s-s-c-napoli-2017-audi-cup-stadio-san-paolo-football-uefa-champions-league-football-ssc-napoli-2017-audi-cup.png"
-                        alt="logo"
+                        src="https://hero.gmichele.it/HE-Logo.jpg"
+                        alt="he-logo"
                       />
                       <h4 className="mt-4 text-xl font-semibold mb-8 pb-1">Harvest Easy - Login page</h4>
                       <h5 className="text-l font-italic mt-1 mb-4 pb-1">Welcome, please log in </h5>
