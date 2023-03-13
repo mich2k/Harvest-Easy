@@ -39,9 +39,9 @@ const AdminGeorecord = () => {
 
     useEffect(() => {
         document.title = "Admin Georecord";
-      }, [])
-    
-    
+    }, [])
+
+
 
     useEffect(() => {
         setLoading(true);
@@ -182,9 +182,6 @@ const AdminGeorecord = () => {
                                                             </div>
                                                             <div>
 
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-bold">Detected geo-reversed city:</span> <span>{apartment_id}</span>
                                                             </div>
 
                                                         </div>
