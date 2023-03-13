@@ -38,19 +38,19 @@ fakers = [
         "idbin": 6,
         "tipologia": "umido",
         "ultimo_svuotamento": utils.Utils.randomTime(),
-        "apartment_ID": "Cuoppo",
+        "apartment_ID": "Trento",
     },
     {
         "idbin": 7,
         "tipologia": "plastica",
         "ultimo_svuotamento": utils.Utils.randomTime(),
-        "apartment_ID": "Cuoppo",
+        "apartment_ID": "Trento",
     },
     {
         "idbin": 8,
         "tipologia": "carta",
         "ultimo_svuotamento": utils.Utils.randomTime(),
-        "apartment_ID": "IDK",
+        "apartment_ID": "Viali",
     },
 ]
 
@@ -107,7 +107,7 @@ def create_faker(db):
             Apartment(
                 apartment_name="Fermi",
                 city="Modena",
-                street="via Giuseppe Fava",
+                street="via Giuseppe Verdi",
                 apartment_street_number='49',
                 lat=44.6194014,
                 lng=10.9217465,
@@ -125,7 +125,7 @@ def create_faker(db):
                 associated_admin="rossi1",
             ),
             Apartment(
-                apartment_name="Cuoppo",
+                apartment_name="Trento",
                 city="Modena",
                 street="via Nervi",
                 apartment_street_number='57',
@@ -135,7 +135,7 @@ def create_faker(db):
                 associated_admin="mario2",
             ),
             Apartment(
-                apartment_name="IDK",
+                apartment_name="Viali",
                 city="Modena",
                 street="via Cividale",
                 apartment_street_number='80',
@@ -188,59 +188,7 @@ def create_faker(db):
                 ),
                 "Fermi",
                 45,
-            ),
-            User(
-                Person(
-                    username="nenna",
-                    name="Elena",
-                    surname="Berselli",
-                    password=generate_password("elenaberselli"),
-                    city="Modena",
-                    birth_year=2000,
-                    card_number="d3370b8"
-                ),
-                "Torri",
-                78,
-            ),
-            User(
-                Person(
-                    username="lollo",
-                    name="Lorenzo",
-                    surname="Venturelli",
-                    password=generate_password("lorenzoventurelli"),
-                    city="Avellino",
-                    birth_year=2004,
-                    card_number="d337018"
-                ),
-                "Cuoppo",
-                23,
-            ),
-            User(
-                Person(
-                    username="abby",
-                    name="Abeer",
-                    surname="Jelali",
-                    password=generate_password("abeerjelali"),
-                    city="Modena",
-                    birth_year=2005,
-                    card_number="d337028"
-                ),
-                "Fermi",
-                33,
-            ),
-            User(
-                Person(
-                    username="turro",
-                    name="Alessio",
-                    surname="Turrini",
-                    password=generate_password("alessioturrini"),
-                    city="Moliterno",
-                    birth_year=2006,
-                    card_number="d337038"
-                ),
-                "IDK",
-                12,
-            ),
+            )
         ]
     )
 
@@ -249,44 +197,20 @@ def create_faker(db):
         [
             Operator(
                 Person(
-                    username="mattia",
-                    name="Mattia",
-                    surname="Gualtieri",
-                    password=generate_password("mattiagualtieri"),
-                    city="Avellino",
-                    birth_year=2004,
+                    username="marco",
+                    name="Marco",
+                    surname="Verdi",
+                    password=generate_password("marcoverdi"),
+                    city="Modena",
+                    birth_year=2000,
                     card_number="d337048"
                 ),
                 id=158,
-            ),
-            Operator(
-                Person(
-                    username="guido",
-                    name="Guido",
-                    surname="Benevelli",
-                    password=generate_password("guidobenevelli"),
-                    city="Modena",
-                    birth_year=2004,
-                    card_number="d3375a8",
-                ),
-                id=478,
-            ),
-            Operator(
-                Person(
-                    username="rasta",
-                    name="Gabriele",
-                    surname="Rastelli",
-                    password=generate_password("gabrielerastelli"),
-                    city="Avellino",
-                    birth_year=2004,
-                    card_number="d337068"
-                ),
-                id=500,
             )
         ]
     )
 
-    # Mich & Vinz Telegram profiles
+    # Telegram profiles
     db.session.add_all(
         [
             UserTG("@vinz20110", "",
