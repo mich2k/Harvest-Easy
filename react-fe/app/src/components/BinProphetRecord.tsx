@@ -1,15 +1,5 @@
 import React from "react";
 
-
-function calculateDateDifference(dueDateStr:string, currentDateStr:string) {
-    const dueDate = new Date(dueDateStr);
-    const currentDate = new Date(currentDateStr);
-    const differenceInDays = Math.ceil((dueDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
-    return differenceInDays;
-}
-
-
-
 export const BinProphetRecord = (props: {filling:number, sort_type: string, date: string, color: string }) => {
     return (
         <div className="mx-4">

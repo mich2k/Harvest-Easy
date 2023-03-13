@@ -123,6 +123,7 @@ const AdminRecord = () => {
 
 
       }).catch((err) => {
+        console.dir(err);
         setErrShowAlert(true);
       });
   }

@@ -4,10 +4,6 @@ import axios from 'axios'
 import React from 'react';
 import User from '../User'
 import { useNavigate } from "react-router-dom";
-import useToken from '../../useToken';
-
-
-
 
 const Login = () => {
 
