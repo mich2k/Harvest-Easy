@@ -13,7 +13,7 @@
 #define PIN_CO2 34   // Analogical pin connected to the CO2 sensor
 #define PINTrigger 19  // Trigger pin of ultrasonic sensor 
 #define PINEcho 18  // Echo pin connected of ultrasonic sensor 
-#define altezza 15
+#define altezza 50
 #define SERVER_ADDR "https://flask.gmichele.it/db/addrecord"
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
@@ -23,8 +23,8 @@ DHT dht(DHTPIN, DHTTYPE);
 HTTPClient http;
 StaticJsonDocument<1024> jsonMsg1;
 
-const char* ssid = "IOT"; // Qui va inserito il nome della propria rete WiFi
-const char* password = "ciaociao1";// Qui va inserita la password di rete
+const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
+const char* password = "altalena";// Qui va inserita la password di rete
 
 unsigned long timestamp;
 // Pitch, Roll and Yaw values

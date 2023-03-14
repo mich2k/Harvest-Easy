@@ -1,13 +1,23 @@
 
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import home from '../home/Home';
 import axios from 'axios'
 import React from 'react';
 import User from '../User'
+import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
+import useToken from '../../useToken';
+
+
+
 
 const Login = () => {
 
 
+
+
+  const { setToken } = useToken();
 
   const navigate = useNavigate();
 
@@ -90,8 +100,8 @@ const Login = () => {
                       <img
                         className="mx-auto w-48"
                         width="100px"
-                        src="https://hero.gmichele.it/HE-Logo.jpg"
-                        alt="he-logo"
+                        src="https://e7.pngegg.com/pngimages/165/760/png-clipart-s-s-c-napoli-2017-audi-cup-stadio-san-paolo-football-uefa-champions-league-football-ssc-napoli-2017-audi-cup.png"
+                        alt="logo"
                       />
                       <h4 className="mt-4 text-xl font-semibold mb-8 pb-1">Harvest Easy - Login page</h4>
                       <h5 className="text-l font-italic mt-1 mb-4 pb-1">Welcome, please log in </h5>
@@ -140,7 +150,7 @@ const Login = () => {
                   <div className="text-black px-4 py-6 md:p-12 md:mx-6">
                     <h4 className="text-xl font-semibold mb-4">We are more than just a bin, let me explain y.</h4>
                     <p className="text-sm">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates tempore in reprehenderit aliquid dignissimos numquam illo accusantium, nesciunt obcaecati repellat omnis debitis odio ipsam dolore? Odit, molestias vero, necessitatibus molestiae nihil odio fugit consequuntur eligendi unde laudantium, voluptatum sint. Possimus dignissimos molestiae excepturi harum, est porro temporibus labore quaerat dolore laboriosam iure, quam eveniet. Quisquam voluptatum sint quae et dolorem, velit assumenda quasi odio maxime voluptatibus molestias aliquam aliquid error facere architecto id ad obcaecati quaerat accusamus, est fugiat maiores, aut ab ea. Cupiditate ipsum ea ut provident ratione officiis? Repellat quo, quis maiores aut nihil accusamus perferendis ad dolorum.
+                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates tempore in reprehenderit aliquid dignissimos numquam illo accusantium, nesciunt obcaecati repellat omnis debitis odio ipsam dolore? Odit, molestias vero, necessitatibus molestiae nihil odio fugit consequuntur eligendi unde laudantium, voluptatum sint. Possimus dignissimos molestiae excepturi harum, est porro temporibus labore quaerat dolore laboriosam iure, quam eveniet. Quisquam voluptatum sint quae et dolorem, velit assumenda quasi odio maxime voluptatibus molestias aliquam aliquid error facere architecto id ad obcaecati quaerat accusamus, est fugiat maiores, aut ab ea. Cupiditate ipsum ea ut provident ratione officiis? Repellat quo, quis maiores aut nihil accusamus perferendis ad dolorum.
                     </p>
                   </div>
                 </div>

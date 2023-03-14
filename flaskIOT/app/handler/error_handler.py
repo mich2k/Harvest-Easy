@@ -13,14 +13,15 @@ def db_handler(error):
     session["last_url"] = request.url
 
     print(f"WARNING! An error occured in: {request.url}\n" + str(error))
-
+    
     if getenv('FLASK_CONFIG') == 'docker_local':
         return redirect("http://127.0.0.1:5000/db")
 
+    
     return Utils.get_response(400, 'Error in DB: not created.')
 
 
 @handler_blueprint.app_errorhandler(Exception)
 def handler(error):
-
+    
     return Utils.get_response(400, f"WARNING! An error occured in: {request.url} " + str(error))

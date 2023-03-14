@@ -6,7 +6,7 @@ class Person:
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column("username", db.String(20),
                          nullable=False, unique=True)
-
+    
     name = db.Column("name", db.String)
     surname = db.Column("surname", db.String)
     password = db.Column("password", db.String, nullable=False)
@@ -54,7 +54,7 @@ class Operator(Person, db.Model):
 class User(Person, db.Model):
     __tablename__ = "user"
     internal_number = db.Column("internal_number", db.Integer)
-
+    
     # FK
     apartment_ID = db.Column(
         "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name"))
@@ -116,6 +116,7 @@ class Bin(db.Model):
             
         self.tipologia = tipologia
         self.apartment_ID = apartment_ID
+
 
 
 class BinRecord(db.Model):

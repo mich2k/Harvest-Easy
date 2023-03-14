@@ -28,7 +28,7 @@ const typologyColorMap: TypologyColorMap = { "vetro": "bg-green-600", "plastica"
 
 
 const WasteListComponent: React.FC<Props> = ({ wasteList }) => {
-  if (!wasteList) return (<div className='text-bold'>Loading or not available</div>);
+  if (!wasteList) return (<div className='text-bold'>Loading</div>);
 
   return (
     <div>

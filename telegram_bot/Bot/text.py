@@ -1,5 +1,7 @@
+welcome_message = 'Questo è un messaggio di benvenuto'
+
 init_error_message = 'Inizializzi il bot'
 
-help_text = 'Se hai dubbi o domande contatta l\'amministratore condominiale oppure helpdesk@commercial.com.'
+help_text = 'Aiutati che lo SmartBIN ti aiuta'
 
 unregistered_user = "Utente non registrato, contatti l'amministratore condominiale."

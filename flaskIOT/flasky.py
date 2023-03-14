@@ -34,7 +34,7 @@ except:
 template = {
     "swagger": "2.0",
     "info": {
-        "title": "Smart Bin API",
+        "title": "Harvest Easy",
         "description": "API about our Smart Bin",
         "contact": {
             "responsibleOrganization": "",
@@ -74,24 +74,24 @@ myutils = Utils()
 # is very important to refer to the db path from the config file, otherwise
 # it will not work
 
-if (getenv('FLASK_CONFIG') is None):
+if(getenv('FLASK_CONFIG') is None):
     print("FLASK_CONFIG not set in environment")
-    # raise RuntimeError("Wrong env var value, exiting..")
-elif (getenv('FLASK_CONFIG') == 'docker'):
+    #raise RuntimeError("Wrong env var value, exiting..")
+elif(getenv('FLASK_CONFIG') == 'docker'):
     app.config.update(
-        # SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
+        #SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db',
         DEBUG=True,
         TESTING=False,
     )
     print("NOTE: Using docker debug config")
-elif (getenv('FLASK_CONFIG') == 'local'):
+elif(getenv('FLASK_CONFIG') == 'local'):
     app.config.update(
-        # SQLALCHEMY_DATABASE_URI = 'sqlite:///out.db',
+        #SQLALCHEMY_DATABASE_URI = 'sqlite:///out.db',
         DEBUG=True,
         TESTING=False,
     )
     print("NOTE: Using local config")
-elif (getenv('FLASK_CONFIG') == 'docker_production'):
+elif(getenv('FLASK_CONFIG') == 'docker_production'):
     app.config.update(
         SQLALCHEMY_DATABASE_URI='sqlite:///database.db',
         DEBUG=False,
@@ -100,7 +100,7 @@ elif (getenv('FLASK_CONFIG') == 'docker_production'):
     print("NOTE: Using docker production config")
 else:
     pass
-    # raise RuntimeError("Wrong config, exiting..")
+    #raise RuntimeError("Wrong config, exiting..")
 
 
 # Inizializzazione DB

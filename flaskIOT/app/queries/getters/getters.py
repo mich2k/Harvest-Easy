@@ -9,13 +9,10 @@ from flask_jwt_extended import jwt_required
 from app.utils.utils import Utils
 from flasgger import swag_from
 from datetime import datetime, timedelta
-import requests
-import base64
+import requests, base64
 
-get_blueprint = Blueprint(
-    "getters", __name__, template_folder="templates", url_prefix="/get")
+get_blueprint = Blueprint("getters", __name__, template_folder="templates", url_prefix="/get")
 URL = getenv('URL_get')
-
 
 def getbinrecord(id_bin):
 
@@ -39,49 +36,44 @@ def getbinrecord(id_bin):
 
 
 @get_blueprint.route('/prevision/<string:apartment>')
-# @jwt_required()
+#@jwt_required()
 def getprevision(apartment):
-
-    bins = db.session.query(Bin.id_bin, Bin.previsione_status, Bin.tipologia).where(
-        Bin.apartment_ID == apartment).all()
-
+    
+    bins = db.session.query(Bin.id_bin, Bin.previsione_status, Bin.tipologia).where(Bin.apartment_ID == apartment).all()
+    
     answ = {}
-
+    
     for bin in list(bins):
-
+        
         data = {}
         resp = getbinrecord(bin[0])
 
-            
         data['previsione_status'] = bin[1]
         data['tipologia'] = bin[2]
         data['status'] = resp['status'] if 'error' not in resp else 1
         data['riempimento'] = resp['riempimento'] if 'error' not in resp else 0.1
 
         answ[bin[2]] = data
-
+    
     return jsonify(answ)
-
 
 @get_blueprint.route("/getprofileuser/<string:uid>", methods=["GET"])
 @jwt_required()
 def getprofileuser(uid):
-    user = User.query.filter(User.username == uid).first()
-    if user is None:
-        return jsonify({"errore": "username non corretto"})
+    user = User.query.filter(User.username==uid).first()
+    if user is None: return jsonify({"errore": "username non corretto"})
 
-    apartment_user = Apartment.query.filter(
-        Apartment.apartment_name == user.apartment_ID).first()
-    bins = Bin.query.filter(Bin.apartment_ID == user.apartment_ID).all()
-
-    bidoni_user = []
+    apartment_user= Apartment.query.filter(Apartment.apartment_name==user.apartment_ID).first()
+    bins=Bin.query.filter(Bin.apartment_ID==user.apartment_ID).all()
+  
+    bidoni_user=[]
     for bin in bins:
         ultimo_bin_record = (
             BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
             .order_by(BinRecord.timestamp.desc())
             .first()
         )
-        dict = {
+        dict={
             "id_bin": bin.id_bin,
             "tipologia": bin.tipologia,
             "previsione_status": bin.previsione_status,
@@ -102,42 +94,38 @@ def getprofileuser(uid):
         "apartment_city": apartment_user.city,
         "street": apartment_user.street,
         "apartment_street_number": apartment_user.apartment_street_number,
-        "n_internals": apartment_user.n_internals,
+        "n_internals":apartment_user.n_internals,
         "associated_admin": apartment_user.associated_admin,
-        "bins": bidoni_user
-    })
-
+        "bins":bidoni_user
+   })
 
 @get_blueprint.route("/getprofileadmin/<string:uid>", methods=["GET"])
 @jwt_required()
 def getprofileadmin(uid):
-    admin = Admin.query.filter(Admin.username == uid).first()
-    if admin is None:
-        return jsonify({"errore": "username non corretto"})
-
-    apartments = Apartment.query.filter(
-        Apartment.associated_admin == uid).all()
-    appartment_list = []
+    admin = Admin.query.filter(Admin.username==uid).first()
+    if admin is None: return jsonify({"errore": "username non corretto"})
+    
+    apartments = Apartment.query.filter(Apartment.associated_admin==uid).all()
+    appartment_list=[]
     for apartment in apartments:
-        dictap = {
+        dictap={
             "apartment_name": apartment.apartment_name,
             "apartment_city": apartment.city,
             "street": apartment.street,
             "apartment_street_number": apartment.apartment_street_number,
-            "n_internals": apartment.n_internals,
-            "bins": None
+            "n_internals": apartment.n_internals, 
+            "bins":None
         }
-
-        bins = Bin.query.filter(
-            Bin.apartment_ID == apartment.apartment_name).all()
-        bidoni = []
+        
+        bins=Bin.query.filter(Bin.apartment_ID==apartment.apartment_name).all()
+        bidoni=[]
         for bin in bins:
             ultimo_bin_record = (
                 BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
                 .order_by(BinRecord.timestamp.desc())
                 .first()
             )
-            dict = {
+            dict={
                 "id_bin": bin.id_bin,
                 "tipologia": bin.tipologia,
                 "previsione_status": bin.previsione_status,
@@ -148,7 +136,7 @@ def getprofileadmin(uid):
                 "riempimento": ultimo_bin_record.riempimento
             }
             bidoni.append(dict)
-        dictap["bins"] = bidoni
+        dictap["bins"]=bidoni
         appartment_list.append(dictap)
 
     return jsonify({
@@ -159,8 +147,7 @@ def getprofileadmin(uid):
         "birth_year": admin.birth_year,
         "card_number": admin.card_number,
         "apartments": appartment_list,
-    })
-
+   })
 
 @get_blueprint.route("/dataAdmin/<string:uid>", methods=["GET"])
 @jwt_required()
@@ -196,7 +183,7 @@ def getusers(city):
     # Subquery: Tutti gli appartamenti della cittá indicata
     sq = db.session.query(Apartment.apartment_name).where(
         Apartment.city == city)
-
+    
     # Query: Tutti gli user negli appartamenti selezionati
     res = db.session.query(User).filter(User.apartment_ID.in_(sq)).all()
 
@@ -211,7 +198,7 @@ def getusers(city):
 def getypes(apartment):
     res = db.session.query(Bin).filter(
         Bin.apartment_ID == apartment).all()
-    tipologie = []
+    tipologie=[]
     for re in res:
         tipologie.append(re.tipologia)
     return jsonify(tipologie)
@@ -257,18 +244,16 @@ def getapartment(name):
 
 @get_blueprint.route("/getScore/<string:usr>", methods=["GET"])
 def getscore(usr):
-    user = db.session.query(UserTG.associated_user).where(
-        UserTG.id_user == usr).first()[0]
-
+    user = db.session.query(UserTG.associated_user).where(UserTG.id_user == usr).first()[0]
+    
     if user is None:
         return Utils.get_response(400, 'User not found')
-
-    res = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(
-        LeaderBoard.record_id.desc()).first()
-
+    
+    res = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
+    
     if res is None:
         return Utils.get_response(400, 0)
-
+        
     return Utils.get_response(200, str(res.score), True)
 
 
@@ -293,33 +278,30 @@ def getsession(usr):
 @get_blueprint.route("/leaderboard", methods=['GET'])
 def getleaderboard():
 
-    records = db.session.query(LeaderBoard.associated_user, db.func.count(
-        LeaderBoard.score)*10).group_by(LeaderBoard.associated_user).all()
+    records = db.session.query(LeaderBoard.associated_user, db.func.count(LeaderBoard.score)*10).group_by(LeaderBoard.associated_user).all()
     asw = ""
-
+    
     if records is not None:
         for record in records:
-            asw += record[0] + ': ' + str(record[1]) + '\n'
-
+           asw += record[0] + ': ' + str(record[1]) + '\n'  
+        
         return Utils.get_response(200, asw, text=True)
     else:
         return Utils.get_response(200, "Empty Leaderboard", text=True)
 
-
 @get_blueprint.route("/urlprevision/<string:apartment>")
 def geturlprevision(apartment):
-    out = {}
+    out =  {}
     files = []
     types = []
     for dir in listdir(f'./predictions/{apartment}/'):
         if isdir(f'./predictions/{apartment}/{dir}'):
             types.append(dir)
-            files += [f'./predictions/{apartment}/{dir}/' + file for file in listdir(
-                f'./predictions/{apartment}/{dir}') if file == 'forecast.png']
-
+            files += [f'./predictions/{apartment}/{dir}/' + file for file in listdir(f'./predictions/{apartment}/{dir}') if file == 'forecast.png']        
+    
     for file, type in zip(files, types):
         print(file)
         with open(file, 'rb') as img_file:
             out[type] = base64.b64encode(img_file.read()).decode('ascii')
-
+    
     return jsonify(out)
