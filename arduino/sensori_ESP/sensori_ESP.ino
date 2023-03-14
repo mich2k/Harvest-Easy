@@ -13,7 +13,7 @@
 #define PIN_CO2 34   // Analogical pin connected to the CO2 sensor
 #define PINTrigger 19  // Trigger pin of ultrasonic sensor 
 #define PINEcho 18  // Echo pin connected of ultrasonic sensor 
-#define altezza 15
+#define altezza 13
 #define SERVER_ADDR "https://flask.gmichele.it/db/addrecord"
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
