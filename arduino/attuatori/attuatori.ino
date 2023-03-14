@@ -77,10 +77,12 @@ const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria r
 const char* password = "altalena";// Qui va inserita la password di rete
 
 void connectToWiFi() {
+  WiFi.disconnect();
   WiFi.begin(ssid, password); 
   while (WiFi.status() != WL_CONNECTED) {
-          delay(2000); // 2 secondi prima di ritentare la connessione 
+          delay(1000); // 2 secondi prima di ritentare la connessione 
           Serial.println("Tentativo di connessione");
+          Serial.println(WiFi.status());
   }
   Serial.println("Connesso alla rete locale!");
 }
@@ -248,7 +250,7 @@ void checkrisp(int respCode){
 }
 
 void visualizza(int batteria){
-  String serverPath = "https://flask.gmichele.it/get/getrecord/" + String(ID_BIN);
+  String serverPath = "https://flask.gmichele.it/db/getrecord/" + String(ID_BIN);
   http.begin(serverPath.c_str());
   int respCode2 = http.GET();
   String risp2 = "{}"; 

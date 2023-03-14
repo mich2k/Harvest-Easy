@@ -89,12 +89,18 @@ def getbinrecord(id_bin):
         .order_by(BinRecord.timestamp.desc())
         .first()
     )
-
-    return {
-        "status": ultimo_bin_record.status,
-        "temperatura": ultimo_bin_record.temperature,
-        "riempimento": ultimo_bin_record.riempimento
+    if ultimo_bin_record is None:
+        status = ultimo_bin_record.status if ultimo_bin_record is not None else 1
+        temperatura = ultimo_bin_record.temperature if ultimo_bin_record is not None else 25,
+        riempimento = ultimo_bin_record.riempimento if ultimo_bin_record is not None else 0.1
+    asw = {
+        "status": status,
+        "temperatura": temperatura,
+        "riempimento": riempimento
     }
+
+
+    return asw if ultimo_bin_record is not None else {'error': 'No records'}
 
 
 @database_blueprint.route("/items", methods=["GET"])
