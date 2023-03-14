@@ -27,7 +27,7 @@ class Utils:
         # self.key = getenv['POST_SECRET_KEY']
         self.key = "maybesupersecretkey"
 
-    def calcolastatus(self, id_bin: int, riempimento: float, roll = 0, pitch = 90, co2 = 1000, prophet=False):
+    def calcolastatus(self, id_bin: int, riempimento: float, roll=0, pitch=90, co2=1000, prophet=False):
         """ 
         Legenda status:
             1: integro e non-pieno, 
@@ -43,19 +43,19 @@ class Utils:
         # Seleziono il bidone passato
         current_bin = BinRecord.query.filter(
             BinRecord.associated_bin == id_bin)
-        
+
         # Estraggo lo status corrente o, se non presente, lo imposto di default ad 1 (suppongo un bidone nuovo: integro e vuoto)
         current_status = (
             BinRecord.query.filter(BinRecord.associated_bin == id_bin)
             .order_by(BinRecord.timestamp.desc())
             .first()
         ).status if current_bin.count() else 1
-        
+
         type = Bin.query.filter(Bin.id_bin == id_bin).first().tipologia
-        
+
         apartment_ID = (Bin.query.filter(
             Bin.id_bin == id_bin)).first().apartment_ID
-        
+
         if type == "umido":
             # Mesi caldi
             current_threashold = self.get_organic_threashold(apartment_ID, id_bin) if datetime.now(
@@ -69,18 +69,21 @@ class Utils:
 
         elif type == "vetro":
             current_threashold = self.soglie["vetro"]
-        
+
         if current_status == 1:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                if not prophet: report(id_bin, db, apartment_ID, riempimento)
+                if not prophet:
+                    report(id_bin, db, apartment_ID, riempimento)
                 current_status = 2
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                if not prophet: report(id_bin, db, apartment_ID, 90)
+                if not prophet:
+                    report(id_bin, db, apartment_ID, 90)
                 current_status = 3
 
             if co2 >= limite_co2 and co2 is not None:
-                if not prophet: report(id_bin, db, apartment_ID, co2)
+                if not prophet:
+                    report(id_bin, db, apartment_ID, co2)
                 current_status = 3
 
             return current_status
@@ -90,23 +93,27 @@ class Utils:
             if float(riempimento) < current_threashold and riempimento is not None:
                 current_status = 1
                 db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-                    {"ultimo_svuotamento": str(datetime.utcnow().replace(microsecond=0))}
+                    {"ultimo_svuotamento": str(
+                        datetime.utcnow().replace(microsecond=0))}
                 )
                 db.session.commit()
 
             if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
-                if not prophet: report(id_bin, db, apartment_ID, 90)
+                if not prophet:
+                    report(id_bin, db, apartment_ID, 90)
                 current_status = 4
 
             if co2 >= limite_co2 and co2 is not None:
-                if not prophet: report(id_bin, db, apartment_ID, co2)
+                if not prophet:
+                    report(id_bin, db, apartment_ID, co2)
                 current_status = 4
 
             return current_status
 
         if current_status == 3:
             if float(riempimento) >= current_threashold and riempimento is not None:
-                if not prophet: report(id_bin, db, apartment_ID, riempimento)
+                if not prophet:
+                    report(id_bin, db, apartment_ID, riempimento)
                 current_status = 4
 
             if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:
@@ -118,14 +125,15 @@ class Utils:
             return current_status
 
         if current_status == 4:
-            
+
             if float(riempimento) < current_threashold and riempimento is not None:
                 current_status = 3
                 db.session.query(Bin).filter(Bin.id_bin == id_bin).update(
-                    {"ultimo_svuotamento": str(datetime.utcnow().replace(microsecond=0))}
+                    {"ultimo_svuotamento": str(
+                        datetime.utcnow().replace(microsecond=0))}
                 )
                 db.session.commit()
-                
+
             if (abs(roll) < 30 and (abs(pitch - 90) < 30)) and roll is not None and pitch is not None:
                 current_status = 2
 
@@ -133,7 +141,7 @@ class Utils:
                 current_status = 2
 
             return current_status
-    
+
     def get_organic_threashold(self, apartment_ID, id_bin):
 
         lat = (
@@ -154,7 +162,7 @@ class Utils:
         res = req.json()
         if 'error' in res:
             return 'error: ' + str(res)
-        
+
         # conversione kelvin-celsius
         temp = int(res["main"]["temp"] - 272.15)
         dd_time = 0;
@@ -232,7 +240,7 @@ class Utils:
 
     def get_limited_random(low: float, upper: float):
         return random.uniform(low, upper)
-    
+
     def sa_dic2json(query):
 
         res = []
@@ -262,5 +270,3 @@ class Utils:
     @property
     def get_post_key(self):
         return self.key
-    
-  

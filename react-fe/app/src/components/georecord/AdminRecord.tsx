@@ -35,6 +35,8 @@ const AdminRecord = () => {
   const [cmn_city, setCommonCity] = useState<string>("Unknown");
   const [apartment_id, setApartmentId] = useState<string>('');
   const [auth_token, setAuthToken] = useState<string>("default_token");
+  const [show_alert, setShowAlert] = useState<boolean>(false);
+  const [err_show_alert, setErrShowAlert] = useState<boolean>(false);
 
   const [people, setPeople] = useState<Person[]>([]);
   const [apartment_coords, setApartmentCoords] = useState<Coordinates>();
@@ -114,11 +116,15 @@ const AdminRecord = () => {
       })
       .then(({ data }) => {
 
-        console.dir(data);
+
+        if (data["success"] == true && data) {
+          setShowAlert(true);
+        }
 
 
-
-
+      }).catch((err) => {
+        console.dir(err);
+        setErrShowAlert(true);
       });
   }
 
@@ -202,11 +208,14 @@ const AdminRecord = () => {
                       <div>
                         <div className="m-4 mb-4 mt-16">Fill all the req. fields & press Register, in this way the apartment and the users will be created.</div>
 
-                        <div className="text-center pt-1 mb-12 pb-1">
+                        <div className="text-center mb-4 pb-1 pt-4">
                           <button onClick={onApartmentRegister} className="inline-block px-6 py-2.5 text-gray font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light">
                             Register Apartment
                           </button>
                         </div>
+                        <div className="mt-2 pb-6" id="alert"> {show_alert ? <ErrorAlert alert_type={'succ'} body_message={`Apartment "${state["apartment_id"]}" added successfully!`}></ErrorAlert> : null} </div>
+                        <div className="mt-2 pb-6" id="err-alert"> {err_show_alert ? <ErrorAlert alert_type={'dang'} body_message={`Something went wrong while adding ${state["apartment_id"]} apartment :( ... but remember, this happens also when the apartment is already initalized!`}></ErrorAlert> : null} </div>
+
                       </div>
                     </div>
 

@@ -1,4 +1,4 @@
-#include <Servo.h>
+#include <ESP32Servo.h>
 #include <ArduinoJson.h>
 #include <Arduino_JSON.h>
 #include <SPI.h>
@@ -10,14 +10,16 @@
 #include <Wire.h>
 #include <HTTPClient.h>
 
-#define ID_BIN 1
+
+
+#define ID_BIN 9
 #define SERVER_ADDR "https://flask.gmichele.it/"
-#define RST_PIN         33       //pin di reset  
+#define RST_PIN         25       //pin di reset  
 #define SCK             18
 #define MISO            19
 #define MOSI            23
 #define SDA             21
-#define SERVO_PIN 26
+#define SERVO_PIN       26
 
 //ICONE
 byte filling[8] = { 
@@ -58,7 +60,7 @@ StaticJsonDocument<1024> jsonMsg1;
 JSONVar myObject;
 String msg1, msg2;
 
-MFRC522 mfrc522(SDA, RST_PIN);   
+MFRC522 mfrc522(33, RST_PIN);   
 
 String inStringDec = "";
 String inStringHex = "";
@@ -73,14 +75,16 @@ unsigned long lastTime = 0;
 unsigned long timerDelay = 3600000;
 String sensorReadings;
 
-const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
-const char* password = "altalena";// Qui va inserita la password di rete
+const char* ssid = "IOT"; // Qui va inserito il nome della propria rete WiFi
+const char* password = "ciaociao1";// Qui va inserita la password di rete
 
 void connectToWiFi() {
+  WiFi.disconnect();
   WiFi.begin(ssid, password); 
   while (WiFi.status() != WL_CONNECTED) {
-          delay(2000); // 2 secondi prima di ritentare la connessione 
+          delay(1000); // 2 secondi prima di ritentare la connessione 
           Serial.println("Tentativo di connessione");
+          Serial.println(WiFi.status());
   }
   Serial.println("Connesso alla rete locale!");
 }
@@ -248,7 +252,7 @@ void checkrisp(int respCode){
 }
 
 void visualizza(int batteria){
-  String serverPath = "https://flask.gmichele.it/get/getrecord/" + String(ID_BIN);
+  String serverPath = "https://flask.gmichele.it/db/getrecord/" + String(ID_BIN);
   http.begin(serverPath.c_str());
   int respCode2 = http.GET();
   String risp2 = "{}"; 

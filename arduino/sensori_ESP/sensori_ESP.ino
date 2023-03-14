@@ -7,13 +7,13 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
-#define ID_BIN 1
+#define ID_BIN 9
 #define DHTPIN 23     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT11  //definisco di quale tipo di sensore DHT deve essere utilizzato
 #define PIN_CO2 34   // Analogical pin connected to the CO2 sensor
 #define PINTrigger 19  // Trigger pin of ultrasonic sensor 
 #define PINEcho 18  // Echo pin connected of ultrasonic sensor 
-#define altezza 50
+#define altezza 12
 #define SERVER_ADDR "https://flask.gmichele.it/db/addrecord"
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
@@ -23,8 +23,8 @@ DHT dht(DHTPIN, DHTTYPE);
 HTTPClient http;
 StaticJsonDocument<1024> jsonMsg1;
 
-const char* ssid = "AlessiaSaporita"; // Qui va inserito il nome della propria rete WiFi
-const char* password = "altalena";// Qui va inserita la password di rete
+const char* ssid = "IOT"; // Qui va inserito il nome della propria rete WiFi
+const char* password = "ciaociao1";// Qui va inserita la password di rete
 
 unsigned long timestamp;
 // Pitch, Roll and Yaw values
@@ -38,12 +38,14 @@ int16_t AcX, AcY, AcZ;
 
 
 void connectToWiFi() {
-    WiFi.begin(ssid, password); 
-        while (WiFi.status() != WL_CONNECTED) {
-                delay(2000); // 2 secondi prima di ritentare la connessione 
-                Serial.println("Tentativo di connessione");
-        }
-        Serial.println("Connesso alla rete locale!");
+  WiFi.disconnect();
+  WiFi.begin(ssid, password); 
+  while (WiFi.status() != WL_CONNECTED) {
+          delay(1000); // 2 secondi prima di ritentare la connessione 
+          Serial.println("Tentativo di connessione");
+          Serial.println(WiFi.status());
+  }
+  Serial.println("Connesso alla rete locale!");
 }
 
 void setup() {
@@ -119,8 +121,8 @@ void loop() {
       jsonMsg1["temperature"] = temperature;
       jsonMsg1["humidity"] = humidity;
       jsonMsg1["riempimento"] = riempimento;
-      jsonMsg1["roll"] = roll; //0 gradi
-      jsonMsg1["pitch"] = pitch;  //90 gradi
+      jsonMsg1["roll"] = 0; //0 gradi
+      jsonMsg1["pitch"] = 90;  //90 gradi
       //jsonMsg2["yaw"] = yaw;  //90 gradi
       jsonMsg1["co2"] = co2;
       jsonMsg1["timestamp"]="";
