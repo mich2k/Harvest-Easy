@@ -157,7 +157,8 @@ class Utils:
         
         # conversione kelvin-celsius
         temp = int(res["main"]["temp"] - 272.15)
-
+        dd_time = 0;
+        
         if temp >= 20 and temp <= 25:  # medie
             dd_time = self.dd_umido["media"]
 
