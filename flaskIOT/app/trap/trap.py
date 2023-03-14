@@ -10,14 +10,14 @@ URL = f"https://api.telegram.org/bot{TOKEN}/"
 # Filled or Overturned or Fired Bin
 
 
-def report(id_bin, db, filling=None, coord=None, co2=None):
+def report(idbin, db, filling=None, coord=None, co2=None):
 
-    if id_bin is None:
-        raise Exception('id_bin in trap module is None')
+    if idbin is None:
+        raise Exception('idbin in trap module is None')
 
-    apartment = Bin.query.where(Bin.id_bin == id_bin).first().apartment_ID
+    apartment = Bin.query.where(Bin.id_bin == idbin).first().apartment_ID
 
-    text = f"Attenzione! Anomalia nel bidone [{Bin.query.where(Bin.id_bin == id_bin).first().id_bin}]:"
+    text = f"Attenzione! Anomalia nel bidone [{Bin.query.where(Bin.id_bin == idbin).first().id_bin}]:"
     event = 'Bidone:'
     
     # Costruisco il testo da notificare a User ed Admin
@@ -60,6 +60,6 @@ def report(id_bin, db, filling=None, coord=None, co2=None):
         requests.post(URL + f"sendMessage", data=data)
 
     db.session.add(AlterationRecord(type_of_event=event,
-                   is_notified=True, associated_bin=id_bin))
+                   is_notified=True, associated_bin=idbin))
     db.session.commit()
     

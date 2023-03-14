@@ -5,43 +5,49 @@ from app.login.login import generate_password
 
 fakers = [
     {
-        "id_bin": 2,
+        "idbin": 1,
+        "tipologia": "carta",
+        "ultimo_svuotamento": utils.Utils.randomTime(),
+        "apartment_ID": "Fermi",
+    },
+    {
+        "idbin": 2,
         "tipologia": "plastica",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "Fermi",
     },
     {
-        "id_bin": 3,
+        "idbin": 3,
         "tipologia": "vetro",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "Fermi",
     },
     {
-        "id_bin": 4,
+        "idbin": 4,
         "tipologia": "carta",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "Torri",
     },
     {
-        "id_bin": 5,
+        "idbin": 5,
         "tipologia": "plastica",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "Torri",
     },
     {
-        "id_bin": 6,
+        "idbin": 6,
         "tipologia": "umido",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "Cuoppo",
     },
     {
-        "id_bin": 7,
+        "idbin": 7,
         "tipologia": "plastica",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "Cuoppo",
     },
     {
-        "id_bin": 8,
+        "idbin": 8,
         "tipologia": "carta",
         "ultimo_svuotamento": utils.Utils.randomTime(),
         "apartment_ID": "IDK",
@@ -54,22 +60,11 @@ def create_faker(db):
     # Bin
     for faker in fakers:
         db.session.add(
-            Bin(faker['tipologia'], apartment_ID=faker['apartment_ID'], id_bin=faker['id_bin']))
+            Bin(faker['tipologia'], apartment_ID=faker['apartment_ID']))
 
     # Admin
     db.session.add_all(
         [
-            Admin( 
-                  Person(
-                    username="RobertoVezzani",
-                    name="Roberto",
-                    surname="Vezzani",
-                    password=generate_password("roberto"),
-                    city="Modena",
-                    birth_year=2000,
-                    card_number="d3370a8"
-                )
-            ),
             Admin(
                 Person(
                     username="rossi1",
