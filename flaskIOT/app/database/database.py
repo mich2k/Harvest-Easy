@@ -10,7 +10,8 @@ from flask_jwt_extended import jwt_required
 # Lo userò per verificare se il DB è stato già creato
 db_manager = DB_status()
 
-database_blueprint = Blueprint("database", __name__, template_folder="templates", url_prefix="/db")
+database_blueprint = Blueprint(
+    "database", __name__, template_folder="templates", url_prefix="/db")
 
 # CREA IL DB A RUNTIME, SE GIà PRESENTE DROPPA TUTTE LE TABLES
 # È LA PRIMA ROUTE DA RAGGIUNGERE QUANDO SI AVVIA IL SISTEMA
@@ -27,11 +28,11 @@ def createDB():
         try:
             db.drop_all()
             db.create_all()
-        
+
             # if getenv("FAKER") == "True":
             create_faker(db)
         except Exception as e:
-            
+
             print('Error during db creation: ' + str(e))
         db_manager.setstatus(db, True)
 
@@ -54,7 +55,6 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
-    
     
     msgJson["status"] = Utils.calcolastatus(
         Utils,
@@ -117,19 +117,21 @@ def stampaitems():
 
     return res
 
+
 @database_blueprint.route("/records")
 def printmore():
     res = []
-    
+
     elenco = [AlterationRecord.query.all(),
               LeaderBoard.query.all()]
-    
+
     for queries in elenco:
         res.append({queries[0].__tablename__: Utils.sa_dic2json(queries)})
 
     return res
 
 # delete
+
 
 @database_blueprint.route("/deleteuser/<string:username>", methods=["GET"])
 def deleteuser(username):
@@ -289,7 +291,7 @@ def solved(uid, id_bin):
     db.session.add(LeaderBoard(last_score.score +
                    10 if last_score else 10, id_bin, user, record))
     db.session.commit()
-    
+
     return Utils.get_response(200, 'Fatto, aggiunti 10 punti per la segnalazione')
 
 
@@ -339,7 +341,8 @@ def test_leaderboard(user, id_bin):
         # Check if already solved
         if not record:
             return Utils.get_response(200, 'Segnalazione già risolta')
-        last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(LeaderBoard.record_id.desc()).first()
+        last_score = LeaderBoard.query.where(LeaderBoard.associated_user == user).order_by(
+            LeaderBoard.record_id.desc()).first()
 
         db.session.add(LeaderBoard(last_score.score +
                        10 if last_score else 10, id_bin, user, record))
