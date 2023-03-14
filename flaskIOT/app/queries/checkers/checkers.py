@@ -1,4 +1,4 @@
-from app.database.tables import User, Operator,Admin, BinRecord, UserTG
+from app.database.tables import User, Operator, Admin, BinRecord, UserTG
 from app.utils.utils import Utils
 from app.login.login import checkpassword
 from app.database.__init__ import db
@@ -6,7 +6,8 @@ from flask import Blueprint
 import json
 from flask import jsonify
 
-check_blueprint = Blueprint("checkers", __name__, template_folder="templates", url_prefix="/check")
+check_blueprint = Blueprint(
+    "checkers", __name__, template_folder="templates", url_prefix="/check")
 
 
 @check_blueprint.route("/checkuid/<string:uid>&<int:id_bin>", methods=["GET"])
@@ -51,7 +52,7 @@ def checkuid(uid, id_bin):
 def checkadmin(uid, password):
 
     access_allowed = False
-    
+
     for asw in db.session.query(Admin.password).where(Admin.username == uid).all():
         if asw[0]:
             print(asw)
@@ -60,10 +61,12 @@ def checkadmin(uid, password):
 
     return Utils.get_response(200 if access_allowed else 400, str(access_allowed))
 
+
 @check_blueprint.route("/checkUsername/<string:usr>", methods=["GET"])
 def checkusername(usr):
     found = False
     for asw in db.session.query(UserTG.id_user == usr).all():
+        print(asw)
         if asw[0]:
             found = True
 

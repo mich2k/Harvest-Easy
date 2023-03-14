@@ -3,22 +3,11 @@ import React from "react";
 import User from "../User";
 import { Collapse } from 'react-collapse';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import useToken from "../../useToken";
-import { BinProphetRecord } from "../BinProphetRecord";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Base64toRenderedImages from "../Base64toRenderedImages";
 import WasteListComponent from "../WasteListComponent";
 const Home = () => {
-
-
-  interface apartmentPrevisions {
-    previsione_status: Date;  // ETA Filling date
-    riempimento: number;    // Actual Filling percentage
-    status: number;         // FSM status
-    tipologia: "carta" | "plastica" | "vetro";  // Type of waste, sorting type
-  }
-
 
 
   const [isOpen, setIsOpen] = useState(false);
@@ -34,8 +23,6 @@ const Home = () => {
 
   const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-
-  const type = "carta";
 
   const handleToggle = () => {
     setIsOpen(!isOpen);

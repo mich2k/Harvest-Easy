@@ -56,7 +56,11 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> parent of 3ae3efc3 (Merge branch 'main' of)
     msgJson["status"] = Utils.calcolastatus(
         Utils,
         msgJson["id_bin"],

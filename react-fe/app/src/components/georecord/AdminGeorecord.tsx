@@ -39,9 +39,9 @@ const AdminGeorecord = () => {
 
     useEffect(() => {
         document.title = "Admin Georecord";
-      }, [])
-    
-    
+    }, [])
+
+
 
     useEffect(() => {
         setLoading(true);
@@ -167,7 +167,7 @@ const AdminGeorecord = () => {
                                                             <img
                                                                 className="mx-auto w-48"
                                                                 width="100px"
-                                                                src="https://e7.pngegg.com/pngimages/165/760/png-clipart-s-s-c-napoli-2017-audi-cup-stadio-san-paolo-football-uefa-champions-league-football-ssc-napoli-2017-audi-cup.png"
+                                                                src="https://hero.gmichele.it/HE-Logo.jpg"
                                                                 alt="logo"
                                                             />
                                                             <h4 className="text-xl font-semibold mt-1 mb-8 pb-1">Apartment registration tool</h4>
@@ -182,9 +182,6 @@ const AdminGeorecord = () => {
                                                             </div>
                                                             <div>
 
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-bold">Detected geo-reversed city:</span> <span>{apartment_id}</span>
                                                             </div>
 
                                                         </div>
@@ -219,27 +216,12 @@ const AdminGeorecord = () => {
                                                                 >
                                                                     Log in
                                                                 </button>
-                                                                <div className="flex items-center mb-4">
+                                                                <div className="flex items-center mb-2 mt-2">
                                                                     <input onChange={() => { setCheck(!checked_state); }} id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                                                     <label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Confirm apartment id</label>
                                                                 </div>
-                                                                <a className="text-gray-500" href="#!">Valuta funzione da inserire</a>
                                                             </div>
                                                             <div id="alert"> {show_alert ? <ErrorAlert alert_type={'warn'} body_message={"Please confirm by checking the checkbox in order to confirm you want to init this apartment"}></ErrorAlert> : null} </div>
-
-                                                            { /** 
-                    <div className="flex items-center justify-between pb-6">
-                      <p className="mb-0 mr-2">Don't have an account?</p>
-                      <button
-                        type="button"
-                        className="inline-block px-6 py-2 border-2 border-red-600 text-red-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
-                        data-mdb-ripple="true"
-                        data-mdb-ripple-color="light"
-                      >
-                        Danger
-                      </button>
-                    </div>
-                  */ }
 
                                                         </form>
                                                     </div>
@@ -254,10 +236,6 @@ const AdminGeorecord = () => {
                                                             tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                                                             quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
                                                             consequat.
-
-                                                            Spiega che roba è.
-
-                                                            Bidone fantastico bellissimo me lo sposo guarda eccomi ciao.
                                                         </p>
                                                     </div>
                                                 </div>

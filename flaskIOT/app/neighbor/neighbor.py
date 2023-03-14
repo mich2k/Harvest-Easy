@@ -6,9 +6,11 @@ from flask import jsonify
 from flasgger import swag_from
 from os import getenv
 
-neighbor_blueprint = Blueprint("neighbor", __name__, template_folder="templates")
+neighbor_blueprint = Blueprint(
+    "neighbor", __name__, template_folder="templates")
 
 OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
+
 
 @neighbor_blueprint.route("/")
 def main():
@@ -33,31 +35,35 @@ def getneighbor(id_bin):
 
     # dati del bidone pieno
     apartment_ID = Bin.query.filter(Bin.id_bin == id_bin)[0].apartment_ID
-    lat_bin = Apartment.query.filter(Apartment.apartment_name == apartment_ID)[0].lat
-    long_bin = Apartment.query.filter(Apartment.apartment_name == apartment_ID)[0].lng
+    lat_bin = Apartment.query.filter(
+        Apartment.apartment_name == apartment_ID)[0].lat
+    long_bin = Apartment.query.filter(
+        Apartment.apartment_name == apartment_ID)[0].lng
     tipologia = Bin.query.filter(Bin.id_bin == id_bin).first().tipologia
 
     apartments = Apartment.query.all()
-    bins = Bin.query.filter(Bin.tipologia == tipologia)  # bidoni di quella tipologia
-    
+    # bidoni di quella tipologia
+    bins = Bin.query.filter(Bin.tipologia == tipologia)
+
     apartments_ID = []  # nomi appartamenti con bidoni di quella tipologia non pieni
-    apartments_ID.append(apartment_ID)  # aggiungo l'appartamento del bidone pieno
+    # aggiungo l'appartamento del bidone pieno
+    apartments_ID.append(apartment_ID)
     for bin in bins:
         ultimo_bin_record = (
             BinRecord.query.filter(BinRecord.associated_bin == bin.id_bin)
             .order_by(BinRecord.timestamp.desc())
             .first()
         )
-        
-        status = None if ultimo_bin_record is None else ultimo_bin_record.status       
-        
+
+        status = None if ultimo_bin_record is None else ultimo_bin_record.status
+
         if status == 1:
             apartments_ID.append(bin.apartment_ID)
 
     coordinates = (
         []
     )  # coordinate degli appartamenti con bidoni non pieni della stessa tipologia da cui calcolare la distanza, compreso quello di origine
-    
+
     index = 0  # indice del mio appartamento nella lista
 
     for i in range(len(apartments)):
@@ -65,14 +71,14 @@ def getneighbor(id_bin):
         if apartments[i].apartment_name in apartments_ID:
             if apartments[i].lng == long_bin and apartments[i].lat == lat_bin:
                 index = i
-                
+
             apartment_coordinate.append(apartments[i].lng)
             apartment_coordinate.append(apartments[i].lat)
             coordinates.append(apartment_coordinate)
-    
-    if(len(coordinates)<2):
+
+    if (len(coordinates) < 2):
         return 'Nessun vicino disponibile'
-    
+
     body = {"locations": coordinates}
 
     headers = {
@@ -80,13 +86,14 @@ def getneighbor(id_bin):
         "Authorization": OPENROUTESERVICE_KEY,
         "Content-Type": "application/json; charset=utf-8",
     }
-    
-    call = requests.post('https://api.openrouteservice.org/v2/matrix/driving-car', json=body, headers=headers).json()
-    #https://ors.gmichele.it/ors/v2/matrix/driving-car
-    
+
+    call = requests.post(
+        'https://api.openrouteservice.org/v2/matrix/driving-car', json=body, headers=headers).json()
+    # https://ors.gmichele.it/ors/v2/matrix/driving-car
+
     if 'error' in call:
         return 'error: ' + str(call)
-    
+
     distances = call["durations"][index]
 
     # calcolo del vicino
@@ -103,8 +110,9 @@ def getneighbor(id_bin):
         .first()
         .apartment_name
     )
-    
-    vicino = Apartment.query.filter(Apartment.apartment_name == apartment_name).first()
-    
+
+    vicino = Apartment.query.filter(
+        Apartment.apartment_name == apartment_name).first()
+
     return jsonify({"street": vicino.street,  "number": vicino.apartment_street_number, "apartment_name": vicino.apartment_name,
-    "lat": vicino.lat, "lng": vicino.lng}), 200
+                    "lat": vicino.lat, "lng": vicino.lng}), 200

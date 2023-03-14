@@ -83,7 +83,6 @@ def profileuser():
     }), 200
 
 
-
 @login_blueprint.route('/ApartmentInit', methods=['POST'])
 @jwt_required()
 # @swag_from('docs/registeruser.yml')
@@ -95,22 +94,22 @@ def registeruser():
     user = []
     user_tg = []
     bin = []
-    
-    print(data)
-    
+
+    # print(data)
+
     # Adding people
     for msgJson in data['final_people']:
-        
+
         username = msgJson['name'] + msgJson['surname']
-        
+
         if not username.isalnum() or " " in username:
             continue
-            #return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 400
+            # return jsonify({'error': "Username should be alphanumeric, also no spaces"}), 400
 
         if db.session.query(User).where(
                 User.username == username).first() is not None:
             continue
-            #return jsonify({"error": "Username already exists"}), 409
+            # return jsonify({"error": "Username already exists"}), 409
 
         user.append(User(
             Person(
@@ -125,8 +124,9 @@ def registeruser():
             apartment_ID=data['apartment_name'],
             internal_number=msgJson["intern_number"],
         ))
-        
-        user_tg.append(UserTG(id_user=msgJson['telegramUsername'], id_chat="", logged=False, associated_user=username))
+
+        user_tg.append(UserTG(
+            id_user=msgJson['telegramUsername'], id_chat="", logged=False, associated_user=username))
 
     # Adding bins
     for bins in data['apartment_waste_sorting']:
@@ -143,7 +143,7 @@ def registeruser():
         street=req["address"]["road"],
         lat=data['apartment_coords']['lat'],
         lng=data['apartment_coords']['lon'],
-        apartment_street_number= req['address']['house_number'] if 'house_number' in req['address'] else "0",
+        apartment_street_number=req['address']['house_number'] if 'house_number' in req['address'] else "0",
         n_internals=len(user),
         associated_admin=data["admin_username"],
     )
@@ -154,9 +154,10 @@ def registeruser():
     db.session.add_all(bin)
     db.session.commit()
 
-    return jsonify('Success'), 200
+    return {"success": True}, 200
 
 # OPERATOR
+
 
 @ login_blueprint.route('/registeroperator', methods=['POST'])
 # @swag_from('docs/registeroperator.yml')

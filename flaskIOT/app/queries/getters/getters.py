@@ -17,7 +17,11 @@ get_blueprint = Blueprint(
 URL = getenv('URL_get')
 
 
+<<<<<<< HEAD
 def getbinrecord(idbin):
+=======
+def getbinrecord(id_bin):
+>>>>>>> parent of 3ae3efc3 (Merge branch 'main' of)
 
     ultimo_bin_record = (
         BinRecord.query.filter(BinRecord.associated_bin == idbin)
@@ -46,6 +50,7 @@ def getprevision(apartment):
         data = {}
         resp = getbinrecord(bin[0])
 
+            
         data['previsione_status'] = bin[1]
         data['tipologia'] = bin[2]
         data['status'] = resp['status']

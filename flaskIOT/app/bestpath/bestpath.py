@@ -10,7 +10,8 @@ from flask import jsonify
 from flasgger import swag_from
 
 OPENROUTESERVICE_KEY = getenv("OPENROUTESERVICE_KEY")
-path_blueprint = Blueprint("path", __name__, template_folder="templates", static_folder='static')
+path_blueprint = Blueprint(
+    "path", __name__, template_folder="templates", static_folder='static')
 
 
 @path_blueprint.route("/")
@@ -18,6 +19,7 @@ def main():
     return "<h1>Best Path</h1>"
 
 # ottenere la matrice delle distanze tra gli appartamenti
+
 
 @path_blueprint.route("/getdistances")
 def getdistances():
@@ -36,31 +38,33 @@ def getdistances():
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
         "Content-Type": "application/json; charset=utf-8",
     }
-    
+
     call = requests.post(
         "https://ors.gmichele.it/ors/v2/matrix/driving-car", json=body, headers=headers
     )
-    
+
     return call.json()
 
-#calcolo cammino ottimo
+# calcolo cammino ottimo
+
+
 def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None):
     end = None
     if (isinstance(lat_init, float) and isinstance(lng_init, float)):
         start = [lng_init, lat_init]
     else:
         return jsonify({"Errore": "latitudine o longitudine di partenza scorrette"}), 401
-    
+
     if lat_end is not None and lng_end is not None:
         if (isinstance(lat_end, float) and isinstance(lng_end, float)):
             end = [lng_end, lat_end]
         else:
             return jsonify({"Errore: latitudine e longitudine di fine percorso scorrette"}), 402
-    
+
     if tipologia is not None:
         if Bin.query.filter(Bin.tipologia == tipologia).first() == None:
             return jsonify({"Errore": "tipologia scorretta"}), 403
-        
+
     if tipologia is None:
         bins = Bin.query.all()
     else:
@@ -83,7 +87,7 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
             empty["apartment_ID"] = bin.apartment_ID
             empty["bin"] = bin.tipologia
             to_empty.append(empty)
-     
+
     jobs = []
     i = 0
     j = 0
@@ -101,21 +105,21 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
         if i < len(to_empty):
             while (to_empty[i]["apartment_ID"] == apartment_ID):
                 i = i + 1
-    
-    if(len(jobs)==0):
+
+    if (len(jobs) == 0):
         return jsonify({"message": "nessun percorso disponibile per mancanza di bidoni pieni"})
-    
+
     body = {
         "jobs": jobs,
         "vehicles": [{
             "id": 1,
             "profile": "driving-car",
-            "start": start                
+            "start": start
         }]
     }
     if end is not None:
-        body["vehicles"][0]["end"]=end
-    
+        body["vehicles"][0]["end"] = end
+
     headers = {
         "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
         "Authorization": OPENROUTESERVICE_KEY,
@@ -125,14 +129,14 @@ def optimal_route(lat_init, lng_init, lat_end=None, lng_end=None, tipologia=None
         "https://api.openrouteservice.org/optimization", json=body, headers=headers
     )
     call = call.json()
-    
+
     if 'error' in call:
         return 'error: ' + str(call)
     # API json
     best_path = {}
     best_path["duration"] = call["routes"][0]["duration"]
     best_path["steps"] = []
-    
+
     for i in range(len(call["routes"][0]["steps"])):
         step = {}
         step["arrival"] = call["routes"][0]["steps"][i]["duration"]
@@ -168,12 +172,16 @@ def bpath(lat, lng):
     return optimal_route(lat, lng, tipologia=None)
 
 # cammino con inizio e fine
+
+
 @path_blueprint.route("/optimal_route/<float:lat_init>&<float:lng_init>&<float:lat_end>&<float:lng_end>")
 @swag_from('docs/optimal_route3.yml')
 def bpath2(lat_init, lng_init, lat_end, lng_end):
     return optimal_route(lat_init, lng_init, lat_end, lng_end)
 
 # cammino con solo inizio per una certa tipologia di bidoni
+
+
 @path_blueprint.route("/optimal_route/<float:lat>&<float:lng>&<string:tipologia>")
 @swag_from('docs/optimal_route2.yml')
 def bpath3(lat, lng, tipologia):
@@ -184,20 +192,20 @@ def bpath3(lat, lng, tipologia):
 @path_blueprint.route("/optimal_route/<float:lat_init>&<float:lng_init>&<float:lat_end>&<float:lng_end>&<string:tipologia>")
 @swag_from('docs/optimal_route3.yml')
 def bpath4(lat_init, lng_init, lat_end, lng_end, tipologia):
-   return optimal_route(lat_init, lng_init, lat_end, lng_end, tipologia)
+    return optimal_route(lat_init, lng_init, lat_end, lng_end, tipologia)
 
 
 # aggiorno il file path.json con il cammino corrente
 def viewmap(bpath):
-    steps=bpath["steps"]
+    steps = bpath["steps"]
     points = []
     for i in range(len(steps)):
         point = {}
         point["id"] = i
-        point["type"] = steps[i]["type"]        
+        point["type"] = steps[i]["type"]
         if steps[i]["type"] == "step":
             point["bins"] = steps[i]["bins"]
-            point["apartment_ID"]= steps[i]["apartment_ID"]
+            point["apartment_ID"] = steps[i]["apartment_ID"]
         point["duration"] = steps[i]["arrival"]
         point["lat"] = steps[i]["location"][1]
         point["lng"] = steps[i]["location"][0]
@@ -213,16 +221,20 @@ def viewmap(bpath):
         os.makedirs(path)
     with open("./out/path.json", "w") as outfile:
         json.dump(viewmap, outfile)
-    
+
     return viewmap
+
 
 @path_blueprint.route("/getpoints")
 def getmap():
     with open("./out/path.json") as file:
         return json.load(file)
-    
+
+
 @path_blueprint.route("/map")
 def map():
     return render_template("bpathmap.html", path='getpoints')
     
-    
+@path_blueprint.route('//<float:km>&<float:kWatt>')
+def compute_km(km):
+    return 'Done'
