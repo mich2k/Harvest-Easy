@@ -91,7 +91,7 @@ def getbinrecord(id_bin):
     )
     if ultimo_bin_record is None:
         status = ultimo_bin_record.status if ultimo_bin_record is not None else 1
-        temperatura = ultimo_bin_record.temperature if ultimo_bin_record is not None else 25,
+        temperatura = ultimo_bin_record.temperature if ultimo_bin_record is not None else 25
         riempimento = ultimo_bin_record.riempimento if ultimo_bin_record is not None else 0.1
     asw = {
         "status": status,
@@ -100,7 +100,7 @@ def getbinrecord(id_bin):
     }
 
 
-    return asw if ultimo_bin_record is not None else {'error': 'No records'}
+    return asw
 
 
 @database_blueprint.route("/items", methods=["GET"])

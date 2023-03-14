@@ -32,7 +32,7 @@ def getbinrecord(id_bin):
     }
 
 
-    return asw if ultimo_bin_record is not None else {'error': 'No records'}
+    return asw
 
 @get_blueprint.route('/prevision/<string:apartment>')
 # @jwt_required()
