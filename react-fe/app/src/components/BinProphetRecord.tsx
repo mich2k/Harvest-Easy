@@ -1,6 +1,9 @@
 import React from "react";
 
 export const BinProphetRecord = (props: {filling:number, sort_type: string, date: string, color: string }) => {
+    props.filling > 1 ? props.filling = 1 : props.filling;
+    props.filling < 0 ? props.filling = 0 : props.filling;
+
     return (
         <div className="mx-4">
             <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
