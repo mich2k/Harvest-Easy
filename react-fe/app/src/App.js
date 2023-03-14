@@ -4,6 +4,7 @@ import Home from "./components/home/Home";
 import Login from "./components/user_login/Login";
 import AdminGeoRecord from "./components/georecord/AdminGeorecord";
 import AdminRecord from "./components/georecord/AdminRecord";
+
 function App() {
   return (
     <div className="wrapper">
