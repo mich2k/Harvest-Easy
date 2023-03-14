@@ -109,7 +109,11 @@ class Bin(db.Model):
         "apartment_ID", db.String, db.ForeignKey("apartment.apartment_name")
     )
 
-    def __init__(self, tipologia: str, apartment_ID: str):
+    def __init__(self, tipologia: str, apartment_ID: str, id_bin = None):
+        
+        if id_bin is not None:
+            self.id_bin = id_bin
+            
         self.tipologia = tipologia
         self.apartment_ID = apartment_ID
 

@@ -17,19 +17,25 @@ get_blueprint = Blueprint(
 URL = getenv('URL_get')
 
 
-def getbinrecord(idbin):
+def getbinrecord(id_bin):
 
     ultimo_bin_record = (
-        BinRecord.query.filter(BinRecord.associated_bin == idbin)
+        BinRecord.query.filter(BinRecord.associated_bin == id_bin)
         .order_by(BinRecord.timestamp.desc())
         .first()
     )
-
-    return {
-        "status": ultimo_bin_record.status,
-        "temperatura": ultimo_bin_record.temperature,
-        "riempimento": ultimo_bin_record.riempimento
+    
+    status = ultimo_bin_record.status if ultimo_bin_record is not None else 1
+    temperatura = ultimo_bin_record.temperature if ultimo_bin_record is not None else 25
+    riempimento = ultimo_bin_record.riempimento if ultimo_bin_record is not None else 0.01
+    
+    asw = {
+        "status": status,
+        "temperatura": temperatura,
+        "riempimento": riempimento
     }
+    
+    return asw if ultimo_bin_record is not None else {"error": "No records"}
 
 
 @get_blueprint.route('/prevision/<string:apartment>')
@@ -46,10 +52,11 @@ def getprevision(apartment):
         data = {}
         resp = getbinrecord(bin[0])
 
+            
         data['previsione_status'] = bin[1]
         data['tipologia'] = bin[2]
-        data['status'] = resp['status']
-        data['riempimento'] = resp['riempimento']
+        data['status'] = resp['status'] if 'error' not in resp else 1
+        data['riempimento'] = resp['riempimento'] if 'error' not in resp else 0.1
 
         answ[bin[2]] = data
 
@@ -225,11 +232,11 @@ def getapartmentusers(apartment):
 # Get: tutte le info associate al bidone indicato
 
 
-@get_blueprint.route("/getBinInfo/<string:idbin>", methods=["GET"])
+@get_blueprint.route("/getBinInfo/<string:id_bin>", methods=["GET"])
 @swag_from('docs/getBinInfo.yml')
-def getbininfo(idbin):
+def getbininfo(id_bin):
 
-    res = db.session.query(Bin).where(Bin.id_bin == idbin).all()
+    res = db.session.query(Bin).where(Bin.id_bin == id_bin).all()
 
     return Utils.sa_dic2json(res)
 

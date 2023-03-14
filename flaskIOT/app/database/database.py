@@ -43,7 +43,6 @@ def createDB():
         """
         if "last_url" in session:
             print('last_url: ' + str(session['last_url']))
-            return redirect(session["last_url"])
 
         return Utils.get_response(200, "Done")
 
@@ -56,18 +55,21 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
-
+    
     msgJson["status"] = Utils.calcolastatus(
         Utils,
         msgJson["id_bin"],
         msgJson["riempimento"],
-        msgJson["roll"],
-        msgJson["pitch"],
-        msgJson["co2"],
+        0,
+        0,
+        400,
         False
     )
+    
     msgJson["timestamp"] = str(datetime.utcnow().replace(microsecond=0))
+    
     sf = BinRecord(msgJson)
+    
     db.session.add(sf)
     db.session.commit()
 
@@ -82,11 +84,11 @@ def addrecord():
 # Print tables
 
 
-@database_blueprint.route('/getrecord/<string:idbin>')
-def getbinrecord(idbin):
+@database_blueprint.route('/getrecord/<string:id_bin>')
+def getbinrecord(id_bin):
 
     ultimo_bin_record = (
-        BinRecord.query.filter(BinRecord.associated_bin == idbin)
+        BinRecord.query.filter(BinRecord.associated_bin == id_bin)
         .order_by(BinRecord.timestamp.desc())
         .first()
     )
@@ -262,12 +264,12 @@ def deletebinrecord(id_record):
 # solved si occupa di aggiornare la leaderboard
 
 
-@database_blueprint.route('/solved/<string:uid>&<string:idbin>')
-def solved(uid, idbin):
+@database_blueprint.route('/solved/<string:uid>&<string:id_bin>')
+def solved(uid, id_bin):
     """
         Workflow:
         - 1): Dall'uid ottengo l'utente
-        - 2): Dall'idbin ottengo l'alteration record attiva
+        - 2): Dall'id_bin ottengo l'alteration record attiva
         - 2): Aggiorno il campo is_solved
         - 3): Controllo se un utente è inserito nella Leaderboard mediante lo score
             - 3.1): Se si aggiorno il punteggio (score non None)
@@ -277,7 +279,7 @@ def solved(uid, idbin):
     user = db.session.query(UserTG.associated_user).where(
         UserTG.id_chat == uid).first()[0]
     record = db.session.query(AlterationRecord.alteration_id).filter(
-        AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
+        AlterationRecord.associated_bin == id_bin).where(AlterationRecord.is_solved == False).first()[0]
 
     # Check if already solved
     if not record:
@@ -287,20 +289,26 @@ def solved(uid, idbin):
         LeaderBoard.record_id.desc()).first()
 
     db.session.add(LeaderBoard(last_score.score +
-                   10 if last_score else 10, idbin, user, record))
+                   10 if last_score else 10, id_bin, user, record))
     db.session.commit()
 
     return Utils.get_response(200, 'Fatto, aggiunti 10 punti per la segnalazione')
 
 
-@database_blueprint.route('/report/<string:uid>&<string:idbin>')
-def report(uid, idbin):
+@database_blueprint.route('/report/<string:uid>&<string:id_bin>')
+def report(uid, id_bin):
     db.session.execute(
         update(AlterationRecord)
-        .where(AlterationRecord.associated_bin == idbin)
+        .where(AlterationRecord.associated_bin == id_bin)
         .values({"is_solved": True})
     )
-    return Utils.get_response(200, f'Contacting HERA from {uid} for {idbin}')
+    
+    db.session.execute(
+        update(BinRecord)
+        .where(BinRecord.associated_bin == id_bin)
+        .values({"status": 1})
+    )
+    return Utils.get_response(200, f'Contacting HERA from {uid} for {id_bin}')
 
 
 # ONLY FOR TESTING PURPOSES
@@ -308,7 +316,14 @@ def report(uid, idbin):
 
 @database_blueprint.route("/testrap")
 def test_trap():
+    
     tp.report(1, db, filling=56)
+    db.session.execute(
+        update(BinRecord)
+        .where(BinRecord.associated_bin == 1)
+        .values({"status": 3})
+    )
+    
     tp.report(2, db, coord=56)
     tp.report(6, db, filling=56)
     tp.report(7, db, coord=56)
@@ -317,11 +332,11 @@ def test_trap():
     return 'Done'
 
 
-@database_blueprint.route("/testleaderboard/<string:user>&<string:idbin>")
-def test_leaderboard(user, idbin):
+@database_blueprint.route("/testleaderboard/<string:user>&<string:id_bin>")
+def test_leaderboard(user, id_bin):
     try:
         record = db.session.query(AlterationRecord.alteration_id).filter(
-            AlterationRecord.associated_bin == idbin).where(AlterationRecord.is_solved == False).first()[0]
+            AlterationRecord.associated_bin == id_bin).where(AlterationRecord.is_solved == False).first()[0]
 
         # Check if already solved
         if not record:
@@ -330,7 +345,7 @@ def test_leaderboard(user, idbin):
             LeaderBoard.record_id.desc()).first()
 
         db.session.add(LeaderBoard(last_score.score +
-                       10 if last_score else 10, idbin, user, record))
+                       10 if last_score else 10, id_bin, user, record))
         db.session.commit()
     except:
         return 'Error'

@@ -88,7 +88,7 @@ def profileuser():
 # @swag_from('docs/registeruser.yml')
 def registeruser():
     data = request.get_json()
-
+    print(data)
     URL = getenv('URL_REVERSE')
 
     user = []
@@ -116,7 +116,7 @@ def registeruser():
                 username=username,
                 name=msgJson["name"],
                 surname=msgJson["surname"],
-                password=msgJson["password"],
+                password=generate_password(msgJson["password"]),
                 city=data["common_city"],
                 birth_year=msgJson["birth_year"],
                 card_number=msgJson["rfid_card"]
@@ -132,8 +132,6 @@ def registeruser():
     for bins in data['apartment_waste_sorting']:
         bin.append(Bin(tipologia=bins, apartment_ID=data['apartment_name']))
 
-    # https://osm.gmichele.it/reverse?lat=44.6280877&lon=10.9166076&format=json
-
     req = requests.get(
         URL + f"?lat={data['apartment_coords']['lat']}&lon={data['apartment_coords']['lon']}&format=json").json()
 
@@ -148,6 +146,8 @@ def registeruser():
         associated_admin=data["admin_username"],
     )
 
+    print(user, user_tg, bin)
+    
     db.session.add(apartment)
     db.session.add_all(user)
     db.session.add_all(user_tg)

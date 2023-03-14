@@ -76,7 +76,7 @@ class Utils:
                     report(id_bin, db, apartment_ID, riempimento)
                 current_status = 2
 
-            if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
+            if (abs(roll) >= 40 or (abs(pitch - 90) >= 40)) and roll is not None and pitch is not None:
                 if not prophet:
                     report(id_bin, db, apartment_ID, 90)
                 current_status = 3
@@ -98,7 +98,7 @@ class Utils:
                 )
                 db.session.commit()
 
-            if (abs(roll) >= 30 or (abs(pitch - 90) >= 30)) and roll is not None and pitch is not None:
+            if (abs(roll) >= 40 or (abs(pitch - 90) >= 40)) and roll is not None and pitch is not None:
                 if not prophet:
                     report(id_bin, db, apartment_ID, 90)
                 current_status = 4

@@ -2,7 +2,7 @@ import requests
 import text
 import re
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, ChatMemberHandler, CallbackQueryHandler, InvalidCallbackData
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
 from os import getenv
 
 TOKEN = getenv('TG_TOKEN')

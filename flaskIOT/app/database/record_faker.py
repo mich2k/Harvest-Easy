@@ -19,7 +19,7 @@ threshold = 0.8
 def faker_instances():
 
     # Campiono un bidone a caso
-    selected_bin = sample["id_bin"] = utils.Utils.get_random_int(1, 8)
+    selected_bin = sample["id_bin"] = utils.Utils.get_random_int(2, 8)
 
     # Prelevo l'ultima istanza del bin selezionato casualmente
     act_record = (

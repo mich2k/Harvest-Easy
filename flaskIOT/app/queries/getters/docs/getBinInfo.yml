@@ -1,7 +1,7 @@
 summary: Ritorna informazioni sul bidone indicato
 parameters:
   - in: path
-    name: idbin
+    name: id_bin
     required: true
     type: int
 responses:
