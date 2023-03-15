@@ -78,10 +78,10 @@ def create_faker(db):
             ),
             Admin(
                 Person(
-                    username="mario2",
-                    name="Mario",
-                    surname="Verdi",
-                    password=generate_password("marioverdi"),
+                    username="RobertoVezzani",
+                    name="Roberto",
+                    surname="Vezzani",
+                    password=generate_password("iotproject"),
                     city="Modena",
                     birth_year=2000,
                     card_number="d3370a9"

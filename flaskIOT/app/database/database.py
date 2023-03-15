@@ -56,7 +56,9 @@ def createDB():
 @database_blueprint.route("/addrecord", methods=["POST"])
 def addrecord():
     msgJson = request.get_json()
-    msgJson["status"] = Utils.calcolastatus(
+    
+    try: 
+        msgJson["status"] = Utils.calcolastatus(
         Utils,
         msgJson["id_bin"],
         msgJson["riempimento"],
@@ -64,7 +66,11 @@ def addrecord():
         msgJson["pitch"],
         msgJson["co2"],
         False
-    )
+        )
+        
+    except:
+        msgJson['status'] = 1
+        
     msgJson["timestamp"] = str(datetime.utcnow().replace(microsecond=0))
     sf = BinRecord(msgJson)
     db.session.add(sf)
@@ -89,12 +95,20 @@ def getbinrecord(id_bin):
         .order_by(BinRecord.timestamp.desc())
         .first()
     )
-
-    return {
-        "status": ultimo_bin_record.status,
-        "temperatura": ultimo_bin_record.temperature,
-        "riempimento": ultimo_bin_record.riempimento
+    
+    
+    status =  1 if ultimo_bin_record is None else ultimo_bin_record.status
+    temperatura = 25 if ultimo_bin_record is None else ultimo_bin_record.temperature
+    riempimento =  0.1 if ultimo_bin_record is None else ultimo_bin_record.riempimento 
+    
+    asw = {
+        "status": status,
+        "temperatura": temperatura,
+        "riempimento": riempimento
     }
+
+
+    return asw
 
 
 @database_blueprint.route("/items", methods=["GET"])

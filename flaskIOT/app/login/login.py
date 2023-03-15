@@ -116,7 +116,7 @@ def registeruser():
                 username=username,
                 name=msgJson["name"],
                 surname=msgJson["surname"],
-                password=msgJson["password"],
+                password=generate_password(msgJson["password"]) ,
                 city=data["common_city"],
                 birth_year=msgJson["birth_year"],
                 card_number=msgJson["rfid_card"]
@@ -148,6 +148,8 @@ def registeruser():
         associated_admin=data["admin_username"],
     )
 
+    print(user, user_tg, bin)
+    
     db.session.add(apartment)
     db.session.add_all(user)
     db.session.add_all(user_tg)

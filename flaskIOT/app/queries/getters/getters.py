@@ -24,13 +24,15 @@ def getbinrecord(id_bin):
         .order_by(BinRecord.timestamp.desc())
         .first()
     )
-
-    return {
-        "status": ultimo_bin_record.status,
-        "temperatura": ultimo_bin_record.temperature,
-        "riempimento": ultimo_bin_record.riempimento
+    
+    asw = {
+        "status": ultimo_bin_record.status if ultimo_bin_record is not None else 1,
+        "temperatura": ultimo_bin_record.temperature if ultimo_bin_record is not None else 25,
+        "riempimento": ultimo_bin_record.riempimento if ultimo_bin_record is not None else 0.1
     }
 
+
+    return asw
 
 @get_blueprint.route('/prevision/<string:apartment>')
 # @jwt_required()
@@ -49,8 +51,8 @@ def getprevision(apartment):
             
         data['previsione_status'] = bin[1]
         data['tipologia'] = bin[2]
-        data['status'] = resp['status']
-        data['riempimento'] = resp['riempimento']
+        data['status'] = resp['status'] if 'error' not in resp else 1
+        data['riempimento'] = resp['riempimento'] if 'error' not in resp else 0.1
 
         answ[bin[2]] = data
 
