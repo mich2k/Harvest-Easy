@@ -122,3 +122,14 @@ app.register_blueprint(map_blueprint, url_prefix='/map')
 app.register_blueprint(fbprophet_blueprint, url_prefix='/pred')
 app.register_blueprint(handler_blueprint)
 app.register_blueprint(login_blueprint)
+
+@app.route('/check_battery/<float:km_to_drive>/<float:remaining_kwh>')
+def check_battery(km_to_drive, remaining_kwh):
+    # Calculate the estimated energy consumption for the trip
+    estimated_kwh = km_to_drive * 2  # Assuming 1.5-2 kWh per km
+    
+    # Check if the battery can handle the trip
+    if estimated_kwh <= remaining_kwh:
+        return {'battery_status': True}
+    else:
+        return {'battery_status': False}

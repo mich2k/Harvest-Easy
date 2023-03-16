@@ -98,8 +98,16 @@ def getbinrecord(id_bin):
     
     
     status =  1 if ultimo_bin_record is None else ultimo_bin_record.status
-    temperatura = 25 if ultimo_bin_record is None else ultimo_bin_record.temperature
-    riempimento =  0.1 if ultimo_bin_record is None else ultimo_bin_record.riempimento 
+    temperatura = 30 if ultimo_bin_record is None else ultimo_bin_record.temperature
+    
+    
+    if ultimo_bin_record is None:
+        riempimento =  0.01 
+    elif ultimo_bin_record < 0:
+        riempimento =  1
+    else:
+        riempimento = ultimo_bin_record.riempimento 
+    
     
     asw = {
         "status": status,
@@ -322,7 +330,7 @@ def report(uid, id_bin):
 @database_blueprint.route("/testrap")
 def test_trap():
     tp.report(1, db, filling=56)
-    tp.report(2, db, coord=56)
+    tp.report(9, db, coord=56)
     tp.report(6, db, filling=56)
     tp.report(7, db, coord=56)
     tp.report(3, db, filling=56, coord=56, co2=56)
