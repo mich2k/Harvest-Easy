@@ -4,7 +4,7 @@ from datetime import timedelta
 class Config:
 
     # General Flask Config
-    SECRET_KEY = b'ergergergergegg/'
+    SECRET_KEY = b''
     USE_PROXYFIX = True
 
     APPLICATION_ROOT = '/'
