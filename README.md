@@ -12,25 +12,26 @@
 <!-- TABLE OF CONTENTS -->
   <h4><summary>Table of Contents</summary></h4>
   <ol>
-    <li><a href="#about-the-project">Abstract</a></li>
+    <li><a href="#abstract">Abstract</a></li>
     <li>
-      <a href="#about-the-project">Demos</a>
+      <a href="#demos">Demos</a>
       <ul>
-          <li><a href="#built-with">Apartment Initalization</a></li>
-          <li><a href="#built-with">React Frontend</a></li>
-          <li><a href="#built-with">Telegram</a></li>
-          <li><a href="#built-with">Alerts</a></li>
+          <li><a href="#ap-init">Apartment Initalization</a></li>
+          <li><a href="#react-fe">React Frontend</a></li>
+          <li><a href="#telegram-bot">Telegram</a></li>
+          <li><a href="#alerts">Alerts</a></li>
       </ul>
     </li>
-    <li><a href="#getting-started">Technologies used</a></li>
-    <li><a href="#acknowledgments">Hardware used</a></li>
-    <li><a href="#acknowledgments">Project slides</a></li>
-    <li><a href="#acknowledgments">License</a></li>
-    <li><a href="#acknowledgments">Contact</a></li>
+    <li><a href="#tech-used">Technologies used</a></li>
+    <li><a href="#hw-used">Hardware used</a></li>
+    <li><a href="#slides">Project slides</a></li>
+    <li><a href="#licensing">License</a></li>
+    <li><a href="#contact-us">Contact Us</a></li>
   </ol>
 
 
-# 3D Model Choices, Design & Diagrams
+# Abstract
+Harvest Easy represents a modern solution for an old and known problem: domestic waste sorting at 360 degrees. We designed this from the really ground root, starting from the 3D CADs of the prototype up to the backend AI-powered solution and the user-friendly front-end, all equipped with the needed sensors & acturators. We started 3D printing with an organic plastic polymere (PLA) the bin prototype where we added on this the RFID sensor, 16x2 LCD screen, two ESP32,  
 
 
 # Concept:
