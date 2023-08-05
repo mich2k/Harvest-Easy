@@ -9,7 +9,7 @@ class Config:
 
     APPLICATION_ROOT = '/'
 
-    FLASK_APP = 'flasky.py'
+    FLASK_APP = 'main.py'
     FLASK_RUN_HOST = '0.0.0.0'
     FLASK_RUN_PORT = 5000
 
@@ -38,5 +38,5 @@ class Config:
 
     BCRYPT_LOG_ROUNDS = 13
 
-    JWT_SECRET_KEY = "thisisasecretkey"
+    JWT_SECRET_KEY = "sec_key"
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
