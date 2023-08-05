@@ -1,6 +1,6 @@
 <!-- PROJECT LOGO -->
 <div align="center">
-  <img src="res/logo_animated.gif" alt="Logo" width="300" height="300">
+  <img src="./res/logo_animated_ratio_one_one.gif" alt="Logo" width="200" height="200">
 
   <h1 align="center">Harvest Easy</h1>
 
@@ -13,9 +13,8 @@
   <h4><summary>Table of Contents</summary></h4>
   <ol>
     <li><a href="#abstract">Abstract</a></li>
-    <li>
     <li><a href="#goals-and-why">Goals and Why</a></li>
-      <a href="#demos">Demos</a>
+    <li>  <a href="#demos">Demos</a> </li>
       <ul>
           <li><a href="#image-showcase">Image showcase</a></li>
           <li><a href="#react-frontend">React Frontend</a></li>
@@ -170,16 +169,3 @@ If you are curious but don't want yet to deep dive into the code you can check o
 # Licensing
 
 # Contact Us
-
-# Concept:
-* Stato del bidone ("sano"/malfunzionante/manutenzione)
-* Sensore di riempimento (prossimità)
-* Sensore di temperatura
-* Sensore di "vandalismo" : accelerometro + tilt sensor, tentativo di manomissione
-* Raccolta dati per effettuare predizioni sul futuro livello di riempimento
-* Motore che gestisce l'apertura/chiusura del pannello
-* Dati salvati in Cloud
-* Tempo raccolta pattume (Tempo di riempimento)
-* Percorso ottimo basato sul livello di riempimento
-* Alimentato ad energia solare + batteria
-* Feedback sullo stato del bidone (lato User)
