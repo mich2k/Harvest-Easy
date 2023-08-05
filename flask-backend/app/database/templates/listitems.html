@@ -1,0 +1,11 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  {%for lista in listona%}
+    {% for el in lista %}    
+      {{el}}
+      <BR> 
+    {% endfor %}
+    <BR>
+  {%endfor%}
+{% endblock %}
