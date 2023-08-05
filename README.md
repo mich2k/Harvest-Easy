@@ -1,6 +1,6 @@
 <!-- PROJECT LOGO -->
 <div align="center">
-  <img src="res/logo_original.png" alt="Logo" width="200" height="200">
+  <img src="res/logo_animated.gif" alt="Logo" width="300" height="300">
 
   <h1 align="center">Harvest Easy</h1>
 
