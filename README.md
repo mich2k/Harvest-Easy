@@ -4,9 +4,6 @@
 
   <h1 align="center">Harvest Easy</h1>
 
-  <p align="center">
-    Una bella descrizione
-  </p>
 </div>
 
 <!-- TABLE OF CONTENTS -->
@@ -167,5 +164,18 @@ If you are curious but don't want yet to deep dive into the code you can check o
 **Technical + CAD:** [click here](./slides/HE%20-%20Technical%20and%20CAD.pdf)
 
 # Licensing
+Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 # Contact Us
+
+Vincenzo Lapadula - [Linkedin][linkedin-vin] - [Github][github-vin] <br>
+Michele Giarletta - [Linkedin][linkedin-mich] - [Github][github-mich] <br>
+Alessia Saporita -  [Github](https://github.com/alessiasaporita)
+
+
+<!-- Links agli shield -->
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-vin]: https://www.linkedin.com/in/vincenzo-lapadula-85a937164/
+[linkedin-mich]: https://www.linkedin.com/in/michele-giarletta/
+[github-vin]: https://github.com/Theviki20110
+[github-mich]: https://github.com/mich2k
