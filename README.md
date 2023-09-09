@@ -15,7 +15,7 @@
       <ul>
           <li><a href="#image-showcase">Image showcase</a></li>
           <li><a href="#react-frontend">React Frontend</a></li>
-          <li><a href="#telegram-bot">Telegram</a></li>
+          <li><a href="#telegram-bot">Telegram Bot</a></li>
           <li><a href="#alerts">Alerts</a></li>
           <li><a href="#cads-showcase">Designed CADs showcase</a></li>
       </ul>
