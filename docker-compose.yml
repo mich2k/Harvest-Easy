@@ -4,7 +4,7 @@ services:
   flask_app:
     build:
       dockerfile: Dockerfile
-      context: ./flaskIOT
+      context: ./flask-backend
     ports:
       - 5000:5000
     image: mick2k1/iotflask
