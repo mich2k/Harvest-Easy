@@ -145,7 +145,7 @@ servo-lid hand             |  top
 
 
 # Tech Stack
-
+![techstack](./res/tech_stack.png)
 # Alerts
 
 <img width="500" alt="pic" src="./res/alerts.png">
