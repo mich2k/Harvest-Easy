@@ -10,9 +10,9 @@ services:
     image: mick2k1/iotflask
     container_name: iotproj
     environment:
-      - TG_TOKEN=5887797061:AAEvYrnkdgFwS5nKmfoSJXNck-kzefUFEC0
-      - OPENROUTESERVICE_KEY=5b3ce3597851110001cf62481c69b9fec9a84097a32947ecbc631599
-      - WEATHER_KEY=8db7edbf3f049e2543fb1115755351c0
+      - TG_TOKEN=
+      - OPENROUTESERVICE_KEY=
+      - WEATHER_KEY=
       - FLASK_CONFIG=docker_local
       - FAKER=True
       - URL_REVERSE=https://osm.gmichele.it/reverse
@@ -52,7 +52,6 @@ services:
         PBF_URL: https://gmichele.it/modena.osm.pbf
         NOMINATIM_PASSWORD: password
     volumes:
-#       - ~/nominatim/osm_extract/:/nominatim/data/
         - ~/nominatim/nominatim-data:/var/lib/postgresql/14/main
     shm_size: 256mb
 
