@@ -167,7 +167,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 # Contact Us
 
 Vincenzo Lapadula - [Linkedin][linkedin-vin] - [Github][github-vin] <br>
-Michele Giarletta - [Linkedin][linkedin-mich] - [Github][github-mich] <br>
+Michele Giarletta - [Linkedin][linkedin-mich] - [Github][github-mich] - [Personal][personal-mich]<br>
 Alessia Saporita -  [Github](https://github.com/alessiasaporita)
 
 
@@ -177,3 +177,5 @@ Alessia Saporita -  [Github](https://github.com/alessiasaporita)
 [linkedin-mich]: https://www.linkedin.com/in/michele-giarletta/
 [github-vin]: https://github.com/Theviki20110
 [github-mich]: https://github.com/mich2k
+[personal-mich]: https://gmichele.com/
+
