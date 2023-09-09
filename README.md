@@ -21,12 +21,13 @@
       </ul>
     </li>
     <li><a href="#tech-stack">Tech stack</a></li>
-    <li><a href="#hw-used">Hardware used</a></li>
-    <li><a href="#slides">Project slides</a></li>
     <li><a href="#licensing">License</a></li>
     <li><a href="#contact-us">Contact Us</a></li>
   </ol>
 
+<!--     
+    <li><a href="#hw-used">Hardware used</a></li>
+    <li><a href="#slides">Project slides</a></li> -->
 
 # Abstract
 Harvest Easy represents a modern solution for an old and known problem: domestic waste sorting at 360 degrees. We designed this from the really ground root, starting from the 3D CADs of the prototype up to the backend AI-powered solution and the user-friendly front-end, all equipped with the needed sensors & acturators. We started 3D printing with an organic plastic polymere (PLA) the bin prototype where we added on this the RFID reader, 16x2 LCD screen, two ESP32, different ultrasonic sensors HC-SR04, DHT11 for temperature and humidity, MQ135 for CO2 & air quality sensoring, MPU-6050 as accellerometer and gryscope module, 5W photovoltaic panel, MG90s Hi-Torque servo for the automatic lid opening, 14500 Li rechargable battery and a Solar Panel Managment with BMS (Battery Managment System) module.
