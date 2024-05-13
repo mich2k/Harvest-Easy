@@ -94,20 +94,20 @@ Once the apartment manager scans the bin group QR code for initialization he wil
 - Tenants' info (how many, data for each including their telegram username)
 - Waste sorting infos (which sorting that apartment will follow)
 
-<img height="600" alt="pic" src="./res/gif/apartment-init.gif"> 
+<img alt="pic" src="./res/gif/apartment-init.gif" width="25%"> 
 
 <hr>
 
 
 After the manager inits the apartment each user will be able to login
 
-<img height="600" alt="pic" src="./res/gif/user-login.gif"> 
+<img alt="pic" src="./res/gif/user-login.gif" width="25%"> 
 
 <hr>
 
 After the user logs in the apartment dashboard will be shown, here the status of each bin, info about the apartment and future predictions will be shown
 
-<img height="600" alt="pic" src="./res/gif/user-home.gif"> 
+<img alt="pic" src="./res/gif/user-home.gif" width="25%"> 
 
 
 
@@ -121,7 +121,7 @@ As we can see in this clip the bot (backend) is the first to multicast to every 
 We introduced this bot along the city limited leaderboard for citizen too as a gamification of this problem
 
 
-<img height0" alt="pic" src="./res/gif/telegram-alert-leaderboard.gif"> 
+<img alt="pic" src="./res/gif/telegram-alert-leaderboard.gif" width="25%"> 
 
 
 
